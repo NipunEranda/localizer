@@ -1,9 +1,9 @@
-// const user = require('./routes/user');
-// const project = require('./routes/project');
+const github = require('./routes/github');
+const translator = require('./routes/translator');
 
 const routes = [
-    // { path: '/user', module: user },
-    // { path: '/project', module: project }
+    //{ path: '/github', module: github },
+    { path: '/translator', module: translator }
 ];
 
 module.exports = routes;
