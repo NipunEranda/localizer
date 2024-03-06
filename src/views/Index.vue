@@ -50,6 +50,7 @@ onMounted(async () => {
       Cookies.set("token", lr.token);
       store.commit("auth/setCurrentUser", lr.user);
       store.commit("setLoggedIn", true);
+      location.reload();
     } else {
       Cookies.set("token", "");
       store.commit("auth/setCurrentUser", null);
