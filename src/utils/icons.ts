@@ -1,17 +1,17 @@
-function importAll(r: any) {
-  return r.keys().map(r);
+function importAll(r: __WebpackModuleApi.RequireContext) {
+  return r.keys().map<string>(r);
 }
 
-const img = importAll(
+const img: string[] = importAll(
   require.context("../assets/img", false, /\.(png|jpe?g|svg)$/)
 );
 
-const icons = importAll(
+const icons: string[] = importAll(
   require.context("../assets/img/icons/", false, /\.(png|jpe?g|svg)$/)
 );
 
-const images = img.concat(icons);
+const images: string[] = img.concat(icons);
 
 export default function getIcon(name: string) {
-  return images.filter((i: string) => i.includes(name))[0];
+  return images.filter((value: string) => value.includes(name))[0];
 }

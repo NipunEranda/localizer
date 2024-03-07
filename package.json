@@ -35,6 +35,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^20.11.24",
+    "@types/webpack-env": "^1.18.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

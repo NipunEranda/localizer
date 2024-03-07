@@ -81,7 +81,7 @@
 
 <script setup>
 import * as util from "@/utils";
-import { toRefs, defineProps } from "vue";
+import { /*toRefs,*/ defineProps } from "vue";
 
 const props = defineProps({
   modalId: String,
@@ -94,4 +94,6 @@ const props = defineProps({
     type: Boolean,
   },
 });
+
+console.log(props);
 </script>

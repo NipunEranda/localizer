@@ -69,7 +69,7 @@
 <script setup>
 import * as util from "../utils";
 import router from "@/router";
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { key } from "../store";
 import { useStore } from "vuex";
 

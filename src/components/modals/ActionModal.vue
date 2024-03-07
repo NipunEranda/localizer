@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { toRefs, defineProps } from "vue";
+import { /*toRefs,*/ defineProps } from "vue";
 
 const props = defineProps({
   modalTitlealert: String,
@@ -60,4 +60,6 @@ const props = defineProps({
   modalProcess: Function,
   processText: String,
 });
+
+console.log(props);
 </script>
