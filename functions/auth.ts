@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
 import middy from "middy";
-import { responseHandler } from "./util";
+import util from "./util";
 import axios from "axios";
-import github from "./services/github";
+import github, { User } from "./services/github";
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
 
 exports.systemLogin = async (event) => {
   if (event.queryStringParameters.code) {
@@ -15,10 +15,32 @@ exports.systemLogin = async (event) => {
           accept: "application/json",
         },
       });
-      const user = await github.getUserDetails(response.data.access_token);
-      const email = await github.getUserEmail(response.data.access_token);
-      user.email = email.email;
-      return responseHandler(
+      const user: User | null = await new Promise(async (resolve, reject) => {
+        let user: User, email: string;
+        Promise.all(
+          [
+            github.getUserDetails(response.data.access_token),
+            github.getUserEmail(response.data.access_token),
+          ].map(async (res, r) => {
+            switch (r) {
+              case 0:
+                user = await res;
+                break;
+              case 1:
+                email = await res;
+                break;
+            }
+          })
+        )
+          .then(() => {
+            user.email = email;
+            resolve(user);
+          })
+          .catch(() => {
+            resolve(null);
+          });
+      });
+      return util.responseHandler(
         200,
         { user: user, token: response.data.access_token },
         "Authentication Success!"
@@ -35,7 +57,7 @@ exports.systemLogin = async (event) => {
   };
 };
 
-const handler = async function (event, context) {
+const handler = async function (event: APIGatewayProxyEvent, context: Context) {
   try {
     var result = null;
     if (
@@ -47,7 +69,7 @@ const handler = async function (event, context) {
     return result;
   } catch (e) {
     console.log(e);
-    return responseHandler(500 || e.status, e, e.message);
+    return util.responseHandler(500 || e.status, e, e.message);
   }
 };
 

@@ -1,24 +1,27 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import * as mongoDB from "mongodb";
 
 // Create mongo client
-export function getMongoClient() {
+const getMongoClient = () => {
   try {
-    const mongoClient = new MongoClient(process.env.MONGO_URL);
-    return mongoClient;
+    if (process.env.MONGO_URL) {
+      const mongoClient: mongoDB.MongoClient = new mongoDB.MongoClient(
+        process.env.MONGO_URL
+      );
+      return mongoClient;
+    }
+    return null;
   } catch (e) {
     return null;
   }
-}
+};
 
 // Handle request responses
-export function responseHandler(
-  statusCode: number,
-  data: any,
-  message: string
-) {
+const responseHandler = (statusCode: number, data: Object, message: string) => {
   return {
     statusCode: statusCode,
     body: JSON.stringify(data),
     message: message,
   };
-}
+};
+
+export default { getMongoClient, responseHandler };

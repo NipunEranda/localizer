@@ -30,8 +30,10 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.136",
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^20.11.24",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
