@@ -1,6 +1,8 @@
 import axios from "axios";
+import { ObjectId } from "mongodb";
 
 export class User {
+  _id: ObjectId;
   avatar_url: string;
   bio: string;
   company: string;

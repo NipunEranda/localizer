@@ -3,10 +3,14 @@ import util from "./util";
 import axios from "axios";
 import github, { User } from "./services/github";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import * as mongoDB from "mongodb";
 
 exports.systemLogin = async (event) => {
   if (event.queryStringParameters.code) {
     try {
+      const mongoClient: mongoDB.MongoClient | null = util.getMongoClient();
+      let insertedU: mongoDB.InsertOneResult<mongoDB.BSON.Document>;
+
       // event.queryStringParameters.code
       const response = await axios({
         method: "post",
@@ -33,18 +37,42 @@ exports.systemLogin = async (event) => {
           })
         )
           .then(() => {
-            user.email = email;
+            user.email = email["email"];
             resolve(user);
           })
           .catch(() => {
-            resolve(null);
+            resolve(user);
           });
       });
-      return util.responseHandler(
-        200,
-        { user: user, token: response.data.access_token },
-        "Authentication Success!"
-      );
+      if (user) {
+        if (mongoClient) {
+          const clientPromise = mongoClient.connect();
+          const database = (await clientPromise).db(process.env.MONGO_DB);
+
+          //Check if user is already registered or not
+          const result = await database
+            .collection("users")
+            .findOne({ email: user.email, id: user.id });
+
+          if (!result) {
+            //If user doesn't exists, Register
+            insertedU = await database.collection("users").insertOne(user);
+            user._id = insertedU.insertedId;
+          }else{
+            user._id = result._id;
+          }
+
+          return util.responseHandler(
+            200,
+            { user: user, token: response.data.access_token },
+            "Authentication Success!"
+          );
+        } else {
+          return util.responseHandler(400, null, "Mongo db connection failed");
+        }
+      } else {
+        return util.responseHandler(400, null, "Authentication failed!");
+      }
     } catch (e) {
       console.log(e);
       return { statusCode: 200, body: null, message: null };
