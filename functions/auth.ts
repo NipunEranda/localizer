@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import middy from "middy";
 import { responseHandler } from "./util";
 import axios from "axios";
+import github from "./services/github";
 
 exports.systemLogin = async (event) => {
   if (event.queryStringParameters.code) {
@@ -14,7 +15,9 @@ exports.systemLogin = async (event) => {
           accept: "application/json",
         },
       });
-      const user = await getUserDetails(response.data.access_token);
+      const user = await github.getUserDetails(response.data.access_token);
+      const email = await github.getUserEmail(response.data.access_token);
+      user.email = email.email;
       return responseHandler(
         200,
         { user: user, token: response.data.access_token },
@@ -45,92 +48,6 @@ const handler = async function (event, context) {
   } catch (e) {
     console.log(e);
     return responseHandler(500 || e.status, e, e.message);
-  }
-};
-
-const getUserDetails = async (token: string) => {
-  let response = null;
-  try {
-    response = await axios.get(`${process.env.VUE_APP_GITHUB_API_URL}/user`, {
-      headers: { Authorization: "Bearer " + token },
-    });
-    return response ? response["data"] : null;
-  } catch (e) {
-    console.log(e);
-    return e;
-  }
-};
-
-const getOrganizations = async (token: string) => {
-  let response = null;
-  try {
-    response = await axios.get(
-      `${process.env.VUE_APP_GITHUB_API_URL}/user/orgs`,
-      {
-        headers: {
-          Authorization: "Bearer " + token,
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-    return response ? response["data"] : null;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const getOrgRepositories = async (org: number, token: string) => {
-  let response = null;
-  try {
-    response = await axios.get(
-      `${process.env.VUE_APP_GITHUB_API_URL}/orgs/${org}/repos`,
-      {
-        headers: {
-          Authorization: "Bearer " + token,
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-    return response ? response["data"] : null;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const getPersonalRepositories = async (token: string) => {
-  let response = null;
-  try {
-    response = await axios.get(
-      `${process.env.VUE_APP_GITHUB_API_URL}/user/repos?visibility=all&per_page=100`,
-      {
-        headers: {
-          Authorization: "Bearer " + token,
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-    return response ? response["data"] : null;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const getLanguagesInRepository = async (link: string, token: string) => {
-  let response = null;
-  try {
-    response = await axios.get(link, {
-      headers: {
-        Authorization: "Bearer " + token,
-        Accept: "application/vnd.github.v3+json",
-      },
-    });
-    return response ? response["data"] : null;
-  } catch (e) {
-    console.log(e);
-    return null;
   }
 };
 

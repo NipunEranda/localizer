@@ -4,6 +4,10 @@ import router from "./router";
 import "./assets/tailwind.css";
 import { store, key } from "./store";
 
+import Modal from "./components/modals/Modal.vue";
+import ActionModal from "./components/modals/ActionModal.vue";
+import Alert from "./components/Alert.vue";
+
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
 
@@ -41,4 +45,7 @@ createApp(App)
   .use(router)
   .use(store, key)
   .component("fai", FontAwesomeIcon)
+  .component("modal", Modal)
+  .component("action-modal", ActionModal)
+  .component("alert", Alert)
   .mount("#app");

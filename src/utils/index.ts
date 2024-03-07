@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 
-const icons = require("./icons");
-const $ = require("jquery");
+import $ from "jquery";
+import getIcon from "./icons";
 
-export { icons };
+export { getIcon };
 
 export function formatDate(dateString: Date) {
   dateString = dateString ? dateString : new Date();
@@ -87,7 +87,7 @@ export function errorHandler(data: any) {
 }
 
 export function showAlert(context: any) {
-  setTimeout(() => {}, 1000);
+  // setTimeout(() => {}, 1000);
   setTimeout(() => {
     context.alert = { title: null, text: null, type: null };
   }, 5000);

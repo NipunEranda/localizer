@@ -13,6 +13,22 @@ const getUserDetails = async (token: string) => {
   }
 };
 
+const getUserEmail = async (token: string) => {
+  let response: Object = {};
+  try {
+    response = await axios.get(
+      `${process.env.VUE_APP_GITHUB_API_URL}/user/emails`,
+      {
+        headers: { Authorization: "Bearer " + token },
+      }
+    );
+    return response ? response["data"].filter((email: String) => email.primary)[0] : null;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
 const getOrganizations = async (token: string) => {
   let response = null;
   try {
@@ -86,6 +102,11 @@ const getLanguagesInRepository = async (link: string, token: string) => {
   }
 };
 
-class github {
-    
-}
+export default {
+  getUserDetails,
+  getUserEmail,
+  getOrganizations,
+  getOrgRepositories,
+  getPersonalRepositories,
+  getLanguagesInRepository,
+};

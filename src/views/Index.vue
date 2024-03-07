@@ -27,16 +27,16 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 import axios from "axios";
-import { getIcon } from "@/utils/icons";
 import Cookies from "js-cookie";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { Login, _Login } from "@/models/Auth";
+import { getIcon } from "@/utils";
 
 const store = useStore(key);
 
 function redirectGithubLogin() {
-  location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.VUE_APP_GITHUB_CLIENT_ID}&state=${process.env.VUE_APP_GITHUB_STATE}&redirect_uri=${process.env.VUE_APP_GITHUB_REDIRECT_URI}`;
+  location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.VUE_APP_GITHUB_CLIENT_ID}&state=${process.env.VUE_APP_GITHUB_STATE}&redirect_uri=${process.env.VUE_APP_GITHUB_REDIRECT_URI}&scope=read:user,user:email`;
 }
 
 onMounted(async () => {

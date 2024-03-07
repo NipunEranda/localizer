@@ -12,6 +12,6 @@ const icons = importAll(
 
 const images = img.concat(icons);
 
-export function getIcon(name: string) {
+export default function getIcon(name: string) {
   return images.filter((i: string) => i.includes(name))[0];
 }
