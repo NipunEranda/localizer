@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center pt-16">
+  <div class="text-center pt-5">
     <span class="text-4xl font-bold">Select a Workspace</span>
     <div class="mt-7">
       <!-- Workspace list -->
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import * as util from "../utils";
+import * as util from "@/utils";
 import router from "@/router";
 import { onMounted, ref } from "vue";
 import { key } from "../store";
@@ -88,27 +88,28 @@ let modalContent = ref("");
 let selectedWorkspace = ref(null);
 
 onMounted(async () => {
-  // workspaces.value = await store.dispatch("workspace/loadWorkspaces");
+  workspaces.value = await store.dispatch("workspace/loadWorkspaces");
 });
 
 async function modalProcess() {
-  let response;
   util.showLoadingScreen();
   try {
+    let response;
     switch (operation.value) {
       case "add":
-        response = await store.dispatch("addWorkspace", workspace);
+        response = await store.dispatch("workspace/addWorkspace", workspace);
+        if (response) workspaces.value = response;
         util.hideModal("workspaceModal");
         break;
       case "delete":
         response = await store.dispatch(
-          "removeWorkspace",
+          "workspace/removeWorkspace",
           selectedWorkspace.value._id
         );
+        if (response) workspaces.value = response;
         util.hideModal("workspaceModal");
         break;
     }
-    if (response) workspaces.value = response;
   } catch (e) {
     console.log(e);
   } finally {
@@ -117,20 +118,21 @@ async function modalProcess() {
 }
 
 function openCreateModal(opt, obj) {
-  operation = opt;
+  operation.value = opt;
   switch (operation.value) {
     case "add":
-      modalTitle.value = "Create Workspace";
-      actionName.value = "Save";
+      modalTitle = ref("Create Workspace");
+      actionName = ref("Save");
       break;
     case "delete":
-      modalTitle.value = "Remove Workspace";
-      modalContent.value = `Do you want to remove <i><b>${obj.name}</b></i> workspace?`;
-      actionName.value = "Remove";
-      selectedWorkspace = obj;
+      modalTitle = ref("Remove Workspace");
+      modalContent = ref(
+        `Do you want to remove <i><b>${obj.name}</b></i> workspace?`
+      );
+      actionName = ref("Remove");
+      selectedWorkspace = ref(obj);
       break;
   }
-
   util.showModal("workspaceModal");
 }
 

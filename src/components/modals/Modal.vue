@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      :id="modalId + '-modalOverlay'"
+      :id="props.modalId + '-modalOverlay'"
       class="relative hidden"
       aria-labelledby="modal-title"
       role="dialog"
@@ -15,7 +15,7 @@
           class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
           <div
-            :id="modalId"
+            :id="props.modalId"
             class="relative overflow-hidden rounded-lg text-left w-full sm:w-11/12 md:w-9/12 lg:w-8/12 xl:w-6/12 shadow-md shadow-neutral-500 dark:shadow-neutral-950"
           >
             <!-- Header -->
@@ -24,10 +24,10 @@
             >
               <h3
                 class="text-xl font-semibold text-neutral-900 dark:text-white"
-                v-text="modalTitle"
+                v-text="props.modalTitle"
               ></h3>
               <button
-                @click="util.hideModal(modalId)"
+                @click="util.hideModal(props.modalId)"
                 type="button"
                 class="text-neutral-900 dark:text-neutral-50 bg-transparent rounded-lg text-lg w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:text-white hover:bg-neutral-300 dark:hover:bg-neutral-600 dark:bg-neutral-700"
                 data-modal-hide="default-modal"
@@ -48,10 +48,10 @@
               class="border-t-2 bg-neutral-300 bg-opacity-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
             >
               <button
-                @click="modalProcess()"
+                @click="props.modalProcess()"
                 type="button"
-                v-text="actionName"
-                v-if="modalProcess"
+                v-text="props.actionName"
+                v-if="props.modalProcess"
                 :class="{
                   'ring-danger bg-danger hover:bg-danger-hover':
                     operation == 'delete',
@@ -63,8 +63,8 @@
                 class="mt-3 inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset sm:mt-0 sm:w-auto ml-2"
               ></button>
               <button
-                v-if="showCancel"
-                @click="util.hideModal(modalId)"
+                v-if="props.showCancel"
+                @click="util.hideModal(props.modalId)"
                 type="button"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-secondary hover:bg-secondary-hover px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-secondary-hover sm:mt-0 sm:w-auto"
               >
@@ -94,6 +94,4 @@ const props = defineProps({
     type: Boolean,
   },
 });
-
-console.log(props);
 </script>

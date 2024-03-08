@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import * as utilImport from "../utils";
+import * as utilImport from "@/utils";
 import { /*toRefs,*/ defineProps } from "vue";
 
 const util = utilImport;

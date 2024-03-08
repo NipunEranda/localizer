@@ -1,7 +1,7 @@
 <template>
   <div class="grid place-items-center items-center justify-center h-screen">
     <div class="grid place-items-center -translate-y-32">
-      <img :src="getIcon('logo')" alt="" class="w-72" />
+      <img :src="util.getIcon('logo')" alt="" class="w-72" />
       <button
         class="dark:bg-primary dark:hover:bg-primary-hover p-3 ps-5 pe-5 rounded-lg"
         @click="redirectGithubLogin()"
@@ -31,7 +31,7 @@ import Cookies from "js-cookie";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { Login, _Login } from "@/models/Auth";
-import { getIcon } from "@/utils";
+import * as util from "@/utils";
 
 const store = useStore(key);
 
@@ -40,22 +40,35 @@ function redirectGithubLogin() {
 }
 
 onMounted(async () => {
-  const code: string = location.search.replace("?code=", "");
-  if (code != "") {
-    const loginResponse = await axios.get<_Login>(
-      `${process.env.VUE_APP_API_URL}/auth/github?code=${code}`
-    );
-    const lr = new Login(loginResponse.data);
-    if (lr.token && lr.user) {
-      Cookies.set("token", lr.token);
-      store.commit("auth/setCurrentUser", lr.user);
-      store.commit("setLoggedIn", true);
-      location.reload();
-    } else {
-      Cookies.set("token", "");
-      store.commit("auth/setCurrentUser", null);
-      store.commit("setLoggedIn", false);
+  try {
+    const code: string = location.search.replace("?code=", "");
+    if (code != "") {
+      util.showLoadingScreen();
+      const loginResponse: _Login = (
+        await axios.get(
+          `${process.env.VUE_APP_API_URL}/auth/github?code=${code}`
+        )
+      ).data.data;
+      const lr = new Login(loginResponse);
+      if (lr.token && lr.user) {
+        Cookies.set("token", lr.token, {
+          secure: true,
+          sameSite: "strict",
+          HttpOnly: true,
+        });
+        store.commit("auth/setCurrentUser", lr.user);
+        store.commit("setLoggedIn", true);
+        location.reload();
+      } else {
+        Cookies.remove("token");
+        store.commit("auth/setCurrentUser", null);
+        store.commit("setLoggedIn", false);
+      }
     }
+  } catch (e) {
+    console.log(e);
+  } finally {
+    util.hideLoadingScreen();
   }
 });
 </script>

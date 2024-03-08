@@ -86,7 +86,7 @@ export function hideModal(name: string) {
 }
 
 export function errorHandler(data: Response) {
-  if (data.statusCode == 403) $("#logout_modal").show();
+  if (data.status == 403) $("#logout_modal").show();
   return data;
 }
 

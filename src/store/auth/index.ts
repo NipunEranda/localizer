@@ -47,6 +47,7 @@ const AuthModule = {
           {
             headers: {
               Authorization: `Bearer ${store.getters.getCurrentUser.token}`,
+              withCredentials: true,
             },
           }
         );

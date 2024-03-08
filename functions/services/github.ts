@@ -29,6 +29,7 @@ const getUserDetails = async (token: string) => {
       `${process.env.VUE_APP_GITHUB_API_URL}/user`,
       {
         headers: { Authorization: "Bearer " + token },
+        withCredentials: true
       }
     );
     const user = User.createUser(response.data);
@@ -44,6 +45,7 @@ const getUserEmail = async (token: string) => {
       `${process.env.VUE_APP_GITHUB_API_URL}/user/emails`,
       {
         headers: { Authorization: "Bearer " + token },
+        withCredentials: true
       }
     );
     return response

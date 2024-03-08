@@ -1,12 +1,12 @@
 export interface Response{
-    statusCode: number;
+    status: number;
     body: Object;
     message: string;
 }
 
-// const responseHandler = (statusCode: number, data: Object, message: string) => {
+// const responseHandler = (status: number, data: Object, message: string) => {
 //     return {
-//       statusCode: statusCode,
+//       status: status,
 //       body: JSON.stringify(data),
 //       message: message,
 //     };

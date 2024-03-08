@@ -45,50 +45,63 @@ const WorkspaceModule = {
     },
     async loadWorkspaces(
       context: ActionContext<WorkspaceState, State>
-    ): Promise<void> {
+    ): Promise<Workspace[] | null> {
       try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}/workspace`,
-          {
+        const workspaces: Workspace[] = (
+          await axios.get(`${process.env.VUE_APP_API_URL}/workspace`, {
             headers: {
-              Authorization: `Bearer ${store.getters.getCurrentUser.token}`,
+              withCredentials: true,
             },
-          }
-        );
-        context.commit("setWorkspaces", response.data.workspaces);
-        return response.data.workspaces;
+          })
+        ).data.data;
+        context.commit("setWorkspaces", workspaces);
+        return workspaces;
       } catch (e) {
-        console.log(e);
         store.dispatch("handleRequestErrors", e);
+        return null;
       }
     },
-    // async addWorkspace(context: any, data: any): Promise<any> {
-    //   const response = await axios.post(
-    //     `${process.env.VUE_APP_API_URL}/workspace`,
-    //     data,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${store.getters.getCurrentUser.token}`,
-    //       },
-    //     }
-    //   );
-    //   if (response.data)
-    //     context.commit("setWorkspaces", response.data.workspaces);
-    //   return response.data.workspaces;
-    // },
-    // async removeWorkspace(context: any, data: any): Promise<any> {
-    //   const response = await axios.delete(
-    //     `${process.env.VUE_APP_API_URL}/workspace?id=${data}`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${store.getters.getCurrentUser.token}`,
-    //       },
-    //     }
-    //   );
-    //   if (response.data)
-    //     context.commit("setWorkspaces", response.data.workspaces);
-    //   return response.data.workspaces;
-    // },
+    async addWorkspace(
+      context: ActionContext<WorkspaceState, State>,
+      data: WorkspaceState
+    ): Promise<Workspace[] | null> {
+      try {
+        const workspaces: Workspace[] = (
+          await axios.post(`${process.env.VUE_APP_API_URL}/workspace`, data, {
+            headers: {
+              withCredentials: true,
+            },
+          })
+        ).data.data;
+        context.commit("setWorkspaces", workspaces);
+        return workspaces;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
+    async removeWorkspace(
+      context: ActionContext<WorkspaceState, State>,
+      data: WorkspaceState
+    ): Promise<Workspace[] | null> {
+      try {
+        const workspaces: Workspace[] = (
+          await axios.delete(
+            `${process.env.VUE_APP_API_URL}/workspace?id=${data}`,
+            {
+              headers: {
+                withCredentials: true,
+              },
+            }
+          )
+        ).data.data;
+        context.commit("setWorkspaces", workspaces);
+        return workspaces;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
   },
 };
 
