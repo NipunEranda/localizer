@@ -67,7 +67,6 @@ const systemLogin = async (event) => {
               user._id = result._id;
             }
 
-            console.log(response.data.access_token);
             const myCookie = cookie.serialize(
               "token",
               splitToken(response.data.access_token)[0],
@@ -97,6 +96,7 @@ const systemLogin = async (event) => {
           AppResponse.createObject(400, null, "Authentication failed!");
         }
       } else {
+        console.log(response.data.error);
         AppResponse.createObject(400, response.data, response.data.error);
       }
     } catch (e) {
