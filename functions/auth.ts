@@ -9,10 +9,10 @@ import cookie from "cookie";
 
 // https://api.github.com/applications/YOUR_CLIENT_ID/token
 
-const systemLogin = async (event) => {
-  if (event.queryStringParameters.code) {
+const systemLogin = async (event: APIGatewayProxyEvent) => {
+  if (event.queryStringParameters?.code) {
+    const mongoClient: mongoDB.MongoClient | null = util.getMongoClient();
     try {
-      const mongoClient: mongoDB.MongoClient | null = util.getMongoClient();
       let insertedU: mongoDB.InsertOneResult<mongoDB.BSON.Document>;
 
       // event.queryStringParameters.code
@@ -102,6 +102,8 @@ const systemLogin = async (event) => {
     } catch (e) {
       console.log(e);
       return AppResponse.createObject(500, e, e.message);
+    } finally {
+      if (mongoClient) mongoClient.close();
     }
   }
   return AppResponse.createObject(400, null, "Auth code required");
