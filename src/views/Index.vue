@@ -56,7 +56,7 @@ onMounted(async () => {
           sameSite: "strict",
           path: "/",
         });
-        Cookies.set("userId", lr.user._id.toString());
+        Cookies.set("userId", lr.user._id);
         store.commit("auth/setCurrentUser", lr.user);
         store.commit("setLoggedIn", true);
         location.reload();

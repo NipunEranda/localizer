@@ -1,9 +1,13 @@
 import middy, { HandlerLambda } from "middy";
-import util, { AppResponse, _AppResponse } from "./util";
+import {
+  AppResponse,
+  _AppResponse,
+  connectMongoose,
+  closeMongooseConnection,
+} from "./util";
 import axios from "axios";
-import github, { User } from "./services/github";
+import github, { UserDocument, _User, userSchema } from "./services/github";
 import { APIGatewayProxyEvent, Context, Handler } from "aws-lambda";
-import * as mongoDB from "mongodb";
 import { NextFunction } from "express";
 import cookie from "cookie";
 
@@ -11,10 +15,8 @@ import cookie from "cookie";
 
 const systemLogin = async (event: APIGatewayProxyEvent) => {
   if (event.queryStringParameters?.code) {
-    const mongoClient: mongoDB.MongoClient | null = util.getMongoClient();
     try {
-      let insertedU: mongoDB.InsertOneResult<mongoDB.BSON.Document>;
-
+      connectMongoose();
       // event.queryStringParameters.code
       const response = await axios({
         method: "post",
@@ -24,86 +26,87 @@ const systemLogin = async (event: APIGatewayProxyEvent) => {
         },
       });
       if (!response.data.error) {
-        const user: User | null = await new Promise(async (resolve, reject) => {
-          let user: User, email: string;
-          Promise.all(
-            [
-              github.getUserDetails(response.data.access_token),
-              github.getUserEmail(response.data.access_token),
-            ].map(async (res, r) => {
-              switch (r) {
-                case 0:
-                  user = await res;
-                  break;
-                case 1:
-                  email = await res;
-                  break;
-              }
-            })
-          )
-            .then(() => {
-              user.email = email["email"];
-              resolve(user);
-            })
-            .catch(() => {
-              resolve(user);
-            });
-        });
-        if (user) {
-          if (mongoClient) {
-            const clientPromise = mongoClient.connect();
-            const database = (await clientPromise).db(process.env.MONGO_DB);
-
-            //Check if user is already registered or not
-            const result = await database
-              .collection("users")
-              .findOne({ email: user.email, id: user.id });
-
-            if (!result) {
-              //If user doesn't exists, Register
-              insertedU = await database.collection("users").insertOne(user);
-              user._id = insertedU.insertedId;
-            } else {
-              user._id = result._id;
-            }
-
-            const myCookie = cookie.serialize(
-              "token",
-              splitToken(response.data.access_token)[0],
-              {
-                secure: true,
-                httpOnly: true,
-                path: "/",
-                maxAge: 24 * 60 * 60,
-                sameSite: "strict",
-              }
-            );
-
-            return AppResponse.createObject(
-              200,
-              { user: user, token: splitToken(response.data.access_token)[1] },
-              "Authentication Success!",
-              {
-                "Set-Cookie": myCookie,
-                "Cache-Control": "no-cache",
-                "Content-Type": "text/html",
-              }
-            );
-          } else {
-            AppResponse.createObject(500, null, "Mongo db connection failed");
+        let user: UserDocument | null = await new Promise(
+          async (resolve, reject) => {
+            let user: UserDocument | null, email: string;
+            Promise.all(
+              [
+                github.getUserDetails(response.data.access_token),
+                github.getUserEmail(response.data.access_token),
+              ].map(async (res, r) => {
+                switch (r) {
+                  case 0:
+                    user = await res;
+                    break;
+                  case 1:
+                    email = await res;
+                    break;
+                }
+              })
+            )
+              .then(() => {
+                if (user) {
+                  user.email = email["email"];
+                  resolve(user);
+                } else resolve(null);
+              })
+              .catch(() => {
+                resolve(user);
+              });
           }
+        );
+        if (user) {
+          //Check if user is already registered or not
+          // const result = await database
+          //   .collection("users")
+          //   .findOne({ email: user.email, id: user.id });
+          const existingUser = await userSchema.findOne({
+            email: user.email,
+            id: user.id,
+          });
+
+          if (!existingUser) {
+            //If user doesn't exists, Register
+            // insertedU = await database.collection("users").insertOne(user);
+            user = await userSchema.create(user);
+          }
+
+          const myCookie = cookie.serialize(
+            "token",
+            splitToken(response.data.access_token)[0],
+            {
+              secure: true,
+              httpOnly: true,
+              path: "/",
+              maxAge: 24 * 60 * 60,
+              sameSite: "strict",
+            }
+          );
+
+          return AppResponse.createObject(
+            200,
+            {
+              user: existingUser ? existingUser : user,
+              token: splitToken(response.data.access_token)[1],
+            },
+            "Authentication Success!",
+            {
+              "Set-Cookie": myCookie,
+              "Cache-Control": "no-cache",
+              "Content-Type": "text/html",
+            }
+          );
         } else {
-          AppResponse.createObject(400, null, "Authentication failed!");
+          AppResponse.createObject(500, null, "Mongo db connection failed");
         }
       } else {
-        console.log(response.data.error);
-        AppResponse.createObject(400, response.data, response.data.error);
+        AppResponse.createObject(400, null, "Authentication failed!");
       }
     } catch (e) {
       console.log(e);
       return AppResponse.createObject(500, e, e.message);
     } finally {
-      if (mongoClient) mongoClient.close();
+      closeMongooseConnection();
     }
   }
   return AppResponse.createObject(400, null, "Auth code required");
@@ -131,7 +134,8 @@ export const verifyToken = () => {
                   },
                 })
                 .then((res) => {
-                  handler.event.queryStringParameters["userId"] = cookies.userId;
+                  handler.event.queryStringParameters["userId"] =
+                    cookies.userId;
                   next();
                 })
                 .catch((e) => {

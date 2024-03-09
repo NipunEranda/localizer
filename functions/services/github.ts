@@ -1,26 +1,7 @@
 import axios from "axios";
-import { ObjectId } from "mongodb";
+import mongoose, { ObjectId } from "mongoose";
 
 export interface _User {
-  _id: ObjectId,
-  avatar_url: string;
-  bio: string;
-  company: string;
-  created_at: string;
-  email: string;
-  followers: number;
-  following: number;
-  html_url: string;
-  id: number;
-  location: string;
-  login: string;
-  name: string;
-  public_repos: number;
-  type: string;
-  workspaces: string[];
-}
-
-export class User {
   _id: ObjectId;
   avatar_url: string;
   bio: string;
@@ -37,30 +18,151 @@ export class User {
   public_repos: number;
   type: string;
   workspaces: string[];
-
-  constructor(obj: _User) {
-    this._id = obj._id;
-    this.avatar_url = obj.avatar_url;
-    this.bio = obj.bio;
-    this.company = obj.company;
-    this.created_at = obj.created_at;
-    this.email = obj.created_at;
-    this.followers = obj.followers;
-    this.following = obj.following;
-    this.html_url = obj.html_url;
-    this.id = obj.id;
-    this.location = obj.location;
-    this.login = obj.login;
-    this.name = obj.name;
-    this.public_repos = obj.public_repos;
-    this.type = obj.type;
-    this.workspaces = obj.workspaces ? obj.workspaces : [];
-  }
-
-  static createUser(user: _User) {
-    return new User(user);
-  }
 }
+
+export interface UserDocument extends _User, mongoose.Document {
+  _id: ObjectId;
+  avatar_url: string;
+  bio: string;
+  company: string;
+  created_at: string;
+  email: string;
+  followers: number;
+  following: number;
+  html_url: string;
+  id: number;
+  location: string;
+  login: string;
+  name: string;
+  public_repos: number;
+  type: string;
+  workspaces: string[];
+}
+
+// export class User {
+//   _id: ObjectId;
+//   avatar_url: string;
+//   bio: string;
+//   company: string;
+//   created_at: string;
+//   email: string;
+//   followers: number;
+//   following: number;
+//   html_url: string;
+//   id: number;
+//   location: string;
+//   login: string;
+//   name: string;
+//   public_repos: number;
+//   type: string;
+//   workspaces: string[];
+
+//   constructor(obj: _User) {
+//     this._id = obj._id;
+//     this.avatar_url = obj.avatar_url;
+//     this.bio = obj.bio;
+//     this.company = obj.company;
+//     this.created_at = obj.created_at;
+//     this.email = obj.created_at;
+//     this.followers = obj.followers;
+//     this.following = obj.following;
+//     this.html_url = obj.html_url;
+//     this.id = obj.id;
+//     this.location = obj.location;
+//     this.login = obj.login;
+//     this.name = obj.name;
+//     this.public_repos = obj.public_repos;
+//     this.type = obj.type;
+//     this.workspaces = obj.workspaces ? obj.workspaces : [];
+//   }
+
+//   static createUser() {
+//     return new User(user);
+//   }
+// }
+
+const UserSchema = new mongoose.Schema({
+  avatar_url: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  bio: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  company: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  created_at: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  email: {
+    type: String,
+    required: false,
+    unique: true,
+  },
+  followers: {
+    type: Number,
+    required: false,
+    unique: false,
+  },
+  following: {
+    type: Number,
+    required: false,
+    unique: false,
+  },
+  html_url: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  id: {
+    type: Number,
+    required: false,
+    unique: false,
+  },
+  location: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  login: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  name: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  public_repos: {
+    type: Number,
+    required: false,
+    unique: false,
+  },
+  type: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  workspaces: {
+    type: Array,
+    required: false,
+    unique: false,
+  },
+});
+
+UserSchema.index({ id: 1 });
+
+// Create github user schema
+export const userSchema = mongoose.model<_User>("user", UserSchema);
 
 const getUserDetails = async (token: string) => {
   try {
@@ -68,10 +170,10 @@ const getUserDetails = async (token: string) => {
       `${process.env.VUE_APP_GITHUB_API_URL}/user`,
       {
         headers: { Authorization: "Bearer " + token },
-        withCredentials: true
+        withCredentials: true,
       }
     );
-    const user = User.createUser(response.data);
+    const user: _User = response.data;
     return response ? user : null;
   } catch (e) {
     return e;
@@ -84,11 +186,13 @@ const getUserEmail = async (token: string) => {
       `${process.env.VUE_APP_GITHUB_API_URL}/user/emails`,
       {
         headers: { Authorization: "Bearer " + token },
-        withCredentials: true
+        withCredentials: true,
       }
     );
     return response
-      ? response.data.filter((email: { [x: string]: any; }) => email["primary"])[0]
+      ? response.data.filter(
+          (email: { [x: string]: any }) => email["primary"]
+        )[0]
       : null;
   } catch (e) {
     return e;

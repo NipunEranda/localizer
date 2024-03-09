@@ -1,4 +1,4 @@
-import * as mongoDB from "mongodb";
+import mongoose, { mongo } from "mongoose";
 
 export interface _AppResponse {
   statusCode: number;
@@ -15,31 +15,40 @@ export class AppResponse {
   body: string | null;
   headers?: Object | null;
 
-  constructor(statusCode: number, body: _Response | null, headers?: Object | null) {
+  constructor(
+    statusCode: number,
+    body: _Response | null,
+    headers?: Object | null
+  ) {
     this.statusCode = statusCode;
     this.body = JSON.stringify(body);
     this.headers = headers;
   }
 
-  static createObject(statusCode: number, data: Object | null, error: string | null, headers?: Object | null) {
+  static createObject(
+    statusCode: number,
+    data: Object | null,
+    error: string | null,
+    headers?: Object | null
+  ) {
     return new AppResponse(statusCode, { data: data, error: error }, headers);
   }
 }
 
-// Create mongo client
-const getMongoClient = () => {
-  try {
-    if (process.env.MONGO_URL) {
-      const mongoClient: mongoDB.MongoClient = new mongoDB.MongoClient(
-        process.env.MONGO_URL
-      );
-      return mongoClient;
-    }
-    return null;
-  } catch (e) {
-    return null;
-  }
-};
+// // Create mongo client
+// const getMongoClient = () => {
+//   try {
+//     if (process.env.MONGO_URL) {
+//       const mongoClient: mongoDB.MongoClient = new mongoDB.MongoClient(
+//         process.env.MONGO_URL
+//       );
+//       return mongoClient;
+//     }
+//     return null;
+//   } catch (e) {
+//     return null;
+//   }
+// };
 
 // // Handle request responses
 // const responseHandler = (obj: AppResponse) => {
@@ -49,4 +58,11 @@ const getMongoClient = () => {
 //   };
 // };
 
-export default { getMongoClient };
+export const connectMongoose = () => {
+  if (process.env.MONGO_URL && process.env.MONGO_DB)
+    mongoose.connect(`${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+};
+
+export const closeMongooseConnection = () => {
+  // if (mongoose.connection) mongoose.connection.close();
+};

@@ -1,8 +1,6 @@
-import { ObjectId } from "mongodb";
-
 // Interfaces
 export interface _User {
-  _id: ObjectId;
+  _id: string;
   avatar_url: string;
   bio: string;
   company: string;
@@ -37,7 +35,7 @@ export class Login {
 }
 
 export class User {
-  _id: ObjectId;
+  _id: string;
   avatar_url: string;
   bio: string;
   company: string;

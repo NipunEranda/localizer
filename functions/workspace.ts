@@ -1,104 +1,131 @@
 import middy from "middy";
-import utils, { AppResponse, _Response } from "./util";
-import * as mongoDB from "mongodb";
+import {
+  AppResponse,
+  _Response,
+  closeMongooseConnection,
+  connectMongoose,
+} from "./util";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
-import { ObjectId } from "mongodb";
-import { User } from "./services/github";
+import { _User, userSchema } from "./services/github";
+import mongoose, { ObjectId } from "mongoose";
 
 interface _Workspace {
+  _id: ObjectId;
   name: string;
   deleted: boolean;
   isActive: boolean;
 }
 
-class Workspace {
+export interface WorkspaceDocument extends _Workspace, mongoose.Document {
+  _id: ObjectId;
+  name: string;
+  deleted: boolean;
+  isActive: boolean;
+}
+
+export class Workspace {
+  _id: ObjectId;
   name: string;
   deleted: boolean;
   isActive: boolean;
 
   constructor(obj: _Workspace) {
+    this._id = obj._id;
     this.name = obj.name;
     this.deleted = obj.deleted;
     this.isActive = obj.isActive;
   }
+
+  static createWorkspace(workspace: _Workspace) {
+    return new Workspace(workspace);
+  }
 }
+
+const WorkspaceSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: false,
+  },
+  deleted: {
+    type: Boolean,
+    required: true,
+    unique: false,
+  },
+  isActive: {
+    type: Boolean,
+    required: true,
+    unique: false,
+  },
+});
+
+// Create Workspace schema
+export const workspaceSchema = mongoose.model<Workspace>(
+  "Workspace",
+  WorkspaceSchema
+);
 
 export const getWorkspaces = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  const mongoClient: mongoDB.MongoClient | null = utils.getMongoClient();
   try {
-    if (mongoClient) {
-      const clientPromise = mongoClient.connect();
-      const database = (await clientPromise).db(process.env.MONGO_DB);
+    connectMongoose();
+    // Get user workspace list
+    let user = await userSchema.findOne({
+      _id: event.queryStringParameters?.userId,
+    });
 
-      // Get user workspaces
-      let user = await database.collection("users").findOne<User>({
-        _id: new ObjectId(event.queryStringParameters?.userId),
-      });
+    let newWorkspaceList: string[] = [];
+    user?.workspaces.map((w) => newWorkspaceList.push(w));
 
-      let newWorkspaceList: ObjectId[] = [];
-      user?.workspaces.map((w) => newWorkspaceList.push(new ObjectId(w)));
+    // Get user workspaces
+    const workspaces = await workspaceSchema.find({
+      _id: { $in: newWorkspaceList },
+      isActive: true,
+    });
 
-      const workspaces = await database
-        .collection("workspaces")
-        .find({ _id: { $in: newWorkspaceList }, isActive: true })
-        .toArray();
-
-      return AppResponse.createObject(200, workspaces, "Workspace Loaded!");
-    } else {
-      return AppResponse.createObject(400, null, "Mongo db connection failed");
-    }
+    return AppResponse.createObject(200, workspaces, "Workspace Loaded!");
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    if (mongoClient) mongoClient.close();
+    closeMongooseConnection();
   }
 };
 
 export const addWorkspace = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  const mongoClient = utils.getMongoClient();
   try {
-    if (mongoClient) {
-      const clientPromise = mongoClient.connect();
-      const database = (await clientPromise).db(process.env.MONGO_DB);
-      if (event.body) {
-        const workspace: Workspace = JSON.parse(event.body);
+    connectMongoose();
+    if (event.body) {
+      const workspace: Workspace = JSON.parse(event.body);
 
-        // Get user workspaces
-        let user = await database.collection("users").findOne<User>({
-          _id: new ObjectId(event.queryStringParameters?.userId),
-        });
-        // Insert workspaces
-        const insertWorkspaceResponse = await database
-          .collection("workspaces")
-          .insertOne(workspace);
+      // Get User
+      let user = await userSchema.findOne({
+        _id: event.queryStringParameters?.userId,
+      });
 
-        user?.workspaces.push(insertWorkspaceResponse.insertedId.toString());
-        // Update user workspaces
-        await database
-          .collection("users")
-          .updateOne(
-            { _id: user?._id },
-            { $set: { workspaces: user?.workspaces } }
-          );
+      // Insert workspaces
+      const insertedWorkspace = await workspaceSchema.create(workspace);
 
-        let newWorkspaceList: ObjectId[] = [];
-        user?.workspaces.map((w) => newWorkspaceList.push(new ObjectId(w)));
+      user?.workspaces.push(insertedWorkspace._id.toString());
+      // Update user workspaces
+      await userSchema.updateOne(
+        { _id: user?._id },
+        { $set: { workspaces: user?.workspaces } }
+      );
 
-        const workspaces = await database
-          .collection("workspaces")
-          .find({ _id: { $in: newWorkspaceList }, isActive: true })
-          .toArray();
+      let newWorkspaceList: string[] = [];
+      user?.workspaces.map((w) => newWorkspaceList.push(w));
 
-        return AppResponse.createObject(200, workspaces, "Workspace Added!");
-      } else {
-        return AppResponse.createObject(400, null, "Empty data recieved!");
-      }
+      // Get user workspaces
+      const workspaces = await workspaceSchema.find({
+        _id: { $in: newWorkspaceList },
+        isActive: true,
+      });
+      return AppResponse.createObject(200, workspaces, "Workspace Added!");
     } else {
       return AppResponse.createObject(400, null, "Mongo db connection failed!");
     }
@@ -106,51 +133,50 @@ export const addWorkspace = async (
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    if (mongoClient) mongoClient.close();
+    closeMongooseConnection();
   }
 };
 
 export const deleteWorkspace = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  const mongoClient = utils.getMongoClient();
   try {
-    if (mongoClient) {
-      const workspaceId = event.queryStringParameters?.id;
-      if (workspaceId) {
-        const clientPromise = mongoClient.connect();
-        const database = (await clientPromise).db(process.env.MONGO_DB);
+    connectMongoose();
+    const workspaceId = event.queryStringParameters?.id;
+    if (workspaceId) {
+      // Get User
+      let user = await userSchema.findOne({
+        _id: event.queryStringParameters?.userId,
+      });
 
-        // Update workspace
-        await database
-          .collection("workspaces")
-          .updateOne(
-            { _id: new ObjectId(workspaceId) },
-            { $set: { deleted: true, isActive: false } }
-          );
+      // Update workspace
+      await workspaceSchema.updateOne(
+        { _id: workspaceId },
+        { $set: { deleted: true, isActive: false } }
+      );
 
-        // Get all active workspaces
-        const workspaces = await database
-          .collection("workspaces")
-          .find({ deleted: false, isActive: true })
-          .toArray();
+      let newWorkspaceList: string[] = [];
+      user?.workspaces.map((w) => newWorkspaceList.push(w));
 
-        return AppResponse.createObject(200, workspaces, "Workspace Removed!");
-      } else {
-        return AppResponse.createObject(
-          400,
-          null,
-          "Please provide the workspace Id."
-        );
-      }
+      // Get user workspaces
+      const workspaces = await workspaceSchema.find({
+        _id: { $in: newWorkspaceList },
+        isActive: true,
+      });
+
+      return AppResponse.createObject(200, workspaces, "Workspace Removed!");
     } else {
-      return AppResponse.createObject(400, null, "Mongo db connection failed!");
+      return AppResponse.createObject(
+        400,
+        null,
+        "Please provide the workspace Id."
+      );
     }
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    if (mongoClient) mongoClient.close();
+    closeMongooseConnection();
   }
 };
 
@@ -187,6 +213,7 @@ export const responseHandler = async function (
       );
     }
   } catch (e) {
+    console.log(e);
     return AppResponse.createObject(e.statusCode, e, e.message);
   }
 };
