@@ -26,7 +26,9 @@ const AuthModule = {
   mutations: {
     resetState(state: AuthState) {
       Object.assign(state, getDefaultState());
-      Cookies.remove("local._token");
+      Object.keys(Cookies.get()).map((key) => {
+        Cookies.remove(key);
+      });
     },
     setUsers(state: AuthState, data: User[]) {
       state.users = data;

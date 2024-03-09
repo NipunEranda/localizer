@@ -2,9 +2,9 @@ import middy from "middy";
 import utils, { AppResponse, _Response } from "./util";
 import * as mongoDB from "mongodb";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
-import util from "./util";
 import { verifyToken } from "./auth";
 import { ObjectId } from "mongodb";
+import { User } from "./services/github";
 
 interface _Workspace {
   name: string;
@@ -33,12 +33,20 @@ export const getWorkspaces = async (
       const clientPromise = mongoClient.connect();
       const database = (await clientPromise).db(process.env.MONGO_DB);
 
-      // Get workspaces
+      // Get user workspaces
+      let user = await database.collection("users").findOne<User>({
+        _id: new ObjectId(event.queryStringParameters?.userId),
+      });
+
+      let newWorkspaceList: ObjectId[] = [];
+      user?.workspaces.map((w) => newWorkspaceList.push(new ObjectId(w)));
+
       const workspaces = await database
         .collection("workspaces")
-        .find({ deleted: false, isActive: true })
+        .find({ _id: { $in: newWorkspaceList }, isActive: true })
         .toArray();
-      return AppResponse.createObject(200, workspaces, null);
+
+      return AppResponse.createObject(200, workspaces, "Workspace Loaded!");
     } else {
       return AppResponse.createObject(400, null, "Mongo db connection failed");
     }
@@ -61,12 +69,30 @@ export const addWorkspace = async (
       if (event.body) {
         const workspace: Workspace = JSON.parse(event.body);
 
-        // Insert workspace
-        await database.collection("workspaces").insertOne(workspace);
-        // Get all active workspaces
+        // Get user workspaces
+        let user = await database.collection("users").findOne<User>({
+          _id: new ObjectId(event.queryStringParameters?.userId),
+        });
+        // Insert workspaces
+        const insertWorkspaceResponse = await database
+          .collection("workspaces")
+          .insertOne(workspace);
+
+        user?.workspaces.push(insertWorkspaceResponse.insertedId.toString());
+        // Update user workspaces
+        await database
+          .collection("users")
+          .updateOne(
+            { _id: user?._id },
+            { $set: { workspaces: user?.workspaces } }
+          );
+
+        let newWorkspaceList: ObjectId[] = [];
+        user?.workspaces.map((w) => newWorkspaceList.push(new ObjectId(w)));
+
         const workspaces = await database
           .collection("workspaces")
-          .find({ deleted: false, isActive: true })
+          .find({ _id: { $in: newWorkspaceList }, isActive: true })
           .toArray();
 
         return AppResponse.createObject(200, workspaces, "Workspace Added!");

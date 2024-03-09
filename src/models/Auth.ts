@@ -1,5 +1,8 @@
+import { ObjectId } from "mongodb";
+
 // Interfaces
 export interface _User {
+  _id: ObjectId;
   avatar_url: string;
   bio: string;
   company: string;
@@ -14,6 +17,7 @@ export interface _User {
   name: string;
   public_repos: number;
   type: string;
+  workspaces: string[];
 }
 
 export interface _Login {
@@ -33,6 +37,7 @@ export class Login {
 }
 
 export class User {
+  _id: ObjectId;
   avatar_url: string;
   bio: string;
   company: string;
@@ -47,8 +52,10 @@ export class User {
   name: string;
   public_repos: number;
   type: string;
+  workspaces: string[];
 
   constructor(obj: _User) {
+    this._id = obj._id;
     this.avatar_url = obj.avatar_url;
     this.bio = obj.bio;
     this.company = obj.company;
@@ -63,5 +70,10 @@ export class User {
     this.name = obj.name;
     this.public_repos = obj.public_repos;
     this.type = obj.type;
+    this.workspaces = obj.workspaces ? obj.workspaces : [];
+  }
+
+  static createUser(user: _User) {
+    return new User(user);
   }
 }

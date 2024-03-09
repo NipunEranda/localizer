@@ -3,29 +3,34 @@
     <span class="text-4xl font-bold">Select a Workspace</span>
     <div class="mt-7">
       <!-- Workspace list -->
-      <div
-        v-for="(workspace, w) in workspaces"
-        :key="w"
-        class="group cursor-pointer w-fit flex-grow m-auto text-center"
-      >
+      <div v-if="workspaces.length == 0">
+        <small class="text-neutral-400">Create a Workspace</small>
+      </div>
+      <div v-if="workspaces.length > 0">
         <div
-          class="p-1 w-96 border-b-[0.1em] dark:border-b-neutral-600"
-          :class="{ ' border-t-[0.1em] dark:border-neutral-600': w == 0 }"
+          v-for="(workspace, w) in workspaces"
+          :key="w"
+          class="group cursor-pointer w-fit flex-grow m-auto text-center"
         >
-          <div class="inline-flex group">
-            <div
-              class="p-3 w-96 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl"
-              @click="navigateToWorkspace(workspace)"
-              v-text="workspace.name"
-            ></div>
-            <div
-              class="hidden align-middle items-center group-hover:inline-flex"
-            >
-              <fai
-                icon="fa-trash"
-                class="text-lg p-2 hover:bg-neutral-500 rounded-full ml-2"
-                @click="openCreateModal('delete', workspace)"
-              />
+          <div
+            class="p-1 w-96 border-b-[0.1em] dark:border-b-neutral-600"
+            :class="{ ' border-t-[0.1em] dark:border-neutral-600': w == 0 }"
+          >
+            <div class="inline-flex group">
+              <div
+                class="p-3 w-96 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl"
+                @click="navigateToWorkspace(workspace)"
+                v-text="workspace.name"
+              ></div>
+              <div
+                class="hidden align-middle items-center group-hover:inline-flex"
+              >
+                <fai
+                  icon="fa-trash"
+                  class="text-lg p-2 hover:bg-neutral-500 rounded-full ml-2"
+                  @click="openCreateModal('delete', workspace)"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -34,13 +39,13 @@
     <div class="w-full inline-flex justify-center align-middle items-center">
       <div>
         <div
-          class="p-3 w-96 rounded-xl mt-7 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl bg-orange-600 cursor-pointer"
+          class="p-2 w-56 rounded-xl mt-7 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl bg-orange-600 cursor-pointer"
           @click="openCreateModal('add')"
         >
-          Create Workspace
+          New Workspace
         </div>
         <div
-          class="p-2 mt-3 w-96 bg-danger hover:bg-danger-hover rounded-xl cursor-pointer"
+          class="p-1 mt-3 w-56 bg-danger hover:bg-danger-hover rounded-xl cursor-pointer"
           @click="store.dispatch('logout')"
         >
           <fai icon="fa-power-off" class="text-lg" />

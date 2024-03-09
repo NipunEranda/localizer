@@ -131,6 +131,7 @@ export const verifyToken = () => {
                   },
                 })
                 .then((res) => {
+                  handler.event.queryStringParameters["userId"] = cookies.userId;
                   next();
                 })
                 .catch((e) => {
