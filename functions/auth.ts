@@ -4,9 +4,8 @@ import axios from "axios";
 import github, { User } from "./services/github";
 import { APIGatewayProxyEvent, Context, Handler } from "aws-lambda";
 import * as mongoDB from "mongodb";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction } from "express";
 import cookie from "cookie";
-import Cookies from "js-cookie";
 
 // https://api.github.com/applications/YOUR_CLIENT_ID/token
 
@@ -68,21 +67,22 @@ const systemLogin = async (event) => {
               user._id = result._id;
             }
 
+            console.log(response.data.access_token);
             const myCookie = cookie.serialize(
               "token",
-              response.data.access_token,
+              splitToken(response.data.access_token)[0],
               {
                 secure: true,
                 httpOnly: true,
                 path: "/",
                 maxAge: 24 * 60 * 60,
-                sameSite: "Strict",
+                sameSite: "strict",
               }
             );
 
             return AppResponse.createObject(
               200,
-              { user: user, token: response.data.access_token },
+              { user: user, token: splitToken(response.data.access_token)[1] },
               "Authentication Success!",
               {
                 "Set-Cookie": myCookie,
@@ -110,31 +110,59 @@ const systemLogin = async (event) => {
 export const verifyToken = () => {
   return {
     before: (handler: HandlerLambda, next: NextFunction) => {
-      if (handler.event.headers.cookie) {
+      const cookies = cookie.parse(handler.event.headers.cookie);
+      if (cookies.token && cookies["local._token"]) {
         axios
-          .get(`https://api.github.com/octocat`, {
+          .get(`https://api.github.com/rate_limit`, {
             headers: {
-              Authorization: `Bearer ${handler.event.headers.cookie.replace(
-                "token=",
-                ""
-              )}`,
+              Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
               "X-GitHub-Api-Version": "2022-11-28",
             },
           })
           .then((res) => {
-            next();
-          })
-          .catch((e) => {
-            if (e.response.status == 401)
+            if (res.data.rate.remaining != 0) {
+              axios
+                .get(`https://api.github.com/octocat`, {
+                  headers: {
+                    Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+                    "X-GitHub-Api-Version": "2022-11-28",
+                  },
+                })
+                .then((res) => {
+                  next();
+                })
+                .catch((e) => {
+                  if (e.response.status == 401)
+                    handler.callback(
+                      null,
+                      AppResponse.createObject(401, null, "Bad Credentials")
+                    );
+                });
+            } else {
               handler.callback(
-                "Bad Credential",
-                AppResponse.createObject(403, null, "Bad Credential")
+                null,
+                AppResponse.createObject(
+                  401,
+                  null,
+                  "Access Denied: Github request quota exceeded."
+                )
               );
+            }
+          })
+          .catch(() => {
+            handler.callback(
+              null,
+              AppResponse.createObject(
+                401,
+                null,
+                "Access Denied: Github request quota exceeded."
+              )
+            );
           });
       } else {
         handler.callback(
-          "Access Denied",
-          AppResponse.createObject(403, null, "Access Denied")
+          null,
+          AppResponse.createObject(401, null, "Access Denied")
         );
       }
     },
@@ -155,12 +183,23 @@ const responseHandler = async function (
     } else {
       result = AppResponse.createObject(500, null, "Empty Response!");
     }
-    console.log(result);
     return result;
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(500, e, e.message);
   }
 };
+
+function splitToken(token: string): string[] {
+  const part1 = token
+    .split("")
+    .splice(0, token.length / 2)
+    .join("");
+  const part2 = token
+    .split("")
+    .splice(token.length / 2, token.length)
+    .join("");
+  return [part1, part2];
+}
 
 export const handler = middy(responseHandler);

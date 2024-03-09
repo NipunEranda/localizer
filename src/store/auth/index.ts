@@ -2,6 +2,7 @@ import axios from "axios";
 import { State, store } from "../";
 import { User } from "@/models/Auth";
 import { Commit, ActionContext } from "vuex";
+import Cookies from "js-cookie";
 
 export interface AuthState {
   currentUser: User | null;
@@ -25,6 +26,7 @@ const AuthModule = {
   mutations: {
     resetState(state: AuthState) {
       Object.assign(state, getDefaultState());
+      Cookies.remove("local._token");
     },
     setUsers(state: AuthState, data: User[]) {
       state.users = data;

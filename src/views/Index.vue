@@ -51,12 +51,11 @@ onMounted(async () => {
       ).data.data;
       const lr = new Login(loginResponse);
       if (lr.token && lr.user) {
-        // Cookies.set("token", lr.token, {
-        //   secure: true,
-        //   sameSite: "strict",
-        //   path: "/",
-        //   HttpOnly: true,
-        // });
+        Cookies.set("local._token", lr.token, {
+          secure: true,
+          sameSite: "strict",
+          path: "/",
+        });
         store.commit("auth/setCurrentUser", lr.user);
         store.commit("setLoggedIn", true);
         location.reload();

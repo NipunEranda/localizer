@@ -161,8 +161,7 @@ export const responseHandler = async function (
       );
     }
   } catch (e) {
-    console.log(e);
-    return AppResponse.createObject(500, e, e.message);
+    return AppResponse.createObject(e.statusCode, e, e.message);
   }
 };
 

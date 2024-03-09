@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center pt-5">
+  <div class="text-center pt-5 sm:pt-24">
     <span class="text-4xl font-bold">Select a Workspace</span>
     <div class="mt-7">
       <!-- Workspace list -->
@@ -31,13 +31,22 @@
         </div>
       </div>
     </div>
-    <div>
-      <button
-        class="bg-orange-600 p-2 ps-7 pe-7 rounded-xl mt-7"
-        @click="openCreateModal('add')"
-      >
-        Create Workspace
-      </button>
+    <div class="w-full inline-flex justify-center align-middle items-center">
+      <div>
+        <div
+          class="p-3 w-96 rounded-xl mt-7 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl bg-orange-600 cursor-pointer"
+          @click="openCreateModal('add')"
+        >
+          Create Workspace
+        </div>
+        <div
+          class="p-2 mt-3 w-96 bg-danger hover:bg-danger-hover rounded-xl cursor-pointer"
+          @click="store.dispatch('logout')"
+        >
+          <fai icon="fa-power-off" class="text-lg" />
+          <span class="ms-2">Sign Out</span>
+        </div>
+      </div>
     </div>
   </div>
 

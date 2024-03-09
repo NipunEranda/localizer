@@ -29,13 +29,17 @@ export const store = createStore<State>({
   },
   actions: {
     handleRequestErrors(context: ActionContext<State, State>, data) {
-      if (data.response.status == 400) {
-        console.log(data.response.data.error);
-      }
-      if (data.response.status == 403) {
-        this.commit("resetState");
+      if (data.response.status == 401) {
+        this.commit("auth/resetState");
         router.push("/");
       }
+    },
+    logout() {
+      this.commit("auth/resetState");
+      this.commit("workspace/resetState");
+      this.commit("setLoggedIn", false);
+      this.state.loggedIn = false;
+      location.href = "/";
     },
   },
   plugins: [createPersistedState()],
