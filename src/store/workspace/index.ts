@@ -49,9 +49,7 @@ const WorkspaceModule = {
       try {
         const workspaces: Workspace[] = (
           await axios.get(`${process.env.VUE_APP_API_URL}/workspace`, {
-            headers: {
-              withCredentials: true,
-            },
+            withCredentials: true,
           })
         ).data.data;
         context.commit("setWorkspaces", workspaces);

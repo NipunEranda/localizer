@@ -166,4 +166,4 @@ export const responseHandler = async function (
   }
 };
 
-export const handler = middy(responseHandler);
+export const handler = middy(responseHandler).use(verifyToken());

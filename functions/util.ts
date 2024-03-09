@@ -13,14 +13,16 @@ export interface _Response {
 export class AppResponse {
   statusCode: number;
   body: string | null;
+  headers?: Object | null;
 
-  constructor(statusCode: number, body: _Response | null) {
+  constructor(statusCode: number, body: _Response | null, headers?: Object | null) {
     this.statusCode = statusCode;
     this.body = JSON.stringify(body);
+    this.headers = headers;
   }
 
-  static createObject(statusCode: number, data: Object | null, error: string | null) {
-    return new AppResponse(statusCode, { data: data, error: error });
+  static createObject(statusCode: number, data: Object | null, error: string | null, headers?: Object | null) {
+    return new AppResponse(statusCode, { data: data, error: error }, headers);
   }
 }
 
