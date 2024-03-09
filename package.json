@@ -16,6 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "autoprefixer": "^10",
     "axios": "^1.6.5",
+    "cookie": "^0.6.0",
     "core-js": "^3.8.3",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
@@ -30,9 +31,13 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.136",
+    "@types/cookie": "^0.6.0",
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^20.11.24",
+    "@types/webpack-env": "^1.18.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
