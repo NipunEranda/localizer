@@ -1,9 +1,9 @@
 <template>
   <div class="grid place-items-center items-center justify-center h-screen">
     <div class="grid place-items-center -translate-y-32">
-      <img :src="util.getIcon('logo')" alt="" class="w-72" />
+      <img :src="util.getIcon('logo')" alt="" class="w-56" />
       <button
-        class="dark:bg-primary dark:hover:bg-primary-hover p-3 ps-5 pe-5 rounded-lg"
+        class="bg-orange-600 bg-opacity-90 hover:bg-orange-600 p-3 ps-5 pe-5 rounded-lg text-white"
         @click="redirectGithubLogin()"
       >
         <svg
@@ -36,6 +36,7 @@ import * as util from "@/utils";
 const store = useStore(key);
 
 function redirectGithubLogin() {
+  util.showLoadingScreen();
   location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.VUE_APP_GITHUB_CLIENT_ID}&state=${process.env.VUE_APP_GITHUB_STATE}&redirect_uri=${process.env.VUE_APP_GITHUB_REDIRECT_URI}&scope=read:user,user:email`;
 }
 

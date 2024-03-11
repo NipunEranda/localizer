@@ -1,0 +1,210 @@
+<template>
+  <div>
+    <nav
+      class="bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80"
+    >
+      <div class="flex flex-wrap justify-between items-center mx-auto">
+        <a href="/" class="flex items-center">
+          <img :src="getIcon('logo')" class="mr-3 w-9" alt="Localizer Logo" />
+          <span
+            class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
+            >Localizer</span
+          >
+        </a>
+        <div class="flex items-center justify-center lg:order-2">
+          <a
+            href="#"
+            class="text-gray-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
+            @click="toggleTheme"
+            ><fai
+              :icon="userTheme == 'light' ? 'fa-moon' : 'fa-sun'"
+              class="size-6 justify-center items-center flex"
+          /></a>
+          <a
+            href="#"
+            class="text-gray-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
+            ><fai
+              icon="fa-bell"
+              class="size-6 justify-center items-center flex"
+          /></a>
+          <a
+            href="#"
+            class="text-white font-medium rounded-lg text-sm ps-2 pe-2 hidden lg:flex"
+            ><img
+              :src="user?.avatar_url"
+              alt=""
+              class="rounded-full w-7 hidden lg:inline-block"
+              @click="store.dispatch('logout')"
+          /></a>
+          <button
+            data-collapse-toggle="mobile-menu-2"
+            type="button"
+            class="inline-flex items-center p-2 ml-1 text-sm text-neutral-500 rounded-lg lg:hidden hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:ring-neutral-600"
+            aria-controls="mobile-menu-2"
+            aria-expanded="false"
+            @click="toggleMobileView()"
+          >
+            <span class="sr-only">Open main menu</span>
+            <svg
+              class="w-6 h-6"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <svg
+              class="hidden w-6 h-6"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div
+          class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
+          id="mobile-menu-2"
+        >
+          <ul
+            class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0"
+          >
+            <li
+              :class="{
+                'bg-orange-600 bg-opacity-85 text-white p-2 pl-4 pr-4 rounded-xl':
+                  activeTab == 'dashboard',
+              }"
+              class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="$router.push('/dashboard'), toggleMobileView('close')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                >Dashboard</a
+              >
+            </li>
+            <li
+              :class="{
+                'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
+                  activeTab == 'projects',
+              }"
+              class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="$router.push('/projects'), toggleMobileView('close')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                >Projects</a
+              >
+            </li>
+            <li
+              :class="{
+                'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
+                  activeTab == 'files',
+              }"
+              class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="$router.push('/files'), toggleMobileView('close')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                >Files</a
+              >
+            </li>
+            <li
+              :class="{
+                'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
+                  activeTab == 'languages',
+              }"
+              class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="$router.push('/languages'), toggleMobileView('close')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                >Languages</a
+              >
+            </li>
+            <li
+              :class="{
+                'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
+                  activeTab == 'admin',
+              }"
+              class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="$router.push('/admin'), toggleMobileView('close')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                >Admin</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</template>
+
+<script setup>
+import { getIcon } from "@/utils";
+
+import { useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
+import { key } from "../store";
+import jQuery from "jquery";
+
+const store = useStore(key);
+const route = useRoute();
+
+const user = ref(store.state.auth.currentUser);
+
+let userTheme = ref(store.state.userTheme);
+let activeTab = ref(null);
+
+watch(route, async () => {
+  activeTab.value = route.name;
+});
+
+function toggleMobileView(override) {
+  if (override == "close")
+    jQuery("#mobile-menu-2").removeClass("hidden").addClass("hidden");
+  else jQuery("#mobile-menu-2").toggleClass("hidden");
+}
+
+function toggleTheme() {
+  if (userTheme.value == "dark") {
+    userTheme.value = "light";
+    document.documentElement.classList.remove("dark");
+    store.dispatch("setUserTheme", "light");
+  } else {
+    userTheme.value = "dark";
+    document.documentElement.classList.add("dark");
+    store.dispatch("setUserTheme", "dark");
+  }
+}
+
+onMounted(() => {
+  if (!store.state.userTheme) store.state.userTheme = "dark";
+  if (store.state.userTheme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
+});
+</script>

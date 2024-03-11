@@ -11,13 +11,14 @@ export interface State {
   auth: AuthState;
   workspace: WorkspaceState;
   loggedIn: boolean;
+  userTheme: string | null;
 }
 
 // define injection key
 export const key: InjectionKey<Store<State>> = Symbol();
 
 export const store = createStore<State>({
-  state: { loggedIn: false } as State,
+  state: { loggedIn: false, userTheme: "dark-theme" } as State,
   modules: {
     auth: AuthModule,
     workspace: WorkspaceModule,
@@ -25,6 +26,9 @@ export const store = createStore<State>({
   mutations: {
     setLoggedIn(state: State, data: boolean) {
       state.loggedIn = data;
+    },
+    setUserTheme(state: State, data: string) {
+      state.userTheme = data;
     },
   },
   actions: {
@@ -40,6 +44,9 @@ export const store = createStore<State>({
       this.commit("setLoggedIn", false);
       this.state.loggedIn = false;
       location.href = "/";
+    },
+    setUserTheme(context: ActionContext<State, State>, data) {
+      context.commit("setUserTheme", data);
     },
   },
   plugins: [createPersistedState()],

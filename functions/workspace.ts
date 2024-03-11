@@ -24,24 +24,6 @@ export interface WorkspaceDocument extends _Workspace, mongoose.Document {
   isActive: boolean;
 }
 
-export class Workspace {
-  _id: ObjectId;
-  name: string;
-  deleted: boolean;
-  isActive: boolean;
-
-  constructor(obj: _Workspace) {
-    this._id = obj._id;
-    this.name = obj.name;
-    this.deleted = obj.deleted;
-    this.isActive = obj.isActive;
-  }
-
-  static createWorkspace(workspace: _Workspace) {
-    return new Workspace(workspace);
-  }
-}
-
 const WorkspaceSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -61,7 +43,7 @@ const WorkspaceSchema = new mongoose.Schema({
 });
 
 // Create Workspace schema
-export const workspaceSchema = mongoose.model<Workspace>(
+export const workspaceSchema = mongoose.model<_Workspace>(
   "Workspace",
   WorkspaceSchema
 );
@@ -100,7 +82,7 @@ export const addWorkspace = async (
   try {
     connectMongoose();
     if (event.body) {
-      const workspace: Workspace = JSON.parse(event.body);
+      const workspace: _Workspace = JSON.parse(event.body);
 
       // Get User
       let user = await userSchema.findOne({

@@ -1,6 +1,6 @@
 <template>
   <div
-    :id="modalId"
+    :id="props.modalId"
     class="relative z-10 hidden"
     aria-labelledby="modal-title"
     role="dialog"
@@ -25,10 +25,13 @@
                 <h3
                   class="text-base font-semibold leading-6"
                   id="modal-title"
-                  v-text="modalTitle"
+                  v-text="props.modalTitle"
                 ></h3>
                 <div class="mt-2">
-                  <p class="text-sm text-gray-500" v-text="modalContent"></p>
+                  <p
+                    class="text-sm text-gray-500"
+                    v-text="props.modalContent"
+                  ></p>
                 </div>
               </div>
             </div>
@@ -38,10 +41,10 @@
             class="bg-gray-50 dark:bg-neutral-800 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6"
           >
             <button
-              v-text="processText"
+              v-text="props.processText"
               type="button"
               class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 sm:ml-3 sm:w-auto"
-              @click="modalProcess"
+              @click="props.modalProcess"
             ></button>
           </div>
         </div>
@@ -60,6 +63,4 @@ const props = defineProps({
   modalProcess: Function,
   processText: String,
 });
-
-console.log(props);
 </script>

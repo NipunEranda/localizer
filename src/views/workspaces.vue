@@ -1,10 +1,17 @@
 <template>
-  <div class="text-center pt-5 sm:pt-24">
+  <div class="text-center pt-16">
     <span class="text-4xl font-bold">Select a Workspace</span>
     <div class="mt-7">
       <!-- Workspace list -->
       <div v-if="workspaces.length == 0">
-        <small class="text-neutral-400">Create a Workspace</small>
+        <small class="text-neutral-400" v-if="!loading['workspaces']"
+          >Create a Workspace</small
+        >
+        <div v-if="loading['workspaces']">
+          <div
+            class="loader inline-flex justify-center items-center text-neutral-900 dark:invert"
+          ></div>
+        </div>
       </div>
       <div v-if="workspaces.length > 0">
         <div
@@ -18,7 +25,7 @@
           >
             <div class="inline-flex group">
               <div
-                class="p-3 w-96 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl"
+                class="p-3 w-96 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl hover:bg-neutral-200 hover:bg-opacity-90"
                 @click="navigateToWorkspace(workspace)"
                 v-text="workspace.name"
               ></div>
@@ -27,7 +34,7 @@
               >
                 <fai
                   icon="fa-trash"
-                  class="text-lg p-2 hover:bg-neutral-500 rounded-full ml-2"
+                  class="text-lg p-2 hover:bg-neutral-200 rounded-full ml-2"
                   @click="openCreateModal('delete', workspace)"
                 />
               </div>
@@ -39,13 +46,13 @@
     <div class="w-full inline-flex justify-center align-middle items-center">
       <div>
         <div
-          class="p-2 w-56 rounded-xl mt-7 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl bg-orange-600 cursor-pointer"
+          class="p-2 w-56 rounded-xl mt-7 group-hover:dark:bg-neutral-700 group-hover:rounded-3xl bg-orange-600 bg-opacity-90 hover:bg-opacity-100 cursor-pointer text-white"
           @click="openCreateModal('add')"
         >
           New Workspace
         </div>
         <div
-          class="p-1 mt-3 w-56 bg-danger hover:bg-danger-hover rounded-xl cursor-pointer"
+          class="p-2 mt-3 w-56 bg-danger hover:bg-danger-hover rounded-xl cursor-pointer text-white"
           @click="store.dispatch('logout')"
         >
           <fai icon="fa-power-off" class="text-lg" />
@@ -100,9 +107,14 @@ let operation = ref("add");
 let actionName = ref("Save");
 let modalContent = ref("");
 let selectedWorkspace = ref(null);
+let loading = ref({
+  workspaces: false,
+});
 
 onMounted(async () => {
+  loading.value["workspaces"] = true;
   workspaces.value = await store.dispatch("workspace/loadWorkspaces");
+  loading.value["workspaces"] = false;
 });
 
 async function modalProcess() {
@@ -151,7 +163,7 @@ function openCreateModal(opt, obj) {
 }
 
 function navigateToWorkspace(workspace) {
-  store.commit("setDefaultWorkspace", workspace);
+  store.commit("workspace/setDefaultWorkspace", workspace);
   router.push("/dashboard");
 }
 </script>

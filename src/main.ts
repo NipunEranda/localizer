@@ -7,6 +7,7 @@ import { store, key } from "./store";
 import Modal from "./components/modals/Modal.vue";
 import ActionModal from "./components/modals/ActionModal.vue";
 import Alert from "./components/Alert.vue";
+import Header from "./components/Header.vue";
 
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -26,6 +27,9 @@ import {
   faTrash,
   faNetworkWired,
   faDisplay,
+  faMoon,
+  faSun,
+  faBell,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -38,7 +42,10 @@ library.add(
   faPowerOff,
   faTrash,
   faNetworkWired,
-  faDisplay
+  faDisplay,
+  faMoon,
+  faSun,
+  faBell
 );
 
 createApp(App)
@@ -48,4 +55,5 @@ createApp(App)
   .component("modal", Modal)
   .component("action-modal", ActionModal)
   .component("alert", Alert)
+  .component("Header", Header)
   .mount("#app");

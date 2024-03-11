@@ -1,12 +1,12 @@
 import axios from "axios";
 import { State, store } from "../";
-import { User } from "@/models/Auth";
+import { _User } from "@/models/Auth";
 import { Commit, ActionContext } from "vuex";
 import Cookies from "js-cookie";
 
 export interface AuthState {
-  currentUser: User | null;
-  users: User[];
+  currentUser: _User | null;
+  users: _User[];
 }
 
 const AuthModule = {
@@ -30,10 +30,10 @@ const AuthModule = {
         Cookies.remove(key);
       });
     },
-    setUsers(state: AuthState, data: User[]) {
+    setUsers(state: AuthState, data: _User[]) {
       state.users = data;
     },
-    setCurrentUser(state: AuthState, data: User) {
+    setCurrentUser(state: AuthState, data: _User) {
       state.currentUser = data;
     },
   },
@@ -41,7 +41,7 @@ const AuthModule = {
     resetState({ commit }: { commit: Commit }) {
       commit("resetState");
     },
-    updateCurrentUser(context: ActionContext<AuthState, State>, data: User) {
+    updateCurrentUser(context: ActionContext<AuthState, State>, data: _User) {
       context.commit("updateCurrentUser", data);
     },
     async loadUsers(context: ActionContext<AuthState, State>): Promise<void> {

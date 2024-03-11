@@ -17,8 +17,8 @@ router.beforeEach((to /*, from*/) => {
       return "/workspaces";
   }
 
-  // if (to.name == "workspaces")
-  //   if (store.getters.getDefaultWorkspace) router.push("/dashboard");
+  if (to.name == "workspaces")
+    if (store.state.workspace.defaultWorkspace) router.push("/dashboard");
 });
 
 export default router;
