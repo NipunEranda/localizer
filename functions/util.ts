@@ -64,5 +64,5 @@ export const connectMongoose = () => {
 };
 
 export const closeMongooseConnection = () => {
-  // if (mongoose.connection) mongoose.connection.close();
+  if (mongoose.connection) mongoose.connection.close();
 };
