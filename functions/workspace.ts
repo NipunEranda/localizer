@@ -2,8 +2,8 @@ import middy from "middy";
 import {
   AppResponse,
   _Response,
-  closeMongooseConnection,
   connectMongoose,
+  closeMongooseConnection,
 } from "./util";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
@@ -88,6 +88,7 @@ export const addWorkspace = async (
       let user = await userSchema.findOne({
         _id: event.queryStringParameters?.userId,
       });
+      console.log(user);
 
       // Insert workspaces
       const insertedWorkspace = await workspaceSchema.create(workspace);
@@ -107,6 +108,7 @@ export const addWorkspace = async (
         _id: { $in: newWorkspaceList },
         isActive: true,
       });
+      console.log("Workspace added.");
       return AppResponse.createObject(200, workspaces, "Workspace Added!");
     } else {
       return AppResponse.createObject(400, null, "Mongo db connection failed!");

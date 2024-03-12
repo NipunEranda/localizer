@@ -59,10 +59,15 @@ export class AppResponse {
 // };
 
 export const connectMongoose = () => {
-  if (process.env.MONGO_URL && process.env.MONGO_DB)
+  if (process.env.MONGO_URL && process.env.MONGO_DB) {
+    console.log("Connected to mongodb!");
     mongoose.connect(`${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+  }
 };
 
 export const closeMongooseConnection = () => {
-  if (mongoose.connection) mongoose.connection.close();
+  if (mongoose.connection) {
+    console.log("mongodb connection closed!");
+    mongoose.connection.close();
+  }
 };
