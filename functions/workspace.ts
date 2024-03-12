@@ -88,7 +88,6 @@ export const addWorkspace = async (
       let user = await userSchema.findOne({
         _id: event.queryStringParameters?.userId,
       });
-      console.log(user);
 
       // Insert workspaces
       const insertedWorkspace = await workspaceSchema.create(workspace);
