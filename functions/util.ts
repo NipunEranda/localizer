@@ -58,16 +58,16 @@ export class AppResponse {
 //   };
 // };
 
-export const connectMongoose = () => {
+export const connectMongoose = async () => {
   if (process.env.MONGO_URL && process.env.MONGO_DB) {
     console.log("Connected to mongodb!");
-    mongoose.connect(`${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+    await mongoose.connect(`${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
   }
 };
 
-export const closeMongooseConnection = () => {
+export const closeMongooseConnection = async () => {
   if (mongoose.connection) {
     console.log("mongodb connection closed!");
-    mongoose.connection.close();
+    await mongoose.connection.close();
   }
 };

@@ -52,7 +52,7 @@ export const getWorkspaces = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
   try {
-    connectMongoose();
+    await connectMongoose();
     // Get user workspace list
     let user = await userSchema.findOne({
       _id: event.queryStringParameters?.userId,
@@ -72,7 +72,7 @@ export const getWorkspaces = async (
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    closeMongooseConnection();
+    await closeMongooseConnection();
   }
 };
 
@@ -80,7 +80,7 @@ export const addWorkspace = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
   try {
-    connectMongoose();
+    await connectMongoose();
     if (event.body) {
       const workspace: _Workspace = JSON.parse(event.body);
 
@@ -117,7 +117,7 @@ export const addWorkspace = async (
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    closeMongooseConnection();
+    await closeMongooseConnection();
   }
 };
 
@@ -125,7 +125,7 @@ export const deleteWorkspace = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
   try {
-    connectMongoose();
+    await connectMongoose();
     const workspaceId = event.queryStringParameters?.id;
     if (workspaceId) {
       // Get User
@@ -160,7 +160,7 @@ export const deleteWorkspace = async (
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
   } finally {
-    closeMongooseConnection();
+    await closeMongooseConnection();
   }
 };
 

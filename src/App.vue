@@ -9,7 +9,7 @@
       ></div>
     </div>
     <Header v-if="showHeader" />
-    <div :class="{ 'pt-16': user }" class="dark:bg-neutral-800 min-h-svh p-4">
+    <div :class="{ 'pt-16 p-4': user }" class="dark:bg-neutral-800 min-h-svh">
       <router-view />
     </div>
   </div>

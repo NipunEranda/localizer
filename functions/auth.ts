@@ -16,7 +16,7 @@ import cookie from "cookie";
 const systemLogin = async (event: APIGatewayProxyEvent) => {
   if (event.queryStringParameters?.code) {
     try {
-      connectMongoose();
+      await connectMongoose();
       // event.queryStringParameters.code
       const response = await axios({
         method: "post",
@@ -106,7 +106,7 @@ const systemLogin = async (event: APIGatewayProxyEvent) => {
       console.log(e);
       return AppResponse.createObject(500, e, e.message);
     } finally {
-      closeMongooseConnection();
+      await closeMongooseConnection();
     }
   }
   return AppResponse.createObject(400, null, "Auth code required");

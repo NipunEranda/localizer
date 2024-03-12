@@ -1,6 +1,6 @@
 <template>
   <div class="grid place-items-center items-center justify-center h-screen">
-    <div class="grid place-items-center -translate-y-32">
+    <div class="grid place-items-center -translate-y-16">
       <img :src="util.getIcon('logo')" alt="" class="w-56" />
       <button
         class="bg-orange-600 bg-opacity-90 hover:bg-orange-600 p-3 ps-5 pe-5 rounded-lg text-white"
