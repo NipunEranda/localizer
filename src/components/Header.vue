@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav
-      class="bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80"
+      class="bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80 z-10"
     >
       <div class="flex flex-wrap justify-between items-center mx-auto">
         <a href="/" class="flex items-center">
@@ -72,7 +72,7 @@
           </button>
         </div>
         <div
-          class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
+          class="justify-between items-center w-full hidden lg:flex lg:w-auto lg:order-1"
           id="mobile-menu-2"
         >
           <ul
@@ -96,16 +96,16 @@
             <li
               :class="{
                 'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
-                  activeTab == 'projects',
+                  activeTab == 'repositories',
               }"
               class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
-              @click="$router.push('/projects'), toggleMobileView('close')"
+              @click="$router.push('/repositories'), toggleMobileView('close')"
             >
               <a
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
-                >Projects</a
+                >Repositories</a
               >
             </li>
             <li
@@ -153,6 +153,17 @@
                 >Admin</a
               >
             </li>
+            <li
+              class="flex lg:hidden hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
+              @click="store.dispatch('logout')"
+            >
+              <a
+                href="#"
+                class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
+                aria-current="page"
+                ><fai icon="fa-power-off" class="mr-2" />Logout</a
+              >
+            </li>
           </ul>
         </div>
       </div>
@@ -174,7 +185,7 @@ const route = useRoute();
 
 const user = ref(store.state.auth.currentUser);
 
-let userTheme = ref(store.state.userTheme);
+let userTheme = ref(localStorage.getItem("userTheme"));
 let activeTab = ref(null);
 
 watch(route, async () => {
@@ -191,20 +202,14 @@ function toggleTheme() {
   if (userTheme.value == "dark") {
     userTheme.value = "light";
     document.documentElement.classList.remove("dark");
-    store.dispatch("setUserTheme", "light");
   } else {
     userTheme.value = "dark";
     document.documentElement.classList.add("dark");
-    store.dispatch("setUserTheme", "dark");
   }
+  localStorage.setItem("userTheme", userTheme.value);
 }
 
 onMounted(() => {
-  if (!store.state.userTheme) store.state.userTheme = "dark";
-  if (store.state.userTheme === "light") {
-    document.documentElement.classList.remove("dark");
-  } else {
-    document.documentElement.classList.add("dark");
-  }
+  activeTab.value = route.name;
 });
 </script>

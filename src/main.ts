@@ -30,6 +30,8 @@ import {
   faMoon,
   faSun,
   faBell,
+  faLock,
+  faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -45,7 +47,10 @@ library.add(
   faDisplay,
   faMoon,
   faSun,
-  faBell
+  faBell,
+  faLock,
+  faGlobe,
+  faBars
 );
 
 createApp(App)
