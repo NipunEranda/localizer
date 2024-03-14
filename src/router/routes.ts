@@ -2,7 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 import Index from "@/views/Index.vue";
 import Workspaces from "@/views/Workspaces.vue";
 import Dashboard from "@/views/Dashboard.vue";
-import Projects from "@/views/Projects.vue";
+import Repositories from "@/views/Repositories.vue";
 import Files from "@/views/Files.vue";
 import Languages from "@/views/Languages.vue";
 import AdminIndex from "@/views/Admin/Index.vue";
@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Dashboard,
   },
   {
-    path: "/projects",
-    name: "projects",
-    component: Projects,
+    path: "/repositories",
+    name: "repositories",
+    component: Repositories,
   },
   {
     path: "/files",

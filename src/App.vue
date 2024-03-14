@@ -26,11 +26,19 @@ const store = useStore(key);
 
 const user = ref(store.state.auth.currentUser);
 
-let showHeader = ref(true);
+let showHeader = ref(false);
+let userTheme = ref(localStorage.getItem("userTheme"));
 
 watch(route, async () => {
-  if (route.path == "/" && !user.value) showHeader.value = false;
-  else if (route.path == "/workspaces" && user.value) showHeader.value = false;
-  else showHeader.value = true;
+  if (!(route.name == "index" || route.name == "workspaces") && user.value)
+    showHeader.value = true;
+
+  userTheme = ref(localStorage.getItem("userTheme"));
+  if (!userTheme.value) localStorage.setItem("userTheme", "dark");
+  if (userTheme.value == "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
+  }
 });
 </script>

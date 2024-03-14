@@ -6,10 +6,11 @@ import {
   closeMongooseConnection,
 } from "./util";
 import axios from "axios";
-import github, { UserDocument, _User, userSchema } from "./services/github";
+import github from "./services/github";
 import { APIGatewayProxyEvent, Context, Handler } from "aws-lambda";
 import { NextFunction } from "express";
 import cookie from "cookie";
+import { UserDocument, userSchema } from "./models/User";
 
 // https://api.github.com/applications/YOUR_CLIENT_ID/token
 
@@ -115,37 +116,49 @@ const systemLogin = async (event: APIGatewayProxyEvent) => {
 export const verifyToken = () => {
   return {
     before: (handler: HandlerLambda, next: NextFunction) => {
-      const cookies = cookie.parse(handler.event.headers.cookie);
-      if (cookies.token && cookies["local._token"]) {
-        axios
-          .get(`https://api.github.com/rate_limit`, {
-            headers: {
-              Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
-              "X-GitHub-Api-Version": "2022-11-28",
-            },
-          })
-          .then((res) => {
-            if (res.data.rate.remaining != 0) {
-              axios
-                .get(`https://api.github.com/octocat`, {
-                  headers: {
-                    Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
-                    "X-GitHub-Api-Version": "2022-11-28",
-                  },
-                })
-                .then((res) => {
-                  handler.event.queryStringParameters["userId"] =
-                    cookies.userId;
-                  next();
-                })
-                .catch((e) => {
-                  if (e.response.status == 401)
-                    handler.callback(
-                      null,
-                      AppResponse.createObject(401, null, "Bad Credentials")
-                    );
-                });
-            } else {
+      if (handler.event.headers.cookie) {
+        const cookies = cookie.parse(handler.event.headers.cookie);
+        if (cookies.token && cookies["local._token"]) {
+          axios
+            .get(`https://api.github.com/rate_limit`, {
+              headers: {
+                Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            })
+            .then((res) => {
+              if (res.data.rate.remaining != 0) {
+                axios
+                  .get(`https://api.github.com/octocat`, {
+                    headers: {
+                      Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+                      "X-GitHub-Api-Version": "2022-11-28",
+                    },
+                  })
+                  .then((res) => {
+                    handler.event.queryStringParameters["userId"] =
+                      cookies.userId;
+                    next();
+                  })
+                  .catch((e) => {
+                    if (e.response.status == 401)
+                      handler.callback(
+                        null,
+                        AppResponse.createObject(401, null, "Bad Credentials")
+                      );
+                  });
+              } else {
+                handler.callback(
+                  null,
+                  AppResponse.createObject(
+                    401,
+                    null,
+                    "Access Denied: Github request quota exceeded."
+                  )
+                );
+              }
+            })
+            .catch(() => {
               handler.callback(
                 null,
                 AppResponse.createObject(
@@ -154,18 +167,13 @@ export const verifyToken = () => {
                   "Access Denied: Github request quota exceeded."
                 )
               );
-            }
-          })
-          .catch(() => {
-            handler.callback(
-              null,
-              AppResponse.createObject(
-                401,
-                null,
-                "Access Denied: Github request quota exceeded."
-              )
-            );
-          });
+            });
+        } else {
+          handler.callback(
+            null,
+            AppResponse.createObject(401, null, "Access Denied")
+          );
+        }
       } else {
         handler.callback(
           null,

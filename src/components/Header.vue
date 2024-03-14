@@ -96,16 +96,16 @@
             <li
               :class="{
                 'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
-                  activeTab == 'projects',
+                  activeTab == 'repositories',
               }"
               class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
-              @click="$router.push('/projects'), toggleMobileView('close')"
+              @click="$router.push('/repositories'), toggleMobileView('close')"
             >
               <a
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
-                >Projects</a
+                >Repositories</a
               >
             </li>
             <li
@@ -174,7 +174,7 @@ const route = useRoute();
 
 const user = ref(store.state.auth.currentUser);
 
-let userTheme = ref(store.state.userTheme);
+let userTheme = ref(localStorage.getItem("userTheme"));
 let activeTab = ref(null);
 
 watch(route, async () => {
@@ -191,20 +191,14 @@ function toggleTheme() {
   if (userTheme.value == "dark") {
     userTheme.value = "light";
     document.documentElement.classList.remove("dark");
-    store.dispatch("setUserTheme", "light");
   } else {
     userTheme.value = "dark";
     document.documentElement.classList.add("dark");
-    store.dispatch("setUserTheme", "dark");
   }
+  localStorage.setItem("userTheme", userTheme.value);
 }
 
 onMounted(() => {
-  if (!store.state.userTheme) store.state.userTheme = "dark";
-  if (store.state.userTheme === "light") {
-    document.documentElement.classList.remove("dark");
-  } else {
-    document.documentElement.classList.add("dark");
-  }
+  activeTab.value = route.name;
 });
 </script>

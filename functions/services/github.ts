@@ -1,126 +1,9 @@
 import axios from "axios";
 import mongoose, { ObjectId } from "mongoose";
-
-export interface _User {
-  _id: ObjectId;
-  avatar_url: string;
-  bio: string;
-  company: string;
-  created_at: string;
-  email: string;
-  followers: number;
-  following: number;
-  html_url: string;
-  id: number;
-  location: string;
-  login: string;
-  name: string;
-  public_repos: number;
-  type: string;
-  workspaces: string[];
-}
-
-export interface UserDocument extends _User, mongoose.Document {
-  _id: ObjectId;
-  avatar_url: string;
-  bio: string;
-  company: string;
-  created_at: string;
-  email: string;
-  followers: number;
-  following: number;
-  html_url: string;
-  id: number;
-  location: string;
-  login: string;
-  name: string;
-  public_repos: number;
-  type: string;
-  workspaces: string[];
-}
-
-const UserSchema = new mongoose.Schema({
-  avatar_url: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  bio: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  company: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  created_at: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  email: {
-    type: String,
-    required: false,
-    unique: true,
-  },
-  followers: {
-    type: Number,
-    required: false,
-    unique: false,
-  },
-  following: {
-    type: Number,
-    required: false,
-    unique: false,
-  },
-  html_url: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  id: {
-    type: Number,
-    required: false,
-    unique: false,
-  },
-  location: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  login: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  name: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  public_repos: {
-    type: Number,
-    required: false,
-    unique: false,
-  },
-  type: {
-    type: String,
-    required: false,
-    unique: false,
-  },
-  workspaces: {
-    type: Array,
-    required: false,
-    unique: false,
-  },
-});
-
-UserSchema.index({ id: 1 });
-
-// Create github user schema
-export const userSchema = mongoose.model<_User>("user", UserSchema);
+import { _User } from "../models/User";
+import cookie from "cookie";
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { _Repository } from "../models/Repository";
 
 const getUserDetails = async (token: string) => {
   try {
@@ -157,38 +40,99 @@ const getUserEmail = async (token: string) => {
   }
 };
 
-// const getOrganizations = async (token: string) => {
-//   let response = null;
+const getUserRepositories = async (event: APIGatewayProxyEvent): Promise<_Repository[]> => {
+  try {
+    const cookies = cookie.parse(
+      event.headers.cookie ? event.headers.cookie : ""
+    );
+    let userRepositories:_Repository[] = [],
+      pageCount = 1;
+    if (cookies.token && cookies["local._token"]) {
+      let repositoryResponse = { data: [] };
+      do {
+        repositoryResponse = await axios.get(
+          `https://api.github.com/user/repos?type=all&per_page=100&page=${pageCount}`,
+          {
+            headers: {
+              Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+              "X-GitHub-Api-Version": "2022-11-28",
+            },
+          }
+        );
+        userRepositories.push(...repositoryResponse.data);
+        ++pageCount;
+      } while (repositoryResponse.data.length != 0);
+
+      userRepositories.map((repository, r) => userRepositories[r].ownerLogin = repository.owner.login);
+      userRepositories.sort((a, b) => a.name.localeCompare(b.name));
+      return userRepositories;
+    }else
+      return [];
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+// const getUserOrganizations = async (event: APIGatewayProxyEvent) => {
 //   try {
-//     response = await axios.get(
-//       `${process.env.VUE_APP_GITHUB_API_URL}/user/orgs`,
-//       {
-//         headers: {
-//           Authorization: "Bearer " + token,
-//           Accept: "application/vnd.github.v3+json",
-//         },
-//       }
+//     const cookies = cookie.parse(
+//       event.headers.cookie ? event.headers.cookie : ""
 //     );
-//     return response ? response["data"] : null;
+//     if (cookies.token && cookies["local._token"]) {
+//       const organizationsResponse = await axios.get(
+//         `${process.env.VUE_APP_GITHUB_API_URL}/user/orgs`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+//             "X-GitHub-Api-Version": "2022-11-28",
+//           },
+//         }
+//       );
+//       return organizationsResponse.data;
+//     }
 //   } catch (e) {
 //     console.log(e);
 //     return null;
 //   }
 // };
 
-// const getOrgRepositories = async (org: number, token: string) => {
-//   let response = null;
+// const getUserOrgRepositories = async (event: APIGatewayProxyEvent) => {
 //   try {
-//     response = await axios.get(
-//       `${process.env.VUE_APP_GITHUB_API_URL}/orgs/${org}/repos`,
-//       {
-//         headers: {
-//           Authorization: "Bearer " + token,
-//           Accept: "application/vnd.github.v3+json",
-//         },
-//       }
+//     const cookies = cookie.parse(
+//       event.headers.cookie ? event.headers.cookie : ""
 //     );
-//     return response ? response["data"] : null;
+//     let orgRepositories = {};
+//     if (cookies.token && cookies["local._token"]) {
+//       const orgs = await getUserOrganizations(event);
+//       let userOrganizationRepositories = { data: [] },
+//         pageCount = 1;
+//       await Promise.all(
+//         orgs.map(async (org: { id: any }) => {
+//           do {
+//             userOrganizationRepositories = await axios.get(
+//               `${process.env.VUE_APP_GITHUB_API_URL}/orgs/${org.id}/repos?type=all&per_page=100&page=${pageCount}`,
+//               {
+//                 headers: {
+//                   Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+//                   "X-GitHub-Api-Version": "2022-11-28",
+//                 },
+//               }
+//             );
+
+//             if (!orgRepositories[org.id]) {
+//               orgRepositories[org.id] = { organization: org, repositories: [] };
+//             }
+//             orgRepositories[org.id]["repositories"].push(
+//               ...userOrganizationRepositories.data
+//             );
+//             ++pageCount;
+//             console.log(pageCount);
+//           } while (userOrganizationRepositories.data.length != 0);
+//         })
+//       );
+//       return orgRepositories;
+//     }
 //   } catch (e) {
 //     console.log(e);
 //     return null;
@@ -233,6 +177,9 @@ const getUserEmail = async (token: string) => {
 export default {
   getUserDetails,
   getUserEmail,
+  getUserRepositories,
+  // getUserOrganizations,
+  // getUserOrgRepositories,
   // getOrganizations,
   // getOrgRepositories,
   // getPersonalRepositories,

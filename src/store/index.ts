@@ -3,6 +3,7 @@ import { InjectionKey } from "vue";
 import { createStore, Store, ActionContext } from "vuex";
 import AuthModule, { AuthState } from "./auth";
 import WorkspaceModule, { WorkspaceState } from "./workspace";
+import RepositoryModule, { RepositoryState } from "./repositories";
 import createPersistedState from "vuex-persistedstate";
 import router from "@/router";
 
@@ -10,25 +11,23 @@ import router from "@/router";
 export interface State {
   auth: AuthState;
   workspace: WorkspaceState;
+  repository: RepositoryState;
   loggedIn: boolean;
-  userTheme: string | null;
 }
 
 // define injection key
 export const key: InjectionKey<Store<State>> = Symbol();
 
 export const store = createStore<State>({
-  state: { loggedIn: false, userTheme: "dark-theme" } as State,
+  state: { loggedIn: false } as State,
   modules: {
     auth: AuthModule,
     workspace: WorkspaceModule,
+    repository: RepositoryModule,
   },
   mutations: {
     setLoggedIn(state: State, data: boolean) {
       state.loggedIn = data;
-    },
-    setUserTheme(state: State, data: string) {
-      state.userTheme = data;
     },
   },
   actions: {
@@ -41,12 +40,10 @@ export const store = createStore<State>({
     logout() {
       this.commit("auth/resetState");
       this.commit("workspace/resetState");
+      this.commit("repository/resetState");
       this.commit("setLoggedIn", false);
       this.state.loggedIn = false;
       location.href = "/";
-    },
-    setUserTheme(context: ActionContext<State, State>, data) {
-      context.commit("setUserTheme", data);
     },
   },
   plugins: [createPersistedState()],

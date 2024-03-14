@@ -37,7 +37,7 @@ const store = useStore(key);
 
 function redirectGithubLogin() {
   util.showLoadingScreen();
-  location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.VUE_APP_GITHUB_CLIENT_ID}&state=${process.env.VUE_APP_GITHUB_STATE}&redirect_uri=${process.env.VUE_APP_GITHUB_REDIRECT_URI}&scope=read:user,user:email`;
+  location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.VUE_APP_GITHUB_CLIENT_ID}&state=${process.env.VUE_APP_GITHUB_STATE}&redirect_uri=${process.env.VUE_APP_GITHUB_REDIRECT_URI}&scope=read:user,user:email,read:org,repo`;
 }
 
 onMounted(async () => {

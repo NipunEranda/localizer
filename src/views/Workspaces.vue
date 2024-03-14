@@ -164,6 +164,6 @@ function openCreateModal(opt, obj) {
 
 function navigateToWorkspace(workspace) {
   store.commit("workspace/setDefaultWorkspace", workspace);
-  router.push("/dashboard");
+  router.push("/repositories");
 }
 </script>
