@@ -49,7 +49,8 @@ library.add(
   faSun,
   faBell,
   faLock,
-  faGlobe
+  faGlobe,
+  faBars
 );
 
 createApp(App)

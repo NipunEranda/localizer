@@ -5,7 +5,7 @@
       type="text"
       placeholder="&#128269; Search"
       v-model="searchText"
-      class="customerSearch p-2 border text-neutral-900 dark:text-neutral-300 border-neutral-300 bg-neutral-100 text-xs dark:bg-neutral-600 dark:border-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:border-orange-600 dark:focus:border-orange-600 w-full mb-3"
+      class="customerSearch p-2 border text-neutral-900 dark:text-neutral-300 border-neutral-300 bg-neutral-50 text-xs dark:bg-neutral-600 dark:border-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:border-orange-600 dark:focus:border-orange-600 w-full mb-3"
     />
     <table
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto table-sort"
@@ -13,7 +13,7 @@
       <thead
         class="text-xs text-neutral-700 uppercase bg-gray-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
       >
-        <tr>
+        <tr class="select-none">
           <th
             name="name"
             scope="col"
@@ -38,6 +38,7 @@
           >
             Owner
           </th>
+          <th></th>
         </tr>
       </thead>
       <tbody class="">
@@ -55,6 +56,45 @@
           </td>
           <td v-text="repo.description" class="px-6 py-4"></td>
           <td v-text="repo.owner.login" class="px-6 py-4 text-right"></td>
+          <td
+            @click="jQuery(`#row-menu-${r}`).toggleClass('hidden')"
+            id="menu-td"
+          >
+            <fai
+              icon="fa-bars"
+              id="menu-button"
+              aria-expanded="true"
+              aria-haspopup="true"
+            />
+            <div
+              class="hidden row-menues absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabindex="-1"
+              :id="`row-menu-${r}`"
+            >
+              <div class="py-1" role="none">
+                <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  >Open Repository</a
+                >
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  >Show Files</a
+                >
+              </div>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -94,5 +134,21 @@ onMounted(async () => {
   repositories.value.sort((a, b) => a.name.localeCompare(b.name));
   filterredRepositories = ref(repositories);
   hideLoadingScreen();
+});
+
+// Hide menues after clicking outside
+document.addEventListener("mouseup", function (event) {
+  if (
+    !(
+      event.target.id.includes("menu-button") ||
+      event.target.id.includes("menu-td")
+    )
+  ) {
+    if (!event.target.id.includes("menu-item")) {
+      jQuery(".row-menues").map((id) =>
+        jQuery(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
+      );
+    }
+  }
 });
 </script>
