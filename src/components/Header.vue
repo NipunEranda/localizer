@@ -28,14 +28,63 @@
               class="size-6 justify-center items-center flex"
           /></a>
           <a
+            id="header-profile"
+            aria-expanded="true"
+            aria-haspopup="true"
             href="#"
             class="text-white font-medium rounded-lg text-sm ps-2 pe-2 hidden lg:flex"
             ><img
               :src="user?.avatar_url"
               alt=""
-              class="rounded-full w-7 hidden lg:inline-block"
-              @click="store.dispatch('logout')"
-          /></a>
+              class="rounded-full w-7 hidden lg:flex"
+              @click="jQuery(`#header-profile-menu`).toggleClass('hidden')"
+            />
+            <div
+              class="hidden row-menues absolute right-0 z-10 mt-9 mr-5 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabindex="-1"
+              id="header-profile-menu"
+            >
+              <div class="py-1" role="none">
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  ><fai icon="fa-user" class="mr-2" />Profile</a
+                >
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-1"
+                  ><fai icon="fa-gear" class="mr-2" />Settings</a
+                >
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-1"
+                  ><fai icon="fa-network-wired" class="mr-2" />Switch
+                  Workspace</a
+                >
+                <a
+                  href="#"
+                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-2"
+                  @click="store.dispatch('logout')"
+                  ><fai icon="fa-power-off" class="mr-2" />Logout</a
+                >
+              </div>
+            </div>
+          </a>
           <button
             data-collapse-toggle="mobile-menu-2"
             type="button"
@@ -173,7 +222,6 @@
 
 <script setup>
 import { getIcon } from "@/utils";
-
 import { useRoute } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";

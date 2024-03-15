@@ -8,6 +8,7 @@ import Modal from "./components/modals/Modal.vue";
 import ActionModal from "./components/modals/ActionModal.vue";
 import Alert from "./components/Alert.vue";
 import Header from "./components/Header.vue";
+import BreadCrumb from "./components/BreadCrumb.vue";
 
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -32,6 +33,11 @@ import {
   faBell,
   faLock,
   faGlobe,
+  faUser,
+  faChevronRight,
+  faFile,
+  faHouseChimney,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -50,7 +56,12 @@ library.add(
   faBell,
   faLock,
   faGlobe,
-  faBars
+  faBars,
+  faUser,
+  faChevronRight,
+  faFile,
+  faHouseChimney,
+  faPlus
 );
 
 createApp(App)
@@ -61,4 +72,5 @@ createApp(App)
   .component("action-modal", ActionModal)
   .component("alert", Alert)
   .component("Header", Header)
+  .component("Breadcrumb", BreadCrumb)
   .mount("#app");

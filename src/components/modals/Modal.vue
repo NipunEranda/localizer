@@ -12,11 +12,11 @@
       ></div>
       <div class="fixed inset-0 w-screen overflow-y-auto">
         <div
-          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+          class="flex h-screen sm:min-h-screenWH items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
           <div
             :id="props.modalId"
-            class="relative overflow-hidden rounded-lg text-left w-full sm:w-11/12 md:w-9/12 lg:w-8/12 xl:w-6/12 shadow-md shadow-neutral-500 dark:shadow-neutral-950"
+            class="relative overflow-hidden rounded-lg text-left w-full sm:w-11/12 md:w-11/12 lg:w-10/12 xl:w-8/12 shadow-md shadow-neutral-500 dark:shadow-neutral-950"
           >
             <!-- Header -->
             <div
@@ -38,7 +38,9 @@
             <!-- Header -->
 
             <!-- Body -->
-            <div class="bg-neutral-50 dark:bg-neutral-800 p-5">
+            <div
+              class="bg-neutral-50 dark:bg-neutral-800 p-5 h-fit max-h-[600px] overflow-auto"
+            >
               <slot />
             </div>
             <!-- Body -->
@@ -60,7 +62,7 @@
                   'ring-success bg-success hover:bg-success-hover':
                     operation == 'update',
                 }"
-                class="mt-3 inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset sm:mt-0 sm:w-auto ml-2"
+                class="mt-3 inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset sm:mt-0 sm:w-auto sm:ml-2"
               ></button>
               <button
                 v-if="props.showCancel"

@@ -18,5 +18,6 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "linebreak-style": 0,
     "prettier/prettier": ["error", { endOfLine: "auto" }],
+    // "@typescript-eslint/no-explicit-any": ["off"]
   },
 };
