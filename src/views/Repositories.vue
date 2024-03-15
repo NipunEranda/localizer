@@ -92,6 +92,7 @@
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
+                  @click="$router.push(`/files?repo=${repo.id}`)"
                   >Show Files</a
                 >
               </div>

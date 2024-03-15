@@ -11,6 +11,7 @@
       />
       <button
         class="w-1/6 bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:brightness-125 dark:hover:border-neutral-500 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
+        @click="openFileModal('add')"
       >
         <fai icon="fa-plus" />
         <span class="hidden sm:inline ml-2">New File</span>
@@ -130,6 +131,152 @@
     >
       Create a file
     </div>
+
+    <Modal
+      :modalId="'fileModal'"
+      :modalTitle="modal.modalTitle"
+      :operation="modal.operation"
+      :actionName="modal.actionName"
+      :showCancel="modal.showCancel"
+      :modalProcess="modalProcess"
+    >
+      <!-- Body -->
+      <div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+          <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label
+              for="name"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>File Name</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="name"
+              v-model="file.name"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="exampleFile.js"
+              required
+            />
+          </div>
+          <div class="w-full md:w-1/2 px-3">
+            <label
+              for="repository"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              >Repository</label
+            >
+            <input
+              type="text"
+              id="repository"
+              v-model="repository.name"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-neutral-400 text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 cursor-not-allowed"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+          <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label
+              for="fileUrl"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>File Url</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="fileUrl"
+              v-model="file.fileUrl"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="https://github.com/org/repo/blob/branch/file.extension"
+              required
+            />
+          </div>
+          <div class="w-full md:w-1/2 px-3">
+            <label
+              for="branch"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>Branch</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="branch"
+              v-model="file.branch"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="main"
+              required
+            />
+          </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+          <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label
+              for="versionId"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>VersionID</span></label
+            >
+            <input
+              type="text"
+              id="versionId"
+              v-model="file.versionId"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="1.0"
+            />
+          </div>
+          <div class="w-full md:w-1/2 px-3">
+            <label
+              for="type"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>Type</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="type"
+              v-model="file.type"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="javascript"
+              required
+            />
+          </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+          <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label
+              for="from"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>From</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="from"
+              v-model="file.from"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="English"
+              required
+            />
+          </div>
+          <div class="w-full md:w-1/2 px-3">
+            <label
+              for="to"
+              class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+              ><span>To</span><span class="text-danger"> *</span></label
+            >
+            <input
+              type="text"
+              id="to"
+              v-model="file.to"
+              autocomplete="off"
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              placeholder="Spanish"
+              required
+            />
+          </div>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -139,10 +286,21 @@ import { useRoute } from "vue-router";
 import { onMounted, watch, ref } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
+import Modal from "@/components/modals/Modal.vue";
+import { showModal } from "@/utils";
+import { File } from "@/models/File";
 
 const store = useStore(key);
 const route = useRoute();
 let searchText = ref("");
+let modal = ref({
+  modalTitle: "",
+  operation: "",
+  actionName: "",
+  showCancel: true,
+});
+
+let file = ref(new File());
 
 // Get the repository info
 const repository = ref(
@@ -169,4 +327,23 @@ const breadCrumbPaths = [
 ];
 
 let filterredFiles = ref(files);
+
+function openFileModal(operation) {
+  modal.value.operation = operation;
+  switch (operation) {
+    case "add":
+      file.value = new File();
+      file.value.repository = repository.value.id;
+      modal.value.modalTitle = "New File";
+      modal.value.actionName = "Save";
+      modal.value.showCancel = true;
+      break;
+  }
+
+  showModal("fileModal");
+}
+
+async function modalProcess() {
+  return null;
+}
 </script>
