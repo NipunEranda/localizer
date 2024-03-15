@@ -6,6 +6,7 @@ import { Response } from "@/models/Response";
 import { ActionContext } from "vuex";
 import { Alert } from "@/models/Alert";
 import { State } from "@/store";
+import { Ref } from "vue";
 
 export { getIcon };
 
@@ -26,37 +27,45 @@ export function hideLoadingScreen() {
   $("#loading-screen").removeClass("flex").addClass("hidden");
 }
 
-export function sort(event: any, data: any) {
+export function sort(
+  event: { target: { attributes: { nodeValue: string }[] } },
+  data: Ref
+) {
   if (
     getSortDirection(event, data.value) == "unsorted" ||
     getSortDirection(event, data.value) == "descending"
   ) {
-    data.value = data.value.sort((a: any, b: any) =>
-      (a[event.target.attributes[0].nodeValue]
-        ? a[event.target.attributes[0].nodeValue]
-        : ""
-      ).localeCompare(
-        b[event.target.attributes[0].nodeValue]
-          ? b[event.target.attributes[0].nodeValue]
+    data.value = data.value.sort(
+      (a: { [x: string]: string }, b: { [x: string]: string }) =>
+        (a[event.target.attributes[0]?.nodeValue]
+          ? a[event.target.attributes[0]?.nodeValue]
           : ""
-      )
+        ).localeCompare(
+          b[event.target.attributes[0].nodeValue]
+            ? b[event.target.attributes[0].nodeValue]
+            : ""
+        )
     );
   } else {
-    data.value = data.value.sort((a: any, b: any) =>
-      (b[event.target.attributes[0].nodeValue]
-        ? b[event.target.attributes[0].nodeValue]
-        : ""
-      ).localeCompare(
-        a[event.target.attributes[0].nodeValue]
-          ? a[event.target.attributes[0].nodeValue]
+    data.value = data.value.sort(
+      (a: { [x: string]: string }, b: { [x: string]: string }) =>
+        (b[event.target.attributes[0].nodeValue]
+          ? b[event.target.attributes[0].nodeValue]
           : ""
-      )
+        ).localeCompare(
+          a[event.target.attributes[0].nodeValue]
+            ? a[event.target.attributes[0].nodeValue]
+            : ""
+        )
     );
   }
   return data.value;
 }
 
-export function getSortDirection(event: any, arr: Array<any>) {
+export function getSortDirection(
+  event: { target: { attributes: { nodeValue: string }[] } },
+  arr: Array<{ [x: string]: string }>
+) {
   const c = [];
   for (let i = 1; i < arr.length; i++) {
     c.push(

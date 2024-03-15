@@ -1,5 +1,6 @@
 <template>
   <div class="relative overflow-x-auto p-1 pt-3">
+    <Breadcrumb :paths="breadCrumbPaths" />
     <input
       id="customerSearch"
       type="text"
@@ -113,6 +114,9 @@ const store = useStore(key);
 const repositories = ref(store.state.repository.repositories);
 let filterredRepositories = ref(repositories);
 let searchText = ref("");
+const breadCrumbPaths = [
+  { name: "Repositories", icon: "fa-home", url: "/repositories" },
+];
 
 watch(searchText, (newValue) => {
   if (newValue.trim() != "") {
