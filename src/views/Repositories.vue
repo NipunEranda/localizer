@@ -135,20 +135,4 @@ onMounted(async () => {
   filterredRepositories = ref(repositories);
   hideLoadingScreen();
 });
-
-// Hide menues after clicking outside
-document.addEventListener("mouseup", function (event) {
-  if (
-    !(
-      event.target.id.includes("menu-button") ||
-      event.target.id.includes("menu-td")
-    )
-  ) {
-    if (!event.target.id.includes("menu-item")) {
-      jQuery(".row-menues").map((id) =>
-        jQuery(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
-      );
-    }
-  }
-});
 </script>
