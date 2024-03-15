@@ -6,7 +6,7 @@
       type="text"
       placeholder="&#128269; Search"
       v-model="searchText"
-      class="customerSearch p-2 border text-neutral-900 dark:text-neutral-300 border-neutral-300 bg-neutral-50 text-xs dark:bg-neutral-600 dark:border-neutral-500 dark:placeholder-neutral-400 focus:outline-none focus:border-orange-600 dark:focus:border-orange-600 w-full mb-3"
+      class="customerSearch p-2 border text-neutral-900 dark:text-neutral-300 border-neutral-300 bg-neutral-50 text-xs dark:bg-neutral-800 dark:brightness-125 dark:border-neutral-600 dark:placeholder-neutral-400 focus:outline-none focus:border-neutral-500 dark:focus:border-neutral-500 w-full mb-3"
     />
     <table
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto table-sort"
@@ -47,6 +47,7 @@
           v-for="(repo, r) in filterredRepositories"
           :key="r"
           class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
+          @dblclick="$router.push(`/files?repo=${repo.id}`)"
         >
           <td
             scope="row"

@@ -1,9 +1,12 @@
 // store.ts
 import { InjectionKey } from "vue";
 import { createStore, Store, ActionContext } from "vuex";
+
 import AuthModule, { AuthState } from "./auth";
 import WorkspaceModule, { WorkspaceState } from "./workspace";
 import RepositoryModule, { RepositoryState } from "./repositories";
+import FileModule, { FileState } from "./files";
+
 import createPersistedState from "vuex-persistedstate";
 import router from "@/router";
 
@@ -12,6 +15,7 @@ export interface State {
   auth: AuthState;
   workspace: WorkspaceState;
   repository: RepositoryState;
+  file: FileState;
   loggedIn: boolean;
 }
 
@@ -24,6 +28,7 @@ export const store = createStore<State>({
     auth: AuthModule,
     workspace: WorkspaceModule,
     repository: RepositoryModule,
+    file: FileModule,
   },
   mutations: {
     setLoggedIn(state: State, data: boolean) {

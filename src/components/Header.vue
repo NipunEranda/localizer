@@ -222,7 +222,6 @@
 
 <script setup>
 import { getIcon } from "@/utils";
-
 import { useRoute } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";

@@ -24,14 +24,9 @@
 </template>
 
 <script setup>
-import * as util from "@/utils";
-import { /*toRefs,*/ defineProps, onMounted } from "vue";
+import { /*toRefs,*/ defineProps } from "vue";
 
 const props = defineProps({
   paths: Array,
-});
-
-onMounted(() => {
-  console.log(props.paths);
 });
 </script>
