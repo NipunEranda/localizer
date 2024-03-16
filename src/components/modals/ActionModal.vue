@@ -29,7 +29,7 @@
                 ></h3>
                 <div class="mt-2">
                   <p
-                    class="text-sm text-gray-500"
+                    class="text-sm text-neutral-500"
                     v-text="props.modalContent"
                   ></p>
                 </div>
@@ -38,7 +38,7 @@
           </div>
           <!-- Footer -->
           <div
-            class="bg-gray-50 dark:bg-neutral-800 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6"
+            class="bg-neutral-50 dark:bg-neutral-800 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6"
           >
             <button
               v-text="props.processText"

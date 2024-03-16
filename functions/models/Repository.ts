@@ -16,4 +16,11 @@ export interface _Repository {
   ownerLogin: string;
   private: boolean;
   visibility: string;
+  branches: _Branch[];
+}
+
+export interface _Branch {
+  name: string;
+  commit: [Object];
+  protected: boolean;
 }

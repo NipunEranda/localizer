@@ -4,15 +4,15 @@ export interface _File {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: string;
+  branch: number;
   versionId: number | null;
   type: string;
   from: string;
   to: string;
-  owner: _User;
+  owner: _User | null;
   createdOn: Date;
   modifiedOn: Date;
-  modifiedBy: _User;
+  modifiedBy: _User | null;
   history: Array<string>;
 }
 
@@ -20,28 +20,28 @@ export class File implements _File {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: string;
+  branch: number;
   versionId: number | null;
   type: string;
   from: string;
   to: string;
-  owner: _User;
+  owner: _User | null;
   createdOn: Date;
   modifiedOn: Date;
-  modifiedBy: _User;
+  modifiedBy: _User | null;
   history: Array<string>;
 
   constructor(
     name: string,
     repository: number,
     fileUrl: string,
-    branch: string,
+    branch: number,
     versionId: number | null,
     type: string,
     from: string,
     to: string,
-    owner: _User,
-    createdOn: Date
+    owner: _User | null = null,
+    createdOn: Date = new Date()
   ) {
     this.name = name;
     this.repository = repository;
@@ -71,5 +71,9 @@ export class File implements _File {
       obj.owner,
       obj.createdOn
     );
+  }
+
+  static createEmptyObject() {
+    return new File("", 0, "", 0, null, "", "", "", null, new Date());
   }
 }

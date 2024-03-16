@@ -80,7 +80,7 @@
         type="text"
         id="name"
         v-model="workspace.name"
-        class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-orange-600 dark:focus:border-orange-600"
+        class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-orange-600 dark:focus:border-orange-600"
       />
     </div>
     <div v-if="operation == 'delete'" v-html="modalContent"></div>

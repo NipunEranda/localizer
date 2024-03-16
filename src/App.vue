@@ -5,7 +5,7 @@
       class="fixed inset-0 bg-white dark:bg-black bg-opacity-50 dark:bg-opacity-40 min-h-full z-10 hidden"
     >
       <div
-        class="m-auto b border-gray-800 dark:border-gray-300 h-20 w-20 animate-spin rounded-full border-x-8 absolute bottom-0 left-0 right-0 mb-32"
+        class="m-auto b border-neutral-800 dark:border-neutral-300 h-20 w-20 animate-spin rounded-full border-x-8 absolute bottom-0 left-0 right-0 mb-32"
       ></div>
     </div>
     <Header v-if="showHeader" />

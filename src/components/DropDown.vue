@@ -28,46 +28,38 @@
       type="text"
       autocomplete="off"
       name="dropDownInput"
-      class="flex bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+      v-model="searchText"
+      class="flex bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+      :class="{ 'cursor-not-allowed': passedItem }"
+      :disabled="passedItem != null"
       @click="jQuery('#inputDropDown').toggleClass('hidden')"
+      placeholder="Search and select an item"
     />
 
     <!-- Dropdown menu -->
     <div
       id="inputDropDown"
       name="inputDropDown"
-      class="inputDropDown z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 absolute w-full mt-2"
+      v-if="!passedItem"
+      class="inputDropDown z-10 hidden bg-white divide-y divide-neutral-100 rounded-lg shadow dark:bg-neutral-800 dark:brightness-150 absolute w-full mt-2 max-h-40 overflow-auto"
     >
       <ul
-        class="py-2 text-sm text-gray-700 dark:text-gray-200"
+        class="py-2 text-sm text-neutral-700 dark:text-neutral-200"
         aria-labelledby="dropdownDefaultButton"
       >
-        <li>
+        <li
+          v-for="(item, i) in items"
+          :key="i"
+          @click="
+            selectedItem = item;
+            searchText = item.name;
+            $emit('output', selectedItem);
+          "
+        >
           <a
             href="#"
-            class="block px-4 py-2 bg-netral-800 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-            >Dashboard</a
-          >
-        </li>
-        <li>
-          <a
-            href="#"
-            class="block px-4 py-2 bg-netral-800 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-            >Settings</a
-          >
-        </li>
-        <li>
-          <a
-            href="#"
-            class="block px-4 py-2 bg-netral-800 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-            >Earnings</a
-          >
-        </li>
-        <li>
-          <a
-            href="#"
-            class="block px-4 py-2 bg-netral-800 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-            >Sign out</a
+            class="block px-4 py-2 bg-netral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:hover:text-white"
+            >{{ item.name }}</a
           >
         </li>
       </ul>
@@ -75,6 +67,40 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { store } from "@/store";
 import jQuery from "jquery";
+import {
+  /*toRefs,*/ defineProps,
+  defineEmits,
+  onMounted,
+  PropType,
+  Ref,
+  ref,
+} from "vue";
+
+let searchText: Ref = ref("");
+let selectedItem: Ref = ref(null);
+
+const props = defineProps({
+  items: {
+    type: Array as PropType<
+      { name: string | number; value: number | string }[]
+    >,
+  },
+  passedItem: {
+    type: Number || String,
+    default: 0 || null,
+  },
+});
+
+const emits = defineEmits(["output"]);
+
+onMounted(() => {
+  searchText.value = props.passedItem
+    ? store.state.repository.repositories.filter(
+        (r) => r.id == props.passedItem
+      )[0].name
+    : "";
+});
 </script>

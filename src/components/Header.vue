@@ -14,7 +14,7 @@
         <div class="flex items-center justify-center lg:order-2">
           <a
             href="#"
-            class="text-gray-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
+            class="text-neutral-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
             @click="toggleTheme"
             ><fai
               :icon="userTheme == 'light' ? 'fa-moon' : 'fa-sun'"
@@ -22,7 +22,7 @@
           /></a>
           <a
             href="#"
-            class="text-gray-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
+            class="text-neutral-800 dark:text-white font-medium rounded-lg text-sm ps-2 pe-2 hover:text-orange-600 dark:hover:text-orange-600"
             ><fai
               icon="fa-bell"
               class="size-6 justify-center items-center flex"
@@ -50,7 +50,7 @@
               <div class="py-1" role="none">
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
@@ -58,7 +58,7 @@
                 >
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-1"
@@ -66,7 +66,7 @@
                 >
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-1"
@@ -75,7 +75,7 @@
                 >
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-2"
