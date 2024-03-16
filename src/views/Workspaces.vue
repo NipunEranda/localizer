@@ -34,7 +34,7 @@
               >
                 <fai
                   icon="fa-trash"
-                  class="text-lg p-2 hover:bg-neutral-200 rounded-full ml-2"
+                  class="text-lg p-2 hover:bg-neutral-200 rounded-full ml-2 dark:hover:text-red-600"
                   @click="openCreateModal('delete', workspace)"
                 />
               </div>

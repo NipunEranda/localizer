@@ -70,6 +70,10 @@
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-1"
+                  @click="
+                    store.dispatch('workspace/setDefaultWorkspace', null);
+                    $router.push('/workspaces');
+                  "
                   ><fai icon="fa-network-wired" class="mr-2" />Switch
                   Workspace</a
                 >
