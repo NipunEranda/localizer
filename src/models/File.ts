@@ -16,7 +16,7 @@ export interface _File {
   history: Array<string>;
 }
 
-export class File {
+export class File implements _File {
   name: string;
   repository: number;
   fileUrl: string;

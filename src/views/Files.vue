@@ -165,13 +165,17 @@
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
               >Repository</label
             >
-            <input
+            <DropDown />
+            <!-- <input
               type="text"
               id="repository"
               v-model="repository.name"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-neutral-400 text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 cursor-not-allowed"
-              disabled
-            />
+              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              :class="{
+                'cursor-not-allowed dark:text-neutral-400': repository.id,
+              }"
+              :disabled="repository.id"
+            /> -->
           </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -289,6 +293,7 @@ import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
 import { showModal } from "@/utils";
 import { File } from "@/models/File";
+import DropDown from "@/components/DropDown.vue";
 
 const store = useStore(key);
 const route = useRoute();
@@ -308,7 +313,7 @@ const repository = ref(
     ? store.state.repository.repositories.filter(
         (r) => r.id == route.query.repo
       )[0]
-    : null
+    : {}
 );
 
 const files = ref(
@@ -320,7 +325,7 @@ const files = ref(
 const breadCrumbPaths = [
   { name: "Repositories", icon: "fa-home", url: "/repositories" },
   {
-    name: `Files${repository.value ? ` (${repository.value.name})` : ""}`,
+    name: `Files${repository.value.name ? ` (${repository.value.name})` : ""}`,
     icon: "fa-file",
     url: `/files${route.query.repo ? `?repo=${route.query.repo}` : ""}`,
   },

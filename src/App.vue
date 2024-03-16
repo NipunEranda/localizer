@@ -21,6 +21,7 @@ import { ref, watch } from "vue";
 import { useStore } from "vuex";
 import { key } from "./store";
 import jQuery from "jquery";
+import "./utils/uiTools.js";
 
 const route = useRoute();
 const store = useStore(key);
@@ -40,26 +41,6 @@ watch(route, async () => {
     document.documentElement.classList.remove("dark");
   } else {
     document.documentElement.classList.add("dark");
-  }
-});
-
-// Hide menues after clicking outside
-document.addEventListener("mouseup", function (event) {
-  if (!event.target.id.includes("header-profile")) {
-    jQuery(`#header-profile-menu`).removeClass("hidden").addClass("hidden");
-  }
-
-  if (
-    !(
-      event.target.id.includes("menu-button") ||
-      event.target.id.includes("menu-td")
-    )
-  ) {
-    if (!event.target.id.includes("menu-item")) {
-      jQuery(".row-menues").map((id) =>
-        jQuery(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
-      );
-    }
   }
 });
 </script>

@@ -11,12 +11,14 @@
         <a
           href="#"
           @click="path.url ? $router.push(path.url) : null"
-          class="inline-flex items-center text-sm font-medium text-neutral-700 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-white"
+          class="inline-flex items-center text-sm font-medium text-neutral-700 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-white mr-1"
         >
-          <span class="mr-2">
-            <fai :icon="path.icon" class="mr-2" /> {{ path.name }}</span
-          >
-          <fai icon="fa-chevron-right" v-if="p != paths.length - 1" />
+          <span> <fai :icon="path.icon" class="mr-2" /> {{ path.name }}</span>
+          <fai
+            icon="fa-chevron-right"
+            v-if="p != paths.length - 1"
+            class="ml-2"
+          />
         </a>
       </li>
     </ol>

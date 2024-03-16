@@ -9,6 +9,7 @@ import ActionModal from "./components/modals/ActionModal.vue";
 import Alert from "./components/Alert.vue";
 import Header from "./components/Header.vue";
 import BreadCrumb from "./components/BreadCrumb.vue";
+import DropDown from "./components/DropDown.vue";
 
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -73,4 +74,5 @@ createApp(App)
   .component("alert", Alert)
   .component("Header", Header)
   .component("Breadcrumb", BreadCrumb)
+  .component("DropDown", DropDown)
   .mount("#app");
