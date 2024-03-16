@@ -226,6 +226,7 @@
             <DropDown
               :id="'branch'"
               :items="branchesList"
+              :loading="loading.branchLoading"
               @output="branchesDropDownOutput"
             />
           </div>
@@ -325,6 +326,9 @@ let modal = ref({
   actionName: "",
   showCancel: true,
 });
+let loading = ref({
+  branchLoading: false,
+});
 let branchesList: Ref = ref([]);
 let repoId = route.query.repo
   ? typeof route.query.repo == "number"
@@ -389,13 +393,17 @@ async function repositoryDropDownOutput(output: {
   file.value.repository =
     typeof output.value == "number" ? output.value : parseInt(output.value);
 
-  const branches: _Branch[] = await store.dispatch(
-    "repository/loadBranches",
-    store.state.repository.repositories.filter((r) => r.id == output.value)[0]
-  );
-  branches.map((branch) =>
-    branchesList.value.push({ name: branch.name, value: branch.name })
-  );
+  if (output.value != 0) {
+    loading.value.branchLoading = true;
+    const branches: _Branch[] = await store.dispatch(
+      "repository/loadBranches",
+      store.state.repository.repositories.filter((r) => r.id == output.value)[0]
+    );
+    branches.map((branch) =>
+      branchesList.value.push({ name: branch.name, value: branch.name })
+    );
+    loading.value.branchLoading = false;
+  }
 }
 
 function branchesDropDownOutput(output: {
@@ -408,6 +416,7 @@ function branchesDropDownOutput(output: {
 onMounted(async () => {
   // Load branches
   if (repository.value.id != 0) {
+    loading.value.branchLoading = true;
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
       repository.value
@@ -415,6 +424,7 @@ onMounted(async () => {
     branches.map((branch) =>
       branchesList.value.push({ name: branch.name, value: branch.name })
     );
+    loading.value.branchLoading = false;
   }
 });
 </script>
