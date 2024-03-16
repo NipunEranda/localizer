@@ -40,16 +40,20 @@ const getUserEmail = async (token: string) => {
   }
 };
 
-const getUserRepositories = async (event: APIGatewayProxyEvent): Promise<_Repository[]> => {
+const getUserRepositories = async (
+  event: APIGatewayProxyEvent
+): Promise<_Repository[]> => {
   try {
     const cookies = cookie.parse(
       event.headers.cookie ? event.headers.cookie : ""
     );
-    let userRepositories:_Repository[] = [],
+    let userRepositories: _Repository[] = [],
       pageCount = 1;
     if (cookies.token && cookies["local._token"]) {
-      let repositoryResponse = { data: [] };
+      let repositoryResponse = { data: [] },
+        branchResponse = { data: [] };
       do {
+        // Get Repository
         repositoryResponse = await axios.get(
           `https://api.github.com/user/repos?type=all&per_page=100&page=${pageCount}`,
           {
@@ -63,11 +67,33 @@ const getUserRepositories = async (event: APIGatewayProxyEvent): Promise<_Reposi
         ++pageCount;
       } while (repositoryResponse.data.length != 0);
 
-      userRepositories.map((repository, r) => userRepositories[r].ownerLogin = repository.owner.login);
+      // Get branches for all repositories
+      await Promise.all(
+        userRepositories.map(async (repository, r) => {
+          // Get Branches
+          pageCount = 1;
+          do {
+            branchResponse = await axios.get(
+              `https://api.github.com/repos/${repository.full_name}/branches?per_page=100&page=${pageCount}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+                  "X-GitHub-Api-Version": "2022-11-28",
+                },
+              }
+            );
+
+            if (!userRepositories[r].branches)
+              userRepositories[r].branches = [];
+            userRepositories[r].branches.push(...branchResponse.data);
+            ++pageCount;
+          } while (branchResponse.data.length != 0);
+          userRepositories[r].ownerLogin = repository.owner.login;
+        })
+      );
       userRepositories.sort((a, b) => a.name.localeCompare(b.name));
       return userRepositories;
-    }else
-      return [];
+    } else return [];
   } catch (e) {
     console.log(e);
     return [];

@@ -19,17 +19,20 @@
     </div>
     <table
       v-if="filterredFiles.length > 0"
-      class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto table-sort"
+      class="w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400 table-auto table-sort"
     >
       <thead
-        class="text-xs text-neutral-700 uppercase bg-gray-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
+        class="text-xs text-neutral-700 uppercase bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
       >
         <tr class="select-none">
           <th
             name="name"
             scope="col"
             class="px-6 py-3"
-            @click="util.sort($event, ref(files))"
+            @click="
+              //@ts-ignore
+              util.sort($event, ref(files))
+            "
           >
             Name
           </th>
@@ -37,7 +40,13 @@
             name="branch"
             scope="col"
             class="px-6 py-3"
-            @click="util.sort($event, ref(files))"
+            @click="
+              util.sort(
+                //@ts-ignore
+                $event,
+                ref(files)
+              )
+            "
           >
             Branch
           </th>
@@ -45,7 +54,13 @@
             name="type"
             scope="col"
             class="px-6 py-3"
-            @click="util.sort($event, ref(files))"
+            @click="
+              util.sort(
+                //@ts-ignore
+                $event,
+                ref(files)
+              )
+            "
           >
             Type
           </th>
@@ -53,7 +68,13 @@
             name="owner"
             scope="col"
             class="px-6 py-3 text-right"
-            @click="util.sort($event, ref(files))"
+            @click="
+              util.sort(
+                //@ts-ignore
+                $event,
+                ref(files)
+              )
+            "
           >
             Owner
           </th>
@@ -61,7 +82,13 @@
             name="createdOn"
             scope="col"
             class="px-6 py-3 text-right"
-            @click="util.sort($event, ref(files))"
+            @click="
+              util.sort(
+                //@ts-ignore
+                $event,
+                ref(files)
+              )
+            "
           >
             Created On
           </th>
@@ -81,10 +108,10 @@
           ></td>
           <td v-text="file.branch" class="px-6 py-4"></td>
           <td v-text="file.type" class="px-6 py-4 text-right"></td>
-          <td v-text="file.owner.name" class="px-6 py-4 text-right"></td>
+          <td v-text="file.owner?.name" class="px-6 py-4 text-right"></td>
           <td v-text="file.createdOn" class="px-6 py-4 text-right"></td>
           <td
-            @click="jQuery(`#row-menu-${r}`).toggleClass('hidden')"
+            @click="jQuery(`#row-menu-${f}`).toggleClass('hidden')"
             id="menu-td"
           >
             <fai
@@ -99,13 +126,13 @@
               aria-orientation="vertical"
               aria-labelledby="menu-button"
               tabindex="-1"
-              :id="`row-menu-${r}`"
+              :id="`row-menu-${f}`"
             >
               <div class="py-1" role="none">
-                <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                <!-- Active: "bg-neutral-100 text-neutral-900", Not Active: "text-neutral-700" -->
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
@@ -113,7 +140,7 @@
                 >
                 <a
                   href="#"
-                  class="text-gray-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
@@ -142,7 +169,7 @@
     >
       <!-- Body -->
       <div>
-        <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="flex flex-wrap -mx-3 mb-3">
           <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label
               for="name"
@@ -154,7 +181,7 @@
               id="name"
               v-model="file.name"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="exampleFile.js"
               required
             />
@@ -163,15 +190,23 @@
             <label
               for="repository"
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
-              >Repository</label
+              >Repository<span class="text-danger"> *</span></label
             >
-            <input
+            <DropDown
+              :items="repositoryDropDownList"
+              :passedItem="repository.id"
+              @output="repositoryDropDownOutput"
+            />
+            <!-- <input
               type="text"
               id="repository"
               v-model="repository.name"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-neutral-400 text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 cursor-not-allowed"
-              disabled
-            />
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              :class="{
+                'cursor-not-allowed dark:text-neutral-400': repository.id,
+              }"
+              :disabled="repository.id"
+            /> -->
           </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -186,7 +221,7 @@
               id="fileUrl"
               v-model="file.fileUrl"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="https://github.com/org/repo/blob/branch/file.extension"
               required
             />
@@ -197,15 +232,16 @@
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
               ><span>Branch</span><span class="text-danger"> *</span></label
             >
-            <input
+            <DropDown :items="branchesList" @output="branchesDropDownOutput" />
+            <!-- <input
               type="text"
               id="branch"
               v-model="file.branch"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="main"
               required
-            />
+            /> -->
           </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -220,7 +256,7 @@
               id="versionId"
               v-model="file.versionId"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="1.0"
             />
           </div>
@@ -235,7 +271,7 @@
               id="type"
               v-model="file.type"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="javascript"
               required
             />
@@ -253,7 +289,7 @@
               id="from"
               v-model="file.from"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="English"
               required
             />
@@ -269,7 +305,7 @@
               id="to"
               v-model="file.to"
               autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-gray-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
               placeholder="Spanish"
               required
             />
@@ -280,16 +316,20 @@
   </div>
 </template>
 
-<script setup>
-// import { getIcon } from "@/utils";
+<script setup lang="ts">
+import * as util from "@/utils";
 import { useRoute } from "vue-router";
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch, ref, Ref } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
 import { showModal } from "@/utils";
-import { File } from "@/models/File";
+import { File, _File } from "@/models/File";
+import DropDown from "@/components/DropDown.vue";
+import jQuery from "jquery";
+import { Repository, _Branch } from "@/models/Repository";
 
+// Data
 const store = useStore(key);
 const route = useRoute();
 let searchText = ref("");
@@ -299,40 +339,55 @@ let modal = ref({
   actionName: "",
   showCancel: true,
 });
+let branchesList: { name: string | number; value: string | number }[] = [];
+let repoId = route.query.repo
+  ? typeof route.query.repo == "number"
+    ? route.query.repo
+    : parseInt(route.query.repo.toString())
+  : 0;
 
-let file = ref(new File());
+let file: Ref = ref(File.createEmptyObject());
 
-// Get the repository info
 const repository = ref(
-  route.query.repo
-    ? store.state.repository.repositories.filter(
-        (r) => r.id == route.query.repo
-      )[0]
-    : null
+  repoId
+    ? store.state.repository.repositories.filter((r) => r.id == repoId)[0]
+    : Repository.createEmptyObject()
 );
 
+if (repository.value.id != 0) {
+  branchesList = repository.value.branches.map((branch) => {
+    return { name: branch.name, value: branch.name };
+  });
+}
+
 const files = ref(
-  route.query.repo
-    ? store.state.file.files.filter((f) => f.repository == route.query.repo)
+  repoId
+    ? store.state.file.files.filter((f) => f.repository == repoId)
     : store.state.file.files
 );
 
 const breadCrumbPaths = [
   { name: "Repositories", icon: "fa-home", url: "/repositories" },
   {
-    name: `Files${repository.value ? ` (${repository.value.name})` : ""}`,
+    name: `Files${repository.value.name ? ` (${repository.value.name})` : ""}`,
     icon: "fa-file",
-    url: `/files${route.query.repo ? `?repo=${route.query.repo}` : ""}`,
+    url: `/files${repoId ? `?repo=${repoId}` : ""}`,
   },
 ];
 
 let filterredFiles = ref(files);
+const repositoryDropDownList = store.state.repository.repositories.map(
+  (repo) => {
+    return { name: repo.name, value: repo.id };
+  }
+);
 
-function openFileModal(operation) {
+// Methods
+function openFileModal(operation: string) {
   modal.value.operation = operation;
   switch (operation) {
     case "add":
-      file.value = new File();
+      file.value = File.createEmptyObject();
       file.value.repository = repository.value.id;
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
@@ -344,6 +399,22 @@ function openFileModal(operation) {
 }
 
 async function modalProcess() {
+  console.log(file.value);
   return null;
+}
+
+function repositoryDropDownOutput(output: {
+  name: string | number;
+  value: string | number;
+}) {
+  file.value.repository =
+    typeof output.value == "number" ? output.value : parseInt(output.value);
+}
+
+function branchesDropDownOutput(output: {
+  name: string | number;
+  value: string | number;
+}) {
+  file.value.branch = output.value;
 }
 </script>
