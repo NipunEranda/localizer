@@ -27,20 +27,20 @@
     <input
       type="text"
       autocomplete="off"
+      id="dropDownInput"
       name="dropDownInput"
       v-model="searchText"
       class="flex bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
       :class="{ 'cursor-not-allowed': passedItem }"
-      :disabled="passedItem != null"
-      @click="jQuery('#inputDropDown').toggleClass('hidden')"
+      :disabled="!(passedItem == null || passedItem == 0)"
+      @click="jQuery(`#inputDropDown-${id}`).toggleClass('hidden')"
       placeholder="Search and select an item"
     />
 
     <!-- Dropdown menu -->
     <div
-      id="inputDropDown"
+      :id="`inputDropDown-${id}`"
       name="inputDropDown"
-      v-if="!passedItem"
       class="inputDropDown z-10 hidden bg-white divide-y divide-neutral-100 rounded-lg shadow dark:bg-neutral-800 dark:brightness-150 absolute w-full mt-2 max-h-40 overflow-auto"
     >
       <ul
@@ -83,6 +83,7 @@ let searchText: Ref = ref("");
 let selectedItem: Ref = ref(null);
 
 const props = defineProps({
+  id: String || Number,
   items: {
     type: Array as PropType<
       { name: string | number; value: number | string }[]

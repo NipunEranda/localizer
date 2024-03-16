@@ -10,13 +10,28 @@ import { verifyToken } from "./auth";
 import { userSchema } from "./models/User";
 import axios from "axios";
 import github from "./services/github";
+import { _Branch, _Repository } from "./models/Repository";
 
 export const getUserRepositories = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
   try {
-    const userRepositories: any[] = await github.getUserRepositories(event);
+    const userRepositories: _Repository[] = await github.getUserRepositories(
+      event
+    );
     return AppResponse.createObject(200, userRepositories, null);
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(500, null, e.message);
+  }
+};
+
+export const getRepositoryBranches = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  try {
+    const repositoryBranches = await github.getRepositoryBranches(event);
+    return AppResponse.createObject(200, repositoryBranches, null);
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
@@ -34,6 +49,11 @@ export const responseHandler = async function (
       event.httpMethod == "GET"
     ) {
       result = await getUserRepositories(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/repository/branches` &&
+      event.httpMethod == "GET"
+    ) {
+      result = await getRepositoryBranches(event);
     } else {
       return AppResponse.createObject(404, null, "Path doesn't exists");
     }
