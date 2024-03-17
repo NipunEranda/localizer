@@ -1,4 +1,5 @@
 import { _User } from "./Auth";
+import { _Workspace } from "./Workspace";
 
 export interface _File {
   name: string;
@@ -10,6 +11,7 @@ export interface _File {
   from: string;
   to: string;
   owner: _User | null;
+  workspace: number;
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: _User | null;
@@ -26,6 +28,7 @@ export class File implements _File {
   from: string;
   to: string;
   owner: _User | null;
+  workspace: number;
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: _User | null;
@@ -41,6 +44,7 @@ export class File implements _File {
     from: string,
     to: string,
     owner: _User | null = null,
+    workspace: number,
     createdOn: Date = new Date()
   ) {
     this.name = name;
@@ -52,6 +56,7 @@ export class File implements _File {
     this.from = from;
     this.to = to;
     this.owner = owner;
+    this.workspace = workspace;
     this.createdOn = createdOn;
     this.modifiedOn = createdOn;
     this.modifiedBy = owner;
@@ -69,11 +74,12 @@ export class File implements _File {
       obj.from,
       obj.to,
       obj.owner,
+      obj.workspace,
       obj.createdOn
     );
   }
 
   static createEmptyObject() {
-    return new File("", 0, "", 0, null, "", "", "", null, new Date());
+    return new File("", 0, "", 0, null, "", "", "", null, 0, new Date());
   }
 }

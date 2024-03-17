@@ -7,16 +7,6 @@ document.addEventListener("mouseup", function (event) {
     jQuery(`#header-profile-menu`).removeClass("hidden").addClass("hidden");
   }
 
-  // Hide search dropdowns
-  if (
-    !(
-      event.target.name == "dropDownInput" ||
-      event.target.name == "inputDropDown"
-    )
-  ) {
-    jQuery("[name='inputDropDown']").removeClass("hidden").addClass("hidden");
-  }
-
   // Hide table row menus
   if (
     !(
@@ -29,5 +19,15 @@ document.addEventListener("mouseup", function (event) {
         jQuery(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
       );
     }
+  }
+
+  // Hide search dropdowns
+  if (
+    !(
+      event.target.id.includes("dropDownInput") ||
+      event.target.id.includes("inputDropDown")
+    )
+  ) {
+    jQuery("[name='inputDropDown']").removeClass("hidden").addClass("hidden");
   }
 });

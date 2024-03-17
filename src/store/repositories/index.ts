@@ -1,7 +1,7 @@
 import axios from "axios";
 import { store, State } from "../";
 import { Commit, ActionContext } from "vuex";
-import { _Repository } from "@/models/Repository";
+import { _Repository, _Branch } from "@/models/Repository";
 
 export interface RepositoryState {
   repositories: _Repository[];
@@ -48,6 +48,32 @@ const RepositoryModule = {
           context.commit("setRepositories", repositoriesResponse);
           return repositoriesResponse;
         } else return context.state.repositories;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
+    async loadBranches(
+      context: ActionContext<RepositoryState, State>,
+      data: _Repository
+    ) {
+      try {
+        if (data) {
+          const branchesResponse: _Branch[] = (
+            await axios.get(
+              `${process.env.VUE_APP_API_URL}/repository/branches?repo=${data.full_name}`,
+              {
+                withCredentials: true,
+              }
+            )
+          ).data.data;
+          context.state.repositories[
+            context.state.repositories.indexOf(
+              context.state.repositories.filter((r) => r.id == data.id)[0]
+            )
+          ].branches = branchesResponse;
+          return branchesResponse;
+        }
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;

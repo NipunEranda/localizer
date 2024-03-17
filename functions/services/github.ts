@@ -3,7 +3,7 @@ import mongoose, { ObjectId } from "mongoose";
 import { _User } from "../models/User";
 import cookie from "cookie";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { _Repository } from "../models/Repository";
+import { _Branch, _Repository } from "../models/Repository";
 
 const getUserDetails = async (token: string) => {
   try {
@@ -50,8 +50,7 @@ const getUserRepositories = async (
     let userRepositories: _Repository[] = [],
       pageCount = 1;
     if (cookies.token && cookies["local._token"]) {
-      let repositoryResponse = { data: [] },
-        branchResponse = { data: [] };
+      let repositoryResponse = { data: [] };
       do {
         // Get Repository
         repositoryResponse = await axios.get(
@@ -66,33 +65,45 @@ const getUserRepositories = async (
         userRepositories.push(...repositoryResponse.data);
         ++pageCount;
       } while (repositoryResponse.data.length != 0);
-
-      // Get branches for all repositories
-      await Promise.all(
-        userRepositories.map(async (repository, r) => {
-          // Get Branches
-          pageCount = 1;
-          do {
-            branchResponse = await axios.get(
-              `https://api.github.com/repos/${repository.full_name}/branches?per_page=100&page=${pageCount}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
-                  "X-GitHub-Api-Version": "2022-11-28",
-                },
-              }
-            );
-
-            if (!userRepositories[r].branches)
-              userRepositories[r].branches = [];
-            userRepositories[r].branches.push(...branchResponse.data);
-            ++pageCount;
-          } while (branchResponse.data.length != 0);
-          userRepositories[r].ownerLogin = repository.owner.login;
-        })
-      );
       userRepositories.sort((a, b) => a.name.localeCompare(b.name));
       return userRepositories;
+    } else return [];
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+const getRepositoryBranches = async (
+  event: APIGatewayProxyEvent
+): Promise<_Branch[]> => {
+  try {
+    const cookies = cookie.parse(
+      event.headers.cookie ? event.headers.cookie : ""
+    );
+    let branches = [],
+      branchResponse = { data: [] };
+
+    // Get branches for the repository
+    if (event.queryStringParameters?.repo) {
+      let pageCount = 1;
+      if (cookies.token && cookies["local._token"]) {
+        do {
+          branchResponse = await axios.get(
+            `https://api.github.com/repos/${event.queryStringParameters?.repo}/branches?per_page=100&page=${pageCount}`,
+            {
+              headers: {
+                Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            }
+          );
+
+          branches.push(...branchResponse.data);
+          ++pageCount;
+        } while (branchResponse.data.length != 0);
+      }
+      return branches;
     } else return [];
   } catch (e) {
     console.log(e);
@@ -204,6 +215,7 @@ export default {
   getUserDetails,
   getUserEmail,
   getUserRepositories,
+  getRepositoryBranches,
   // getUserOrganizations,
   // getUserOrgRepositories,
   // getOrganizations,

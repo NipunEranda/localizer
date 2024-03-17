@@ -193,20 +193,11 @@
               >Repository<span class="text-danger"> *</span></label
             >
             <DropDown
+              :id="'repository'"
               :items="repositoryDropDownList"
               :passedItem="repository.id"
               @output="repositoryDropDownOutput"
             />
-            <!-- <input
-              type="text"
-              id="repository"
-              v-model="repository.name"
-              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              :class="{
-                'cursor-not-allowed dark:text-neutral-400': repository.id,
-              }"
-              :disabled="repository.id"
-            /> -->
           </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -232,16 +223,12 @@
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
               ><span>Branch</span><span class="text-danger"> *</span></label
             >
-            <DropDown :items="branchesList" @output="branchesDropDownOutput" />
-            <!-- <input
-              type="text"
-              id="branch"
-              v-model="file.branch"
-              autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              placeholder="main"
-              required
-            /> -->
+            <DropDown
+              :id="'branch'"
+              :items="branchesList"
+              :loading="loading.branchLoading"
+              @output="branchesDropDownOutput"
+            />
           </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -339,7 +326,10 @@ let modal = ref({
   actionName: "",
   showCancel: true,
 });
-let branchesList: { name: string | number; value: string | number }[] = [];
+let loading = ref({
+  branchLoading: false,
+});
+let branchesList: Ref = ref([]);
 let repoId = route.query.repo
   ? typeof route.query.repo == "number"
     ? route.query.repo
@@ -353,12 +343,6 @@ const repository = ref(
     ? store.state.repository.repositories.filter((r) => r.id == repoId)[0]
     : Repository.createEmptyObject()
 );
-
-if (repository.value.id != 0) {
-  branchesList = repository.value.branches.map((branch) => {
-    return { name: branch.name, value: branch.name };
-  });
-}
 
 const files = ref(
   repoId
@@ -383,7 +367,7 @@ const repositoryDropDownList = store.state.repository.repositories.map(
 );
 
 // Methods
-function openFileModal(operation: string) {
+async function openFileModal(operation: string) {
   modal.value.operation = operation;
   switch (operation) {
     case "add":
@@ -394,7 +378,6 @@ function openFileModal(operation: string) {
       modal.value.showCancel = true;
       break;
   }
-
   showModal("fileModal");
 }
 
@@ -403,12 +386,24 @@ async function modalProcess() {
   return null;
 }
 
-function repositoryDropDownOutput(output: {
+async function repositoryDropDownOutput(output: {
   name: string | number;
   value: string | number;
 }) {
   file.value.repository =
     typeof output.value == "number" ? output.value : parseInt(output.value);
+
+  if (output.value != 0) {
+    loading.value.branchLoading = true;
+    const branches: _Branch[] = await store.dispatch(
+      "repository/loadBranches",
+      store.state.repository.repositories.filter((r) => r.id == output.value)[0]
+    );
+    branches.map((branch) =>
+      branchesList.value.push({ name: branch.name, value: branch.name })
+    );
+    loading.value.branchLoading = false;
+  }
 }
 
 function branchesDropDownOutput(output: {
@@ -417,4 +412,19 @@ function branchesDropDownOutput(output: {
 }) {
   file.value.branch = output.value;
 }
+
+onMounted(async () => {
+  // Load branches
+  if (repository.value.id != 0) {
+    loading.value.branchLoading = true;
+    const branches: _Branch[] = await store.dispatch(
+      "repository/loadBranches",
+      repository.value
+    );
+    branches.map((branch) =>
+      branchesList.value.push({ name: branch.name, value: branch.name })
+    );
+    loading.value.branchLoading = false;
+  }
+});
 </script>
