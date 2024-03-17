@@ -9,7 +9,7 @@
       class="flex bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
       :class="{ 'cursor-not-allowed': passedItem }"
       :disabled="!(passedItem == null || passedItem == 0)"
-      @click="jQuery(`#inputDropDown-${id}`).toggleClass('hidden')"
+      @click="clickEvent()"
       placeholder="Search and select an item"
     />
 
@@ -65,6 +65,7 @@ import {
 let searchText: Ref = ref("");
 let selectedItem: Ref = ref(null);
 let itemList: Ref = ref([]);
+let previousSelection: Ref = ref(null);
 
 const props = defineProps({
   id: String || Number,
@@ -106,4 +107,10 @@ onMounted(() => {
     : "";
   itemList.value = props.items;
 });
+
+function clickEvent() {
+  previousSelection.value = selectedItem.value;
+  itemList.value = props.items;
+  jQuery(`#inputDropDown-${props.id}`).toggleClass("hidden");
+}
 </script>

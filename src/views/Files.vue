@@ -395,6 +395,7 @@ async function repositoryDropDownOutput(output: {
 
   if (output.value != 0) {
     loading.value.branchLoading = true;
+    branchesList.value = [];
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
       store.state.repository.repositories.filter((r) => r.id == output.value)[0]
