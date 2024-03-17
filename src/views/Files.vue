@@ -338,7 +338,7 @@ let repoId = route.query.repo
 
 let file: Ref = ref(File.createEmptyObject());
 
-let repository = ref(
+const repository = ref(
   repoId
     ? store.state.repository.repositories.filter((r) => r.id == repoId)[0]
     : Repository.createEmptyObject()
@@ -350,7 +350,7 @@ const files = ref(
     : store.state.file.files
 );
 
-let breadCrumbPaths = [
+const breadCrumbPaths = [
   { name: "Repositories", icon: "fa-home", url: "/repositories" },
   {
     name: `Files${repository.value.name ? ` (${repository.value.name})` : ""}`,
@@ -365,22 +365,6 @@ const repositoryDropDownList = store.state.repository.repositories.map(
     return { name: repo.name, value: repo.id };
   }
 );
-
-// Watch
-watch(route, async () => {
-  repository.value = Repository.createEmptyObject();
-  repoId = 0;
-  breadCrumbPaths = [
-    { name: "Repositories", icon: "fa-home", url: "/repositories" },
-    {
-      name: `Files${
-        repository.value.name ? ` (${repository.value.name})` : ""
-      }`,
-      icon: "fa-file",
-      url: `/files${repoId ? `?repo=${repoId}` : ""}`,
-    },
-  ];
-});
 
 // Methods
 async function openFileModal(operation: string) {

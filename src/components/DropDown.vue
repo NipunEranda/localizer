@@ -97,13 +97,6 @@ watch(searchText, (newValue) => {
   } else itemList.value = props.items;
 });
 
-watch(
-  () => props.passedItem,
-  (newValue) => {
-    if (newValue == 0) searchText.value = "";
-  }
-);
-
 const emits = defineEmits(["output"]);
 
 onMounted(() => {
