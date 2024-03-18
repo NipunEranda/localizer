@@ -228,6 +228,7 @@
               :items="branchesList"
               :loading="loading.branchLoading"
               @output="branchesDropDownOutput"
+              ref="brancheDropDownRef"
             />
           </div>
         </div>
@@ -366,6 +367,8 @@ const repositoryDropDownList = store.state.repository.repositories.map(
   }
 );
 
+const brancheDropDownRef = ref(null);
+
 // Methods
 async function openFileModal(operation: string) {
   modal.value.operation = operation;
@@ -396,6 +399,11 @@ async function repositoryDropDownOutput(output: {
   if (output.value != 0) {
     loading.value.branchLoading = true;
     branchesList.value = [];
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    brancheDropDownRef.value?.emptySearchValue();
+
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
       store.state.repository.repositories.filter((r) => r.id == output.value)[0]

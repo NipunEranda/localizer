@@ -55,6 +55,7 @@ import jQuery from "jquery";
 import {
   /*toRefs,*/ defineProps,
   defineEmits,
+  defineExpose,
   onMounted,
   PropType,
   Ref,
@@ -98,6 +99,9 @@ watch(searchText, (newValue) => {
 });
 
 const emits = defineEmits(["output"]);
+defineExpose({
+  emptySearchValue,
+});
 
 onMounted(() => {
   searchText.value = props.passedItem
@@ -112,5 +116,9 @@ function clickEvent() {
   previousSelection.value = selectedItem.value;
   itemList.value = props.items;
   jQuery(`#inputDropDown-${props.id}`).toggleClass("hidden");
+}
+
+function emptySearchValue() {
+  searchText.value = "";
 }
 </script>
