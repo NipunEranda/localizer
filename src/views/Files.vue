@@ -197,6 +197,7 @@
               :items="repositoryDropDownList"
               :passedItem="repository.id"
               @output="repositoryDropDownOutput"
+              ref="repositoryDropDownRef"
             />
           </div>
         </div>
@@ -228,6 +229,7 @@
               :items="branchesList"
               :loading="loading.branchLoading"
               @output="branchesDropDownOutput"
+              ref="branchesDropDownRef"
             />
           </div>
         </div>
@@ -310,67 +312,71 @@ import { onMounted, watch, ref, Ref } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
-import { showModal } from "@/utils";
+import { clearDropDowns, showModal } from "@/utils";
 import { File, _File } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
 
 // Data
-const store = useStore(key);
-const route = useRoute();
-let searchText = ref("");
-let modal = ref({
-  modalTitle: "",
-  operation: "",
-  actionName: "",
-  showCancel: true,
-});
-let loading = ref({
-  branchLoading: false,
-});
-let branchesList: Ref = ref([]);
-let repoId = route.query.repo
-  ? typeof route.query.repo == "number"
-    ? route.query.repo
-    : parseInt(route.query.repo.toString())
-  : 0;
+const store = useStore(key),
+  route = useRoute();
 
-let file: Ref = ref(File.createEmptyObject());
+let searchText = ref(""),
+  modal = ref({
+    modalTitle: "",
+    operation: "",
+    actionName: "",
+    showCancel: true,
+  }),
+  loading = ref({
+    branchLoading: false,
+  }),
+  branchesList: Ref = ref([]),
+  repoId = route.query.repo
+    ? typeof route.query.repo == "number"
+      ? route.query.repo
+      : parseInt(route.query.repo.toString())
+    : 0,
+  file: Ref = ref(File.createEmptyObject()),
+  branchesDropDownRef: Ref = ref({}),
+  repositoryDropDownRef: Ref = ref({});
 
 const repository = ref(
-  repoId
-    ? store.state.repository.repositories.filter((r) => r.id == repoId)[0]
-    : Repository.createEmptyObject()
-);
-
-const files = ref(
-  repoId
-    ? store.state.file.files.filter((f) => f.repository == repoId)
-    : store.state.file.files
-);
-
-const breadCrumbPaths = [
-  { name: "Repositories", icon: "fa-home", url: "/repositories" },
-  {
-    name: `Files${repository.value.name ? ` (${repository.value.name})` : ""}`,
-    icon: "fa-file",
-    url: `/files${repoId ? `?repo=${repoId}` : ""}`,
-  },
-];
+    repoId
+      ? store.state.repository.repositories.filter((r) => r.id == repoId)[0]
+      : Repository.createEmptyObject()
+  ),
+  files = ref(
+    repoId
+      ? store.state.file.files.filter((f) => f.repository == repoId)
+      : store.state.file.files
+  ),
+  breadCrumbPaths = ref([
+    { name: "Repositories", icon: "fa-home", url: "/repositories" },
+    {
+      name: `Files${
+        repository.value.name ? ` (${repository.value.name})` : ""
+      }`,
+      icon: "fa-file",
+      url: `/files${repoId ? `?repo=${repoId}` : ""}`,
+    },
+  ]),
+  repositoryDropDownList = store.state.repository.repositories.map((repo) => {
+    return { name: repo.name, value: repo.id };
+  });
 
 let filterredFiles = ref(files);
-const repositoryDropDownList = store.state.repository.repositories.map(
-  (repo) => {
-    return { name: repo.name, value: repo.id };
-  }
-);
 
 // Methods
 async function openFileModal(operation: string) {
   modal.value.operation = operation;
   switch (operation) {
     case "add":
+      console.log(repository.value);
+      if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
+      clearDropDowns(branchesDropDownRef);
+
       file.value = File.createEmptyObject();
       file.value.repository = repository.value.id;
       modal.value.modalTitle = "New File";
@@ -395,6 +401,10 @@ async function repositoryDropDownOutput(output: {
 
   if (output.value != 0) {
     loading.value.branchLoading = true;
+    branchesList.value = [];
+
+    clearDropDowns(branchesDropDownRef);
+
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
       store.state.repository.repositories.filter((r) => r.id == output.value)[0]
@@ -412,6 +422,21 @@ function branchesDropDownOutput(output: {
 }) {
   file.value.branch = output.value;
 }
+
+// Events
+watch(
+  () => route.fullPath,
+  (newValue) => {
+    if (newValue == "/files") {
+      breadCrumbPaths.value[1] = {
+        name: `Files`,
+        icon: "fa-file",
+        url: `/files`,
+      };
+      repository.value = Repository.createEmptyObject();
+    }
+  }
+);
 
 onMounted(async () => {
   // Load branches

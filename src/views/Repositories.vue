@@ -84,6 +84,7 @@
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
+                  @click="openRepository(repo)"
                   >Open Repository</a
                 >
                 <a
@@ -133,6 +134,10 @@ watch(searchText, (newValue) => {
   } else
     filterredRepositories = ref(jQuery.extend(true, [], repositories.value));
 });
+
+function openRepository(repo) {
+  window.open(repo.html_url, "_blank");
+}
 
 onMounted(async () => {
   showLoadingScreen();

@@ -1,10 +1,10 @@
-import jQuery from "jquery";
+import $ from "jquery";
 
 // Hide menues after clicking outside
 document.addEventListener("mouseup", function (event) {
   // Hide header profile dropdown menu
   if (!event.target.id.includes("header-profile")) {
-    jQuery(`#header-profile-menu`).removeClass("hidden").addClass("hidden");
+    $(`#header-profile-menu`).removeClass("hidden").addClass("hidden");
   }
 
   // Hide table row menus
@@ -15,8 +15,8 @@ document.addEventListener("mouseup", function (event) {
     )
   ) {
     if (!event.target.id.includes("menu-item")) {
-      jQuery(".row-menues").map((id) =>
-        jQuery(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
+      $(".row-menues").map((id) =>
+        $(`#row-menu-${id}`).removeClass("hidden").addClass("hidden")
       );
     }
   }
@@ -28,6 +28,18 @@ document.addEventListener("mouseup", function (event) {
       event.target.id.includes("inputDropDown")
     )
   ) {
-    jQuery("[name='inputDropDown']").removeClass("hidden").addClass("hidden");
+    $("[name='inputDropDown']").removeClass("hidden").addClass("hidden");
+  }
+
+  if (event.target.id.includes("dropDownInput")) {
+    Object.keys($("[name='inputDropDown']"))
+      .splice(0, Object.keys($("[name='inputDropDown']")).length - 2)
+      .map((i) => {
+        const elementName = $("[name='inputDropDown']")[i].id.split("-")[1];
+        if (elementName != event.target.name)
+          $(`#inputDropDown-${elementName}`)
+            .removeClass("hidden")
+            .addClass("hidden");
+      });
   }
 });
