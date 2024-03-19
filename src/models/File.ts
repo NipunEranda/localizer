@@ -11,7 +11,7 @@ export interface _File {
   from: string;
   to: string;
   owner: _User | null;
-  workspace: number;
+  workspace: _Workspace | null;
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: _User | null;
@@ -28,7 +28,7 @@ export class File implements _File {
   from: string;
   to: string;
   owner: _User | null;
-  workspace: number;
+  workspace: _Workspace | null;
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: _User | null;
@@ -44,7 +44,7 @@ export class File implements _File {
     from: string,
     to: string,
     owner: _User | null = null,
-    workspace: number,
+    workspace: _Workspace | null = null,
     createdOn: Date = new Date()
   ) {
     this.name = name;
@@ -80,6 +80,6 @@ export class File implements _File {
   }
 
   static createEmptyObject() {
-    return new File("", 0, "", 0, null, "", "", "", null, 0, new Date());
+    return new File("", 0, "", 0, null, "", "", "", null, null, new Date());
   }
 }

@@ -313,7 +313,7 @@ import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
-import { File, _File } from "@/models/File";
+import { File } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
@@ -373,7 +373,6 @@ async function openFileModal(operation: string) {
   modal.value.operation = operation;
   switch (operation) {
     case "add":
-      console.log(repository.value);
       if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
       clearDropDowns(branchesDropDownRef);
 

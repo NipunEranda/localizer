@@ -53,8 +53,9 @@
 import { store } from "@/store";
 import jQuery from "jquery";
 import {
-  /*toRefs,*/ defineProps,
-  defineEmits,
+  // toRefs,
+  defineProps,
+  // defineEmits,
   defineExpose,
   onMounted,
   PropType,
@@ -98,7 +99,7 @@ watch(searchText, (newValue) => {
   } else itemList.value = props.items;
 });
 
-const emits = defineEmits(["output"]);
+// const emit = defineEmits(["output"]);
 defineExpose({
   emptySearchValue,
 });
