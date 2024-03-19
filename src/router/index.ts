@@ -12,13 +12,15 @@ router.beforeEach((to /*, from*/) => {
   const store = useStore(key);
 
   if (store.state.auth) {
-    if (!store.state.auth.currentUser && to.name !== "index") return "/";
-    if (store.state.auth.currentUser && to.name == "index")
+    if (store.state.auth.currentUser._id == "" && to.name !== "index")
+      return "/";
+    if (store.state.auth.currentUser._id != "" && to.name == "index")
       return "/workspaces";
   }
 
   if (to.name == "workspaces")
-    if (store.state.workspace.defaultWorkspace) router.push("/dashboard");
+    if (store.state.workspace.defaultWorkspace._id != "")
+      router.push("/dashboard");
 });
 
 export default router;

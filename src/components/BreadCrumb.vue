@@ -16,7 +16,7 @@
           <span> <fai :icon="path.icon" class="mr-2" /> {{ path.name }}</span>
           <fai
             icon="fa-chevron-right"
-            v-if="p != paths.length - 1"
+            v-if="p != props.paths.length - 1"
             class="ml-2"
           />
         </a>

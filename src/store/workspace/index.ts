@@ -5,14 +5,14 @@ import { Commit, ActionContext } from "vuex";
 
 export interface WorkspaceState {
   workspaces: Workspace[];
-  defaultWorkspace: Workspace | null;
+  defaultWorkspace: Workspace;
 }
 
 const WorkspaceModule = {
   namespaced: true,
   state: (): WorkspaceState => ({
     workspaces: [],
-    defaultWorkspace: null,
+    defaultWorkspace: Workspace.createEmptyObject(),
   }),
   getters: {
     getWorkspaces(state: WorkspaceState) {
@@ -112,7 +112,7 @@ const WorkspaceModule = {
 const getDefaultState = () => {
   return {
     workspaces: [],
-    defaultWorkspace: null,
+    defaultWorkspace: Workspace.createEmptyObject(),
   };
 };
 
