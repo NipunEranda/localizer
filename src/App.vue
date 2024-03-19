@@ -20,8 +20,7 @@ import { useRoute } from "vue-router";
 import { ref, watch } from "vue";
 import { useStore } from "vuex";
 import { key } from "./store";
-import jQuery from "jquery";
-import "./utils/uiTools.js";
+import "@/utils/uiTools";
 
 const route = useRoute();
 const store = useStore(key);

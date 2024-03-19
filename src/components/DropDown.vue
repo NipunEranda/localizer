@@ -4,7 +4,7 @@
       type="text"
       autocomplete="off"
       id="dropDownInput"
-      name="dropDownInput"
+      :name="id"
       v-model="searchText"
       class="flex bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
       :class="{ 'cursor-not-allowed': passedItem }"
