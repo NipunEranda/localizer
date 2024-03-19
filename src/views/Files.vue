@@ -108,7 +108,7 @@
           ></td>
           <td v-text="file.branch" class="px-6 py-4"></td>
           <td v-text="file.type" class="px-6 py-4 text-right"></td>
-          <td v-text="file.owner?.name" class="px-6 py-4 text-right"></td>
+          <td v-text="file.owner" class="px-6 py-4 text-right"></td>
           <td v-text="file.createdOn" class="px-6 py-4 text-right"></td>
           <td
             @click="jQuery(`#row-menu-${f}`).toggleClass('hidden')"
@@ -172,17 +172,18 @@
         <div class="flex flex-wrap -mx-3 mb-3">
           <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label
-              for="name"
+              for="fileUrl"
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
-              ><span>File Name</span><span class="text-danger"> *</span></label
+              ><span>File Url</span><span class="text-danger"> *</span></label
             >
             <input
               type="text"
-              id="name"
-              v-model="file.name"
+              id="fileUrl"
+              v-model="file.fileUrl"
+              @keyup="detectFileType"
               autocomplete="off"
               class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              placeholder="exampleFile.js"
+              placeholder="https://github.com/org/repo/blob/branch/file.extension"
               required
             />
           </div>
@@ -204,17 +205,17 @@
         <div class="flex flex-wrap -mx-3 mb-6">
           <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label
-              for="fileUrl"
+              for="name"
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
-              ><span>File Url</span><span class="text-danger"> *</span></label
+              ><span>File Name</span><span class="text-danger"> *</span></label
             >
             <input
               type="text"
-              id="fileUrl"
-              v-model="file.fileUrl"
+              id="name"
+              v-model="file.name"
               autocomplete="off"
               class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              placeholder="https://github.com/org/repo/blob/branch/file.extension"
+              placeholder="exampleFile.js"
               required
             />
           </div>
@@ -313,14 +314,16 @@ import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
-import { File } from "@/models/File";
+import { File, _File } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
 
 // Data
 const store = useStore(key),
-  route = useRoute();
+  route = useRoute(),
+  user = store.state.auth.currentUser,
+  workspace = store.state.workspace.defaultWorkspace;
 
 let searchText = ref(""),
   modal = ref({
@@ -338,7 +341,7 @@ let searchText = ref(""),
       ? route.query.repo
       : parseInt(route.query.repo.toString())
     : 0,
-  file: Ref = ref(File.createEmptyObject()),
+  file: Ref<_File> = ref(File.createEmptyObject(user._id, workspace._id)),
   branchesDropDownRef: Ref = ref({}),
   repositoryDropDownRef: Ref = ref({});
 
@@ -376,7 +379,7 @@ async function openFileModal(operation: string) {
       if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
       clearDropDowns(branchesDropDownRef);
 
-      file.value = File.createEmptyObject();
+      file.value = File.createEmptyObject(user._id, workspace._id);
       file.value.repository = repository.value.id;
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
@@ -412,6 +415,34 @@ async function repositoryDropDownOutput(output: {
       branchesList.value.push({ name: branch.name, value: branch.name })
     );
     loading.value.branchLoading = false;
+  }
+}
+
+function detectFileType() {
+  const fileName =
+    file.value.fileUrl.split("/")[file.value.fileUrl.split("/").length - 1];
+  if (fileName.includes(".") && file.value.fileUrl.split("/").length == 8)
+    file.value.name = fileName;
+  else file.value.name = "";
+
+  if (file.value.name != "") {
+    switch (file.value.name.split(".")[1]) {
+      case "js":
+        file.value.type = "Javascript";
+        break;
+      case "fr":
+        file.value.type = "C++";
+        break;
+      case "properties":
+        file.value.type = "Java";
+        break;
+      case "resx":
+        file.value.type = "C#";
+        break;
+      default:
+        file.value.type = "";
+        break;
+    }
   }
 }
 

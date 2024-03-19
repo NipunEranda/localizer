@@ -5,16 +5,16 @@ export interface _File {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: number;
+  branch: string | number;
   versionId: number | null;
   type: string;
   from: string;
   to: string;
-  owner: _User | null;
-  workspace: _Workspace | null;
+  owner: string;
+  workspace: string;
   createdOn: Date;
   modifiedOn: Date;
-  modifiedBy: _User | null;
+  modifiedBy: string;
   history: Array<string>;
 }
 
@@ -22,29 +22,29 @@ export class File implements _File {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: number;
+  branch: string | number;
   versionId: number | null;
   type: string;
   from: string;
   to: string;
-  owner: _User | null;
-  workspace: _Workspace | null;
+  owner: string;
+  workspace: string;
   createdOn: Date;
   modifiedOn: Date;
-  modifiedBy: _User | null;
+  modifiedBy: string;
   history: Array<string>;
 
   constructor(
     name: string,
     repository: number,
     fileUrl: string,
-    branch: number,
+    branch: string | number,
     versionId: number | null,
     type: string,
     from: string,
     to: string,
-    owner: _User | null = null,
-    workspace: _Workspace | null = null,
+    owner: string,
+    workspace: string,
     createdOn: Date = new Date()
   ) {
     this.name = name;
@@ -79,7 +79,19 @@ export class File implements _File {
     );
   }
 
-  static createEmptyObject() {
-    return new File("", 0, "", 0, null, "", "", "", null, null, new Date());
+  static createEmptyObject(owner: string, workspace: string) {
+    return new File(
+      "",
+      0,
+      "",
+      0,
+      null,
+      "",
+      "",
+      "",
+      owner,
+      workspace,
+      new Date()
+    );
   }
 }

@@ -1,18 +1,18 @@
 import axios from "axios";
 import { State, store } from "../";
-import { _User } from "@/models/Auth";
+import { User, _User } from "@/models/Auth";
 import { Commit, ActionContext } from "vuex";
 import Cookies from "js-cookie";
 
 export interface AuthState {
-  currentUser: _User | null;
+  currentUser: _User;
   users: _User[];
 }
 
 const AuthModule = {
   namespaced: true,
   state: (): AuthState => ({
-    currentUser: null,
+    currentUser: User.createEmptyObject(),
     users: [],
   }),
   getters: {
@@ -66,7 +66,7 @@ const AuthModule = {
 
 const getDefaultState = () => {
   return {
-    currentUser: null,
+    currentUser: User.createEmptyObject(),
     users: [],
   };
 };

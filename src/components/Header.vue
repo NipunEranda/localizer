@@ -71,7 +71,7 @@
                   tabindex="-1"
                   id="menu-item-1"
                   @click="
-                    store.dispatch('workspace/setDefaultWorkspace', null);
+                    store.dispatch('workspace/resetState', null);
                     $router.push('/workspaces');
                   "
                   ><fai icon="fa-network-wired" class="mr-2" />Switch
