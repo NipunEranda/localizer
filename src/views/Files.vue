@@ -92,7 +92,7 @@
           >
             Created On
           </th>
-          <th></th>
+          <th class="w-8"></th>
         </tr>
       </thead>
       <tbody class="">
@@ -119,6 +119,7 @@
               id="menu-button"
               aria-expanded="true"
               aria-haspopup="true"
+              class="m-auto flex"
             />
             <div
               class="hidden row-menues absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -156,7 +157,7 @@
       v-if="filterredFiles.length == 0"
       class="w-full text-sm text-center border-[.1rem] dark:border-neutral-700 min-h-32 dark:text-neutral-400 items-center justify-center grid"
     >
-      Create a file
+      Create a File
     </div>
 
     <Modal

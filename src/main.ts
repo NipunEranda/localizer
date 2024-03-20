@@ -39,6 +39,7 @@ import {
   faFile,
   faHouseChimney,
   faPlus,
+  faLanguage,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -62,7 +63,8 @@ library.add(
   faChevronRight,
   faFile,
   faHouseChimney,
-  faPlus
+  faPlus,
+  faLanguage
 );
 
 createApp(App)
