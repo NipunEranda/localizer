@@ -390,7 +390,14 @@ async function openFileModal(operation: string) {
 }
 
 async function modalProcess() {
-  console.log(file.value);
+  let filesResponse = null;
+  switch (modal.value.operation) {
+    case "add":
+      filesResponse = await store.dispatch("file/addFile", file.value);
+      if (filesResponse) files.value = filesResponse;
+      break;
+  }
+  util.hideModal("fileModal");
   return null;
 }
 
@@ -421,8 +428,7 @@ async function repositoryDropDownOutput(output: {
 function detectFileType() {
   const fileName =
     file.value.fileUrl.split("/")[file.value.fileUrl.split("/").length - 1];
-  if (fileName.includes(".") && file.value.fileUrl.split("/").length == 8)
-    file.value.name = fileName;
+  if (fileName.includes(".")) file.value.name = fileName;
   else file.value.name = "";
 
   if (file.value.name != "") {
@@ -453,24 +459,12 @@ function branchesDropDownOutput(output: {
   file.value.branch = output.value;
 }
 
-// Events
-watch(
-  () => route.fullPath,
-  (newValue) => {
-    if (newValue == "/files") {
-      breadCrumbPaths.value[1] = {
-        name: `Files`,
-        icon: "fa-file",
-        url: `/files`,
-      };
-      repository.value = Repository.createEmptyObject();
-    }
-  }
-);
-
-onMounted(async () => {
-  // Load branches
+async function loadData() {
+  files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id != 0) {
+    files.value = files.value.filter(
+      (f) => f.repository == repository.value.id
+    );
     loading.value.branchLoading = true;
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
@@ -481,5 +475,25 @@ onMounted(async () => {
     );
     loading.value.branchLoading = false;
   }
+}
+
+// Events
+watch(
+  () => route.fullPath,
+  async (newValue) => {
+    if (newValue == "/files") {
+      breadCrumbPaths.value[1] = {
+        name: `Files`,
+        icon: "fa-file",
+        url: `/files`,
+      };
+      repository.value = Repository.createEmptyObject();
+      await loadData();
+    }
+  }
+);
+
+onMounted(async () => {
+  await loadData();
 });
 </script>
