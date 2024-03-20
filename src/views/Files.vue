@@ -459,24 +459,12 @@ function branchesDropDownOutput(output: {
   file.value.branch = output.value;
 }
 
-// Events
-watch(
-  () => route.fullPath,
-  (newValue) => {
-    if (newValue == "/files") {
-      breadCrumbPaths.value[1] = {
-        name: `Files`,
-        icon: "fa-file",
-        url: `/files`,
-      };
-      repository.value = Repository.createEmptyObject();
-    }
-  }
-);
-
-onMounted(async () => {
-  // Load branches
+async function loadData() {
+  files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id != 0) {
+    files.value = files.value.filter(
+      (f) => f.repository == repository.value.id
+    );
     loading.value.branchLoading = true;
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
@@ -487,7 +475,25 @@ onMounted(async () => {
     );
     loading.value.branchLoading = false;
   }
+}
 
-  await store.dispatch("file/loadFiles", null);
+// Events
+watch(
+  () => route.fullPath,
+  async (newValue) => {
+    if (newValue == "/files") {
+      breadCrumbPaths.value[1] = {
+        name: `Files`,
+        icon: "fa-file",
+        url: `/files`,
+      };
+      repository.value = Repository.createEmptyObject();
+      await loadData();
+    }
+  }
+);
+
+onMounted(async () => {
+  await loadData();
 });
 </script>

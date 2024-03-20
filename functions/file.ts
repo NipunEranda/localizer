@@ -9,6 +9,25 @@ import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
 import { _File, fileSchema } from "./models/File";
 
+export const loadFiles = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  try {
+    await connectMongoose();
+    // Get user workspaces
+    const files = await fileSchema.find({
+      workspace: event.queryStringParameters?.workspace,
+      owner: event.queryStringParameters?.owner,
+    });
+    return AppResponse.createObject(200, files, null);
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(500, null, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
 export const addFile = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
@@ -19,7 +38,10 @@ export const addFile = async (
       await fileSchema.create(file);
 
       // Get user workspaces
-      const files = await fileSchema.find({workspace: file.workspace, owner: file.owner});
+      const files = await fileSchema.find({
+        workspace: file.workspace,
+        owner: file.owner,
+      });
       return AppResponse.createObject(200, files, null);
     } else {
       return AppResponse.createObject(400, null, "Missing Data!");
@@ -37,6 +59,11 @@ export const responseHandler = async function (
   try {
     let result: AppResponse | null;
     if (
+      event.path == `${process.env.VUE_APP_API_URL}/file` &&
+      event.httpMethod == "GET"
+    ) {
+      result = await loadFiles(event);
+    } else if (
       event.path == `${process.env.VUE_APP_API_URL}/file` &&
       event.httpMethod == "POST"
     ) {
