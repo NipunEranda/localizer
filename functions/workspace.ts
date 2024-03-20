@@ -72,7 +72,7 @@ export const addWorkspace = async (
       console.log("Workspace added.");
       return AppResponse.createObject(200, workspaces, "Workspace Added!");
     } else {
-      return AppResponse.createObject(400, null, "Mongo db connection failed!");
+      return AppResponse.createObject(400, null, "Missing Data!");
     }
   } catch (e) {
     console.log(e);

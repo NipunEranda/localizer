@@ -33,7 +33,7 @@ const FileModule = {
     setWorkspaces(context: ActionContext<FileState, State>, data: _File[]) {
       context.commit("setWorkspaces", data);
     },
-    async loadWorkspaces(
+    async loadFiles(
       context: ActionContext<FileState, State>
     ): Promise<FileState[] | null> {
       try {
@@ -50,27 +50,26 @@ const FileModule = {
         return null;
       }
     },
-    async addWorkspace(
+    async addFile(
       context: ActionContext<FileState, State>,
       data: FileState
     ): Promise<_File[] | null> {
       try {
-        // const workspaces: Workspace[] = (
-        //   await axios.post(`${process.env.VUE_APP_API_URL}/workspace`, data, {
-        //     headers: {
-        //       withCredentials: true,
-        //     },
-        //   })
-        // ).data.data;
-        // context.commit("setWorkspaces", workspaces);
-        // return workspaces;
-        return [];
+        const files: _File[] = (
+          await axios.post(`${process.env.VUE_APP_API_URL}/file`, data, {
+            headers: {
+              withCredentials: true,
+            },
+          })
+        ).data.data;
+        context.commit("setFiles", files);
+        return files;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;
       }
     },
-    async removeWorkspace(
+    async removeFile(
       context: ActionContext<FileState, State>,
       data: FileState
     ): Promise<_File[] | null> {
@@ -87,6 +86,17 @@ const FileModule = {
         // ).data.data;
         // context.commit("setWorkspaces", workspaces);
         // return workspaces;
+        return [];
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
+    async updateFile(
+      context: ActionContext<FileState, State>,
+      data: FileState
+    ): Promise<_File[] | null> {
+      try {
         return [];
       } catch (e) {
         store.dispatch("handleRequestErrors", e);

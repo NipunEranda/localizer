@@ -390,7 +390,14 @@ async function openFileModal(operation: string) {
 }
 
 async function modalProcess() {
-  console.log(file.value);
+  let filesResponse = null;
+  switch (modal.value.operation) {
+    case "add":
+      filesResponse = await store.dispatch("file/addFile", file.value);
+      if (filesResponse) files.value = filesResponse;
+      break;
+  }
+  util.hideModal("fileModal");
   return null;
 }
 
@@ -421,8 +428,7 @@ async function repositoryDropDownOutput(output: {
 function detectFileType() {
   const fileName =
     file.value.fileUrl.split("/")[file.value.fileUrl.split("/").length - 1];
-  if (fileName.includes(".") && file.value.fileUrl.split("/").length == 8)
-    file.value.name = fileName;
+  if (fileName.includes(".")) file.value.name = fileName;
   else file.value.name = "";
 
   if (file.value.name != "") {
@@ -481,5 +487,7 @@ onMounted(async () => {
     );
     loading.value.branchLoading = false;
   }
+
+  await store.dispatch("file/loadFiles", null);
 });
 </script>
