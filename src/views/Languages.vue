@@ -106,6 +106,41 @@
       :showCancel="modal.showCancel"
       :modalProcess="modalProcess"
     >
+      <!-- Body -->
+      <div>
+        <div class="w-full px-3 mb-6">
+          <label
+            for="name"
+            class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+            ><span>Name</span><span class="text-danger"> *</span></label
+          >
+          <input
+            type="text"
+            id="name"
+            autocomplete="off"
+            v-model="language.name"
+            class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+            placeholder="English"
+            required
+          />
+        </div>
+        <div class="w-full px-3 mb-6 md:mb-0">
+          <label
+            for="code"
+            class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+            ><span>Code</span><span class="text-danger"> *</span></label
+          >
+          <input
+            type="text"
+            id="code"
+            autocomplete="off"
+            v-model="language.code"
+            class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+            placeholder="EN"
+            required
+          />
+        </div>
+      </div>
     </Modal>
   </div>
 </template>
@@ -120,6 +155,7 @@ import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
+import { Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -136,9 +172,9 @@ let searchText = ref(""),
   }),
   breadCrumbPaths = ref([
     { name: "Languages", icon: "fa-language", url: "/languages" },
-  ]);
-
-let filterredLanguages = ref([]); //Replace [] with loaded languages
+  ]),
+  language = ref(Language.createEmptyObject()),
+  filterredLanguages = ref([]); //Replace [] with loaded languages
 
 // Methods
 async function openFileModal(operation: string) {
@@ -154,6 +190,14 @@ async function openFileModal(operation: string) {
 }
 
 async function modalProcess() {
-  console.log("");
+  console.log(language.value);
 }
+
+async function loadData() {
+  const languageReponse = await store.dispatch("language/loadLanguages", null);
+}
+
+onMounted(async () => {
+  await loadData();
+});
 </script>
