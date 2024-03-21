@@ -6,6 +6,7 @@ import AuthModule, { AuthState } from "./auth";
 import WorkspaceModule, { WorkspaceState } from "./workspace";
 import RepositoryModule, { RepositoryState } from "./repositories";
 import FileModule, { FileState } from "./files";
+import LanguageModule, { LanguageState } from "./language";
 
 import createPersistedState from "vuex-persistedstate";
 import router from "@/router";
@@ -16,6 +17,7 @@ export interface State {
   workspace: WorkspaceState;
   repository: RepositoryState;
   file: FileState;
+  language: LanguageState;
   loggedIn: boolean;
 }
 
@@ -29,6 +31,7 @@ export const store = createStore<State>({
     workspace: WorkspaceModule,
     repository: RepositoryModule,
     file: FileModule,
+    language: LanguageModule,
   },
   mutations: {
     setLoggedIn(state: State, data: boolean) {

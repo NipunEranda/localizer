@@ -36,7 +36,7 @@
       </thead>
       <tbody class="">
         <tr
-          v-for="(language, l) in [{ name: 'English', code: 'EN' }]"
+          v-for="(language, l) in filterredLanguages"
           :key="l"
           class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
         >
@@ -99,13 +99,48 @@
     </div>
 
     <Modal
-      :modalId="'fileModal'"
+      :modalId="'languageModal'"
       :modalTitle="modal.modalTitle"
       :operation="modal.operation"
       :actionName="modal.actionName"
       :showCancel="modal.showCancel"
       :modalProcess="modalProcess"
     >
+      <!-- Body -->
+      <div>
+        <div class="w-full px-3 mb-6">
+          <label
+            for="name"
+            class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+            ><span>Name</span><span class="text-danger"> *</span></label
+          >
+          <input
+            type="text"
+            id="name"
+            autocomplete="off"
+            v-model="language.name"
+            class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+            placeholder="English"
+            required
+          />
+        </div>
+        <div class="w-full px-3 mb-6 md:mb-0">
+          <label
+            for="code"
+            class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
+            ><span>Code</span><span class="text-danger"> *</span></label
+          >
+          <input
+            type="text"
+            id="code"
+            autocomplete="off"
+            v-model="language.code"
+            class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+            placeholder="EN"
+            required
+          />
+        </div>
+      </div>
     </Modal>
   </div>
 </template>
@@ -120,6 +155,7 @@ import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
+import { Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -136,9 +172,10 @@ let searchText = ref(""),
   }),
   breadCrumbPaths = ref([
     { name: "Languages", icon: "fa-language", url: "/languages" },
-  ]);
-
-let filterredLanguages = ref([]); //Replace [] with loaded languages
+  ]),
+  language = ref(Language.createEmptyObject()),
+  languages = ref(store.state.language.languages),
+  filterredLanguages = ref(languages); //Replace [] with loaded languages
 
 // Methods
 async function openFileModal(operation: string) {
@@ -150,10 +187,42 @@ async function openFileModal(operation: string) {
       modal.value.showCancel = true;
       break;
   }
-  showModal("fileModal");
+  showModal("languageModal");
 }
 
 async function modalProcess() {
-  console.log("");
+  let languageResponse = null;
+  util.showLoadingScreen();
+  switch (modal.value.operation) {
+    case "add":
+      language.value.workspace = workspace._id;
+      language.value.createdOn = new Date();
+      languageResponse = await store.dispatch(
+        "language/addLanguage",
+        language.value
+      );
+      if (languageResponse) {
+        languages.value = languageResponse;
+        filterredLanguages.value = languages.value;
+      }
+      break;
+  }
+  util.hideLoadingScreen();
+  util.hideModal("languageModal");
 }
+
+async function loadData() {
+  util.showLoadingScreen();
+  const languageReponse = await store.dispatch(
+    "language/loadLanguages",
+    workspace._id
+  );
+  languages.value = languageReponse;
+  filterredLanguages = ref(languages.value);
+  util.hideLoadingScreen();
+}
+
+onMounted(async () => {
+  await loadData();
+});
 </script>
