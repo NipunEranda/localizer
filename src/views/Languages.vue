@@ -36,7 +36,7 @@
       </thead>
       <tbody class="">
         <tr
-          v-for="(language, l) in [{ name: 'English', code: 'EN' }]"
+          v-for="(language, l) in filterredLanguages"
           :key="l"
           class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
         >
@@ -99,7 +99,7 @@
     </div>
 
     <Modal
-      :modalId="'fileModal'"
+      :modalId="'languageModal'"
       :modalTitle="modal.modalTitle"
       :operation="modal.operation"
       :actionName="modal.actionName"
@@ -174,7 +174,8 @@ let searchText = ref(""),
     { name: "Languages", icon: "fa-language", url: "/languages" },
   ]),
   language = ref(Language.createEmptyObject()),
-  filterredLanguages = ref([]); //Replace [] with loaded languages
+  languages = ref(store.state.language.languages),
+  filterredLanguages = ref(languages); //Replace [] with loaded languages
 
 // Methods
 async function openFileModal(operation: string) {
@@ -186,15 +187,39 @@ async function openFileModal(operation: string) {
       modal.value.showCancel = true;
       break;
   }
-  showModal("fileModal");
+  showModal("languageModal");
 }
 
 async function modalProcess() {
-  console.log(language.value);
+  let languageResponse = null;
+  util.showLoadingScreen();
+  switch (modal.value.operation) {
+    case "add":
+      language.value.workspace = workspace._id;
+      language.value.createdOn = new Date();
+      languageResponse = await store.dispatch(
+        "language/addLanguage",
+        language.value
+      );
+      if (languageResponse) {
+        languages.value = languageResponse;
+        filterredLanguages.value = languages.value;
+      }
+      break;
+  }
+  util.hideLoadingScreen();
+  util.hideModal("languageModal");
 }
 
 async function loadData() {
-  const languageReponse = await store.dispatch("language/loadLanguages", null);
+  util.showLoadingScreen();
+  const languageReponse = await store.dispatch(
+    "language/loadLanguages",
+    workspace._id
+  );
+  languages.value = languageReponse;
+  filterredLanguages = ref(languages.value);
+  util.hideLoadingScreen();
 }
 
 onMounted(async () => {

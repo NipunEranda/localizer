@@ -26,10 +26,10 @@ const LanguageModule = {
     resetState(state: LanguageState) {
       Object.assign(state, getDefaultState());
     },
-    setWorkspaces(state: LanguageState, data: Language[]) {
+    setLanguages(state: LanguageState, data: Language[]) {
       state.languages = data;
     },
-    setDefaultWorkspace(state: LanguageState, data: Language) {
+    setDefaultLanguage(state: LanguageState, data: Language) {
       state.defaultLanguage = data;
     },
   },
@@ -37,30 +37,53 @@ const LanguageModule = {
     resetState({ commit }: { commit: Commit }) {
       commit("resetState");
     },
-    setWorkspaces(
+    setLanguages(
       context: ActionContext<LanguageState, State>,
       data: Language[]
     ) {
       context.commit("setLanguages", data);
     },
-    setDefaultWorkspace(
+    setDefaultLanguage(
       context: ActionContext<LanguageState, State>,
       data: Language | null
     ) {
       context.commit("setDefaultLanguage", data);
     },
     async loadLanguages(
-      context: ActionContext<LanguageState, State>
+      context: ActionContext<LanguageState, State>,
+      data: string
+    ): Promise<Language[] | null> {
+      try {
+        if (context.state.languages.length == 0) {
+          const languages: Language[] = (
+            await axios.get(
+              `${process.env.VUE_APP_API_URL}/language?workspace=${data}`,
+              {
+                withCredentials: true,
+              }
+            )
+          ).data.data;
+          context.commit("setLanguages", languages);
+          return languages;
+        }
+        return context.state.languages;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
+    async addLanguage(
+      context: ActionContext<LanguageState, State>,
+      data: Language
     ): Promise<Language[] | null> {
       try {
         const languages: Language[] = (
-          await axios.get(`${process.env.VUE_APP_API_URL}/language`, {
+          await axios.post(`${process.env.VUE_APP_API_URL}/language`, data, {
             withCredentials: true,
           })
         ).data.data;
-        // context.commit("setLanguages", languages);
-        // return languages;
-        return [];
+        context.commit("setLanguages", languages);
+        return languages;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;
