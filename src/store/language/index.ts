@@ -89,6 +89,23 @@ const LanguageModule = {
         return null;
       }
     },
+    async updateLanguage(
+      context: ActionContext<LanguageState, State>,
+      data: Language
+    ): Promise<Language[] | null> {
+      try {
+        const languages: Language[] = (
+          await axios.put(`${process.env.VUE_APP_API_URL}/language`, data, {
+            withCredentials: true,
+          })
+        ).data.data;
+        context.commit("setLanguages", languages);
+        return languages;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
   },
 };
 

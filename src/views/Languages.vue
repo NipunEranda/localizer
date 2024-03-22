@@ -13,7 +13,7 @@
       />
       <button
         class="w-1/6 bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:brightness-125 dark:hover:border-neutral-500 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
-        @click="openFileModal('add')"
+        @click="openFileModal('add', Language.createEmptyObject())"
       >
         <fai icon="fa-plus" />
         <span class="hidden sm:inline ml-2">New File</span>
@@ -38,6 +38,7 @@
           <tr
             v-for="(language, l) in filterredLanguages"
             :key="l"
+            @dblclick="openFileModal('update', language)"
             class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
           >
             <td
@@ -73,6 +74,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('update', language)"
                     >Edit</a
                   >
                   <a
@@ -156,7 +158,7 @@ import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
-import { Language } from "@/models/Language";
+import { Language, _Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -179,14 +181,19 @@ let searchText = ref(""),
   filterredLanguages = ref(languages); //Replace [] with loaded languages
 
 // Methods
-async function openFileModal(operation: string) {
+async function openFileModal(operation: string, obj: _Language) {
   modal.value.operation = operation;
+  language.value = obj;
   switch (operation) {
     case "add":
       modal.value.modalTitle = "New Language";
       modal.value.actionName = "Save";
       modal.value.showCancel = true;
       break;
+    case "update":
+      modal.value.modalTitle = "Update Language";
+      modal.value.actionName = "Update";
+      modal.value.showCancel = true;
   }
   showModal("languageModal");
 }
@@ -200,6 +207,17 @@ async function modalProcess() {
       language.value.createdOn = new Date();
       languageResponse = await store.dispatch(
         "language/addLanguage",
+        language.value
+      );
+      if (languageResponse) {
+        languages.value = languageResponse;
+        filterredLanguages.value = languages.value;
+      }
+      break;
+    case "update":
+      language.value.workspace = workspace._id;
+      languageResponse = await store.dispatch(
+        "language/updateLanguage",
         language.value
       );
       if (languageResponse) {
