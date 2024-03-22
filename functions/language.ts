@@ -55,6 +55,32 @@ export const addLanguage = async (
   }
 };
 
+export const updateLanguage = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  try {
+    await connectMongoose();
+    const data: _Language = event.body ? JSON.parse(event.body) : null;
+    if (data) {
+      await languageSchema.updateOne(
+        { _id: data._id },
+        { $set: { name: data.name, code: data.code } }
+      );
+    }
+    event.queryStringParameters!.workspace = data.workspace;
+    return AppResponse.createObject(
+      200,
+      JSON.parse((await getLanguages(event)).body!).data,
+      null
+    );
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(e.statusCode, e, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
 export const responseHandler = async function (
   event: APIGatewayProxyEvent,
   context: Context
@@ -71,6 +97,11 @@ export const responseHandler = async function (
       event.httpMethod == "POST"
     ) {
       result = await addLanguage(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/language` &&
+      event.httpMethod == "PUT"
+    ) {
+      result = await updateLanguage(event);
     } else {
       return AppResponse.createObject(404, null, "Path doesn't exists");
     }

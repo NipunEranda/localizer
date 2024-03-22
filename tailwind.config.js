@@ -5,12 +5,6 @@ module.exports = {
   darkMode: 'class', // or 'class'
   theme: {
     extend: {
-      maxHeight: {
-        table1: "48.5rem",
-      },
-      minHeight: {
-        screenWH: "55.3rem",
-      },
       colors: {
         accentColor: "#5ecdbc",
         "accentColor-hover": "#489d90",
