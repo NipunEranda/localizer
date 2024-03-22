@@ -1,4 +1,5 @@
 export interface _Language {
+  _id: string;
   name: string;
   code: string;
   workspace: string;
@@ -8,6 +9,7 @@ export interface _Language {
 }
 
 export class Language {
+  _id: string;
   name: string;
   code: string;
   workspace: string;
@@ -16,6 +18,7 @@ export class Language {
   isActive: boolean;
 
   constructor(obj: _Language) {
+    this._id = obj._id;
     this.name = obj.name;
     this.code = obj.code;
     this.workspace = obj.workspace;
@@ -30,6 +33,7 @@ export class Language {
 
   static createEmptyObject() {
     return new Language({
+      _id: "",
       name: "",
       code: "",
       workspace: "",

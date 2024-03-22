@@ -49,6 +49,8 @@ export const store = createStore<State>({
       this.commit("auth/resetState");
       this.commit("workspace/resetState");
       this.commit("repository/resetState");
+      this.commit("file/resetState");
+      this.commit("language/resetState");
       this.commit("setLoggedIn", false);
       this.state.loggedIn = false;
       location.href = "/";

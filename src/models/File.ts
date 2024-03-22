@@ -2,6 +2,7 @@ import { _User } from "./Auth";
 import { _Workspace } from "./Workspace";
 
 export interface _File {
+  _id: string;
   name: string;
   repository: number;
   fileUrl: string;
@@ -19,6 +20,7 @@ export interface _File {
 }
 
 export class File implements _File {
+  _id: string;
   name: string;
   repository: number;
   fileUrl: string;
@@ -35,6 +37,7 @@ export class File implements _File {
   history: Array<string>;
 
   constructor(
+    _id: string,
     name: string,
     repository: number,
     fileUrl: string,
@@ -47,6 +50,7 @@ export class File implements _File {
     workspace: string,
     createdOn: Date = new Date()
   ) {
+    this._id = _id;
     this.name = name;
     this.repository = repository;
     this.fileUrl = fileUrl;
@@ -65,6 +69,7 @@ export class File implements _File {
 
   static createObject(obj: _File) {
     return new File(
+      obj._id,
       obj.name,
       obj.repository,
       obj.fileUrl,
@@ -81,6 +86,7 @@ export class File implements _File {
 
   static createEmptyObject(owner: string, workspace: string) {
     return new File(
+      "",
       "",
       0,
       "",

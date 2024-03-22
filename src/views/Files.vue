@@ -321,6 +321,7 @@ import { File, _File } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
+import mongoose from "mongoose";
 
 // Data
 const store = useStore(key),
@@ -384,6 +385,7 @@ async function openFileModal(operation: string) {
 
       file.value = File.createEmptyObject(user._id, workspace._id);
       file.value.repository = repository.value.id;
+      file.value._id = new mongoose.Types.ObjectId().toHexString();
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
       modal.value.showCancel = true;

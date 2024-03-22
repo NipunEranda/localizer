@@ -1,7 +1,7 @@
 import mongoose, { ObjectId } from "mongoose";
 
 export interface _File {
-  _id: ObjectId;
+  _id: string;
   name: string;
   repository: number;
   fileUrl: string;
@@ -19,7 +19,7 @@ export interface _File {
 }
 
 export interface FileDocument extends _File, mongoose.Document {
-  _id: ObjectId;
+  _id: string;
   name: string;
   repository: number;
   fileUrl: string;

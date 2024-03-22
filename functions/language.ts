@@ -8,6 +8,7 @@ import {
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
 import { _Language, languageSchema } from "./models/Language";
+import mongoose from "mongoose";
 
 export const getLanguages = async (
   event: APIGatewayProxyEvent
@@ -17,6 +18,8 @@ export const getLanguages = async (
     if (event.queryStringParameters) {
       const languages = await languageSchema.find({
         workspace: event.queryStringParameters.workspace,
+        isActive: true,
+        isDeleted: false
       });
       return AppResponse.createObject(200, languages, null);
     } else return AppResponse.createObject(400, null, "Workspace required!");
@@ -45,8 +48,8 @@ export const addLanguage = async (
         JSON.parse((await getLanguages(event)).body!).data,
         null
       );
-    } else
-      return AppResponse.createObject(400, null, "Language data required!");
+    }
+    return AppResponse.createObject(400, null, "Language data required!");
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(e.statusCode, e, e.message);
@@ -66,13 +69,39 @@ export const updateLanguage = async (
         { _id: data._id },
         { $set: { name: data.name, code: data.code } }
       );
+      event.queryStringParameters!.workspace = data.workspace;
+      return AppResponse.createObject(
+        200,
+        JSON.parse((await getLanguages(event)).body!).data,
+        null
+      );
     }
-    event.queryStringParameters!.workspace = data.workspace;
-    return AppResponse.createObject(
-      200,
-      JSON.parse((await getLanguages(event)).body!).data,
-      null
-    );
+    return AppResponse.createObject(400, null, "Please provide language info!");
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(e.statusCode, e, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
+export const removeLanguage = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  try {
+    await connectMongoose();
+    if (event.queryStringParameters!.id) {
+      await languageSchema.updateOne(
+        { _id: event.queryStringParameters!.id },
+        { $set: { isDeleted: true, isActive: false } }
+      );
+      return AppResponse.createObject(
+        200,
+        JSON.parse((await getLanguages(event)).body!).data,
+        null
+      );
+    }
+    return AppResponse.createObject(400, null, "Please provide language id!");
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(e.statusCode, e, e.message);
@@ -102,6 +131,11 @@ export const responseHandler = async function (
       event.httpMethod == "PUT"
     ) {
       result = await updateLanguage(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/language` &&
+      event.httpMethod == "DELETE"
+    ) {
+      result = await removeLanguage(event);
     } else {
       return AppResponse.createObject(404, null, "Path doesn't exists");
     }

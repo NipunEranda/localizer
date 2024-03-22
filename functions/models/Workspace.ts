@@ -1,14 +1,14 @@
 import mongoose, { ObjectId } from "mongoose";
 
 export interface _Workspace {
-  _id: ObjectId;
+  _id: string;
   name: string;
   deleted: boolean;
   isActive: boolean;
 }
 
 export interface WorkspaceDocument extends _Workspace, mongoose.Document {
-  _id: ObjectId;
+  _id: string;
   name: string;
   deleted: boolean;
   isActive: boolean;

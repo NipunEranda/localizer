@@ -83,6 +83,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('delete', language)"
                     >Delete</a
                   >
                 </div>
@@ -159,6 +160,7 @@ import { clearDropDowns, showModal } from "@/utils";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Language, _Language } from "@/models/Language";
+import mongoose from "mongoose";
 
 // Data
 const store = useStore(key),
@@ -194,6 +196,12 @@ async function openFileModal(operation: string, obj: _Language) {
       modal.value.modalTitle = "Update Language";
       modal.value.actionName = "Update";
       modal.value.showCancel = true;
+      break;
+    case "delete":
+      modal.value.modalTitle = "Remove Language";
+      modal.value.actionName = "Remove";
+      modal.value.showCancel = true;
+      break;
   }
   showModal("languageModal");
 }
@@ -203,6 +211,7 @@ async function modalProcess() {
   util.showLoadingScreen();
   switch (modal.value.operation) {
     case "add":
+      language.value._id = new mongoose.Types.ObjectId().toHexString();
       language.value.workspace = workspace._id;
       language.value.createdOn = new Date();
       languageResponse = await store.dispatch(
@@ -218,6 +227,16 @@ async function modalProcess() {
       language.value.workspace = workspace._id;
       languageResponse = await store.dispatch(
         "language/updateLanguage",
+        language.value
+      );
+      if (languageResponse) {
+        languages.value = languageResponse;
+        filterredLanguages.value = languages.value;
+      }
+      break;
+    case "delete":
+      languageResponse = await store.dispatch(
+        "language/removeLanguage",
         language.value
       );
       if (languageResponse) {

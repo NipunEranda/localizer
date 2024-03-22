@@ -23,6 +23,6 @@ export class Workspace {
   }
 
   static createEmptyObject() {
-    return new Workspace("", "", false, false);
+    return new Workspace("", "", false, true);
   }
 }
