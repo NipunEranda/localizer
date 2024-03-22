@@ -93,12 +93,10 @@ import router from "@/router";
 import { onMounted, ref } from "vue";
 import { key } from "../store";
 import { useStore } from "vuex";
+import { Workspace } from "@/models/Workspace";
+import mongoose from "mongoose";
 
-const workspace = {
-  name: "",
-  deleted: false,
-  isActive: true,
-};
+const workspace = ref(Workspace.createEmptyObject());
 
 const store = useStore(key);
 let workspaces = ref(store.state.workspace.workspaces);
@@ -123,7 +121,11 @@ async function modalProcess() {
     let response;
     switch (operation.value) {
       case "add":
-        response = await store.dispatch("workspace/addWorkspace", workspace);
+        workspace.value._id = new mongoose.Types.ObjectId().toHexString();
+        response = await store.dispatch(
+          "workspace/addWorkspace",
+          workspace.value
+        );
         if (response) workspaces.value = response;
         util.hideModal("workspaceModal");
         break;

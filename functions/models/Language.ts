@@ -1,7 +1,7 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose, { Mongoose, ObjectId } from "mongoose";
 
 export interface _Language {
-  _id: ObjectId;
+  _id: string,
   name: string;
   code: string;
   workspace: string;
@@ -11,7 +11,7 @@ export interface _Language {
 }
 
 export interface LanguageDocument extends _Language, mongoose.Document {
-  _id: ObjectId;
+  _id: string;
   name: string;
   code: string;
   workspace: string;

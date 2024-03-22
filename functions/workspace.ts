@@ -45,7 +45,6 @@ export const addWorkspace = async (
     await connectMongoose();
     if (event.body) {
       const workspace: _Workspace = JSON.parse(event.body);
-
       // Get User
       let user = await userSchema.findOne({
         _id: event.queryStringParameters?.userId,

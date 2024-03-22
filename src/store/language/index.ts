@@ -106,6 +106,26 @@ const LanguageModule = {
         return null;
       }
     },
+    async removeLanguage(
+      context: ActionContext<LanguageState, State>,
+      data: Language
+    ): Promise<Language[] | null> {
+      try {
+        const languages: Language[] = (
+          await axios.delete(
+            `${process.env.VUE_APP_API_URL}/language?id=${data._id}&workspace=${data.workspace}`,
+            {
+              withCredentials: true,
+            }
+          )
+        ).data.data;
+        context.commit("setLanguages", languages);
+        return languages;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
   },
 };
 

@@ -1,7 +1,7 @@
 import mongoose, { ObjectId } from "mongoose";
 
 export interface _User {
-    _id: ObjectId;
+    _id: string;
     avatar_url: string;
     bio: string;
     company: string;
@@ -20,7 +20,7 @@ export interface _User {
   }
   
   export interface UserDocument extends _User, mongoose.Document {
-    _id: ObjectId;
+    _id: string;
     avatar_url: string;
     bio: string;
     company: string;
