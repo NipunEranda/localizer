@@ -1,5 +1,5 @@
 <template>
-  <div class="relative overflow-x-auto p-1 pt-3">
+  <div class="relative p-1 pt-3">
     <Breadcrumb :paths="breadCrumbPaths" />
 
     <!-- Search bar and operations -->
@@ -21,74 +21,75 @@
     </div>
 
     <!-- Show loaded languages -->
-    <table
-      v-if="filterredLanguages.length > 0"
-      class="w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400 table-auto table-sort"
-    >
-      <thead
-        class="text-xs text-neutral-700 uppercase bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
+    <div class="pb-20" v-if="filterredLanguages.length > 0">
+      <table
+        class="h-full w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400 table-auto table-sort"
       >
-        <tr class="select-none">
-          <th name="name" scope="col" class="px-6 py-3">Name</th>
-          <th name="name" scope="col" class="px-6 py-3">Code</th>
-          <th class="w-8"></th>
-        </tr>
-      </thead>
-      <tbody class="">
-        <tr
-          v-for="(language, l) in filterredLanguages"
-          :key="l"
-          class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
+        <thead
+          class="text-xs text-neutral-700 uppercase bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
         >
-          <td
-            scope="row"
-            class="px-6 py-4 font-medium text-neutral-900 whitespace-nowrap dark:text-white"
-            v-text="language.name"
-          ></td>
-          <td scope="row" v-text="language.code" class="px-6 py-4"></td>
-          <td
-            @click="jQuery(`#row-menu-${l}`).toggleClass('hidden')"
-            id="menu-td"
+          <tr class="select-none">
+            <th name="name" scope="col" class="px-6 py-3">Name</th>
+            <th name="name" scope="col" class="px-6 py-3">Code</th>
+            <th class="w-8"></th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr
+            v-for="(language, l) in filterredLanguages"
+            :key="l"
+            class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
           >
-            <fai
-              icon="fa-bars"
-              id="menu-button"
-              aria-expanded="true"
-              aria-haspopup="true"
-              class="m-auto flex"
-            />
-            <div
-              class="hidden row-menues absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabindex="-1"
-              :id="`row-menu-${l}`"
+            <td
+              scope="row"
+              class="px-6 py-4 font-medium text-neutral-900 whitespace-nowrap dark:text-white"
+              v-text="language.name"
+            ></td>
+            <td scope="row" v-text="language.code" class="px-6 py-4"></td>
+            <td
+              @click="jQuery(`#row-menu-${l}`).toggleClass('hidden')"
+              id="menu-td"
             >
-              <div class="py-1" role="none">
-                <!-- Active: "bg-neutral-100 text-neutral-900", Not Active: "text-neutral-700" -->
-                <a
-                  href="#"
-                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-0"
-                  >Edit</a
-                >
-                <a
-                  href="#"
-                  class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-0"
-                  >Delete</a
-                >
+              <fai
+                icon="fa-bars"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+                class="m-auto flex"
+              />
+              <div
+                class="hidden row-menues absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+                tabindex="-1"
+                :id="`row-menu-${l}`"
+              >
+                <div class="py-1" role="none">
+                  <!-- Active: "bg-neutral-100 text-neutral-900", Not Active: "text-neutral-700" -->
+                  <a
+                    href="#"
+                    class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="menu-item-0"
+                    >Edit</a
+                  >
+                  <a
+                    href="#"
+                    class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="menu-item-0"
+                    >Delete</a
+                  >
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- Show if no languages loaded -->
     <div

@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav
-      class="bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80 z-10"
+      class="h-14 bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80 z-10"
     >
       <div class="flex flex-wrap justify-between items-center mx-auto">
         <a href="/" class="flex items-center">
