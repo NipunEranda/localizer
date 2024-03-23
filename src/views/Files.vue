@@ -1,5 +1,5 @@
 <template>
-  <div class="relative p-1 pt-3">
+  <div class="p-1 pt-3">
     <Breadcrumb :paths="breadCrumbPaths" />
     <div class="flex w-100">
       <input
@@ -277,14 +277,11 @@
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
               ><span>From</span><span class="text-danger"> *</span></label
             >
-            <input
-              type="text"
-              id="from"
-              v-model="file.from"
-              autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              placeholder="English"
-              required
+            <DropDown
+              :id="'fromLanguage'"
+              :items="languagesList"
+              @output="languagesDropDownOutputFromLanguage"
+              ref="languagesFromDropDownRef"
             />
           </div>
           <div class="w-full md:w-1/2 px-3">
@@ -293,14 +290,11 @@
               class="block mb-2 text-xs font-medium text-neutral-700 dark:text-white"
               ><span>To</span><span class="text-danger"> *</span></label
             >
-            <input
-              type="text"
-              id="to"
-              v-model="file.to"
-              autocomplete="off"
-              class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-              placeholder="Spanish"
-              required
+            <DropDown
+              :id="'toLanguage'"
+              :items="languagesList"
+              @output="languagesDropDownOutputToLanguage"
+              ref="languagesToDropDownRef"
             />
           </div>
         </div>
@@ -322,6 +316,7 @@ import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
 import mongoose from "mongoose";
+import { Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -347,7 +342,8 @@ let searchText = ref(""),
     : 0,
   file: Ref<_File> = ref(File.createEmptyObject(user._id, workspace._id)),
   branchesDropDownRef: Ref = ref({}),
-  repositoryDropDownRef: Ref = ref({});
+  repositoryDropDownRef: Ref = ref({}),
+  languagesList: Ref = ref([]);
 
 const repository = ref(
     repoId
@@ -398,8 +394,9 @@ async function modalProcess() {
   let filesResponse = null;
   switch (modal.value.operation) {
     case "add":
-      filesResponse = await store.dispatch("file/addFile", file.value);
-      if (filesResponse) files.value = filesResponse;
+      console.log(file.value);
+      // filesResponse = await store.dispatch("file/addFile", file.value);
+      // if (filesResponse) files.value = filesResponse;
       break;
   }
   util.hideModal("fileModal");
@@ -464,6 +461,20 @@ function branchesDropDownOutput(output: {
   file.value.branch = output.value;
 }
 
+function languagesDropDownOutputFromLanguage(output: {
+  name: string | number;
+  value: string | number;
+}) {
+  file.value.from = output.value.toString();
+}
+
+function languagesDropDownOutputToLanguage(output: {
+  name: string | number;
+  value: string | number;
+}) {
+  file.value.to = output.value.toString();
+}
+
 async function loadData() {
   files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id != 0) {
@@ -480,6 +491,10 @@ async function loadData() {
     );
     loading.value.branchLoading = false;
   }
+
+  store.state.language.languages.map((language) =>
+    languagesList.value.push({ name: language.name, value: language._id })
+  );
 }
 
 // Events

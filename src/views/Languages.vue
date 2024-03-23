@@ -111,7 +111,7 @@
       :modalProcess="modalProcess"
     >
       <!-- Body -->
-      <div>
+      <div v-if="modal.operation == 'add' || modal.operation == 'update'">
         <div class="w-full px-3 mb-6">
           <label
             for="name"
@@ -145,6 +145,7 @@
           />
         </div>
       </div>
+      <div v-if="modal.operation == 'delete'" v-html="modal.modalContent"></div>
     </Modal>
   </div>
 </template>
@@ -173,6 +174,7 @@ let searchText = ref(""),
     modalTitle: "",
     operation: "",
     actionName: "",
+    modalContent: "",
     showCancel: true,
   }),
   breadCrumbPaths = ref([
@@ -199,6 +201,7 @@ async function openFileModal(operation: string, obj: _Language) {
       break;
     case "delete":
       modal.value.modalTitle = "Remove Language";
+      modal.value.modalContent = `Do you want to remove <i><b>${obj.name}</b></i> language?`;
       modal.value.actionName = "Remove";
       modal.value.showCancel = true;
       break;
