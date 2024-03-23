@@ -1,5 +1,5 @@
 <template>
-  <div class="p-1 pt-3">
+  <div class="relative p-1 pt-3">
     <Breadcrumb :paths="breadCrumbPaths" />
     <div class="flex w-100">
       <input
