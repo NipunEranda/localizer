@@ -321,7 +321,7 @@ import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
 import mongoose from "mongoose";
-import { Language } from "@/models/Language";
+import { Language, _Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -383,10 +383,9 @@ async function openFileModal(operation: string, obj: _File) {
   file.value = obj;
   switch (operation) {
     case "add":
-      if (repositoryDropDownRef.value.emptySearchValue)
-        if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
-      if (branchesDropDownRef.value.emptySearchValue)
-        clearDropDowns(branchesDropDownRef);
+      branchesList.value = [];
+      if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
+      clearDropDowns(branchesDropDownRef);
 
       file.value = File.createEmptyObject(user._id, workspace._id);
       file.value.repository = repository.value.id;
@@ -412,14 +411,20 @@ async function openFileModal(operation: string, obj: _File) {
 
 async function modalProcess() {
   let filesResponse = null;
+  util.showLoadingScreen();
   switch (modal.value.operation) {
     case "add":
-      console.log(file.value);
-      // filesResponse = await store.dispatch("file/addFile", file.value);
-      // if (filesResponse) files.value = filesResponse;
+      filesResponse = await store.dispatch("file/addFile", file.value);
+      break;
+    case "delete":
+      filesResponse = await store.dispatch("file/removeFile", file.value);
       break;
   }
+
+  if (filesResponse) files.value = filesResponse;
+  filterredFiles.value = files.value;
   util.hideModal("fileModal");
+  util.hideLoadingScreen();
   return null;
 }
 
@@ -434,8 +439,7 @@ async function repositoryDropDownOutput(output: {
     loading.value.branchLoading = true;
     branchesList.value = [];
 
-    if (branchesDropDownRef.value.emptySearchValue)
-      clearDropDowns(branchesDropDownRef);
+    clearDropDowns(branchesDropDownRef);
 
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",
@@ -497,6 +501,7 @@ function languagesDropDownOutputToLanguage(output: {
 }
 
 async function loadData() {
+  util.showLoadingScreen();
   files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id != 0) {
     files.value = files.value.filter(
@@ -513,9 +518,14 @@ async function loadData() {
     loading.value.branchLoading = false;
   }
 
-  store.state.language.languages.map((language) =>
+  if (store.state.language.languages.length == 0)
+    await store.dispatch("language/loadLanguages", workspace._id);
+
+  store.state.language.languages.map((language: _Language) =>
     languagesList.value.push({ name: language.name, value: language._id })
   );
+
+  util.hideLoadingScreen();
 }
 
 // Events

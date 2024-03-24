@@ -9,7 +9,7 @@ import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
 import { _File, fileSchema } from "./models/File";
 
-export const loadFiles = async (
+export const getFiles = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
   try {
@@ -17,7 +17,8 @@ export const loadFiles = async (
     // Get user workspaces
     const files = await fileSchema.find({
       workspace: event.queryStringParameters?.workspace,
-      owner: event.queryStringParameters?.owner,
+      owner: event.queryStringParameters!.userId,
+      deleted: false
     });
     return AppResponse.createObject(200, files, null);
   } catch (e) {
@@ -49,6 +50,30 @@ export const addFile = async (
   } catch (e) {
     console.log(e);
     return AppResponse.createObject(500, null, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
+export const removeFile = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  try {
+    await connectMongoose();
+    await fileSchema.updateOne(
+      { _id: event.queryStringParameters!.id },
+      { $set: { deleted: true } }
+    );
+    return AppResponse.createObject(
+      200,
+      JSON.parse((await getFiles(event)).body!).data,
+      null
+    );
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(500, null, e.message);
+  } finally {
+    await closeMongooseConnection();
   }
 };
 
@@ -62,12 +87,17 @@ export const responseHandler = async function (
       event.path == `${process.env.VUE_APP_API_URL}/file` &&
       event.httpMethod == "GET"
     ) {
-      result = await loadFiles(event);
+      result = await getFiles(event);
     } else if (
       event.path == `${process.env.VUE_APP_API_URL}/file` &&
       event.httpMethod == "POST"
     ) {
       result = await addFile(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/file` &&
+      event.httpMethod == "DELETE"
+    ) {
+      result = await removeFile(event);
     } else {
       return AppResponse.createObject(404, null, "Path doesn't exists");
     }

@@ -16,7 +16,7 @@ export interface _File {
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: string;
-  isDelete: boolean;
+  deleted: boolean;
   history: Array<string>;
 }
 
@@ -35,7 +35,7 @@ export class File implements _File {
   createdOn: Date;
   modifiedOn: Date;
   modifiedBy: string;
-  isDelete: boolean;
+  deleted: boolean;
   history: Array<string>;
 
   constructor(
@@ -51,7 +51,7 @@ export class File implements _File {
     owner: string,
     workspace: string,
     createdOn: Date = new Date(),
-    isDelete: boolean
+    deleted: boolean
   ) {
     this._id = _id;
     this.name = name;
@@ -67,7 +67,7 @@ export class File implements _File {
     this.createdOn = createdOn;
     this.modifiedOn = createdOn;
     this.modifiedBy = owner;
-    this.isDelete = isDelete;
+    this.deleted = deleted;
     this.history = [];
   }
 
@@ -85,7 +85,7 @@ export class File implements _File {
       obj.owner,
       obj.workspace,
       obj.createdOn,
-      obj.isDelete
+      obj.deleted
     );
   }
 
