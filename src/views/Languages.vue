@@ -157,7 +157,7 @@ import { onMounted, watch, ref, Ref } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
-import { clearDropDowns, showModal } from "@/utils";
+import { showModal } from "@/utils";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Language, _Language } from "@/models/Language";

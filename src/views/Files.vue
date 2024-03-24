@@ -383,8 +383,10 @@ async function openFileModal(operation: string, obj: _File) {
   file.value = obj;
   switch (operation) {
     case "add":
-      if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
-      clearDropDowns(branchesDropDownRef);
+      if (repositoryDropDownRef.value.emptySearchValue)
+        if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
+      if (branchesDropDownRef.value.emptySearchValue)
+        clearDropDowns(branchesDropDownRef);
 
       file.value = File.createEmptyObject(user._id, workspace._id);
       file.value.repository = repository.value.id;
@@ -432,7 +434,8 @@ async function repositoryDropDownOutput(output: {
     loading.value.branchLoading = true;
     branchesList.value = [];
 
-    clearDropDowns(branchesDropDownRef);
+    if (branchesDropDownRef.value.emptySearchValue)
+      clearDropDowns(branchesDropDownRef);
 
     const branches: _Branch[] = await store.dispatch(
       "repository/loadBranches",

@@ -16,6 +16,7 @@ export interface _File {
   modifiedOn: Date;
   modifiedBy: string;
   history: Array<string>;
+  isDelete: boolean;
 }
 
 export interface FileDocument extends _File, mongoose.Document {
@@ -34,6 +35,7 @@ export interface FileDocument extends _File, mongoose.Document {
   modifiedOn: Date;
   modifiedBy: string;
   history: Array<string>;
+  isDelete: boolean;
 }
 
 export const FileSchema = new mongoose.Schema({
@@ -107,6 +109,12 @@ export const FileSchema = new mongoose.Schema({
     require: false,
     unique: false,
   },
+  isDelete: {
+    type: Boolean,
+    require: false,
+    unique: false,
+    default: false
+  }
 });
 
 // Create Workspace schema

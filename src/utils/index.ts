@@ -109,5 +109,6 @@ export function showAlert(context: ActionContext<Alert, State>) {
 }
 
 export function clearDropDowns(reference: Ref) {
+  console.log(reference.value);
   reference.value.emptySearchValue();
 }
