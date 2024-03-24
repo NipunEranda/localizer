@@ -56,7 +56,7 @@ const FileModule = {
     },
     async addFile(
       context: ActionContext<FileState, State>,
-      data: FileState
+      data: _File
     ): Promise<_File[] | null> {
       try {
         const files: _File[] = (
@@ -75,21 +75,21 @@ const FileModule = {
     },
     async removeFile(
       context: ActionContext<FileState, State>,
-      data: FileState
+      data: _File
     ): Promise<_File[] | null> {
       try {
-        // const workspaces: Workspace[] = (
-        //   await axios.delete(
-        //     `${process.env.VUE_APP_API_URL}/workspace?id=${data}`,
-        //     {
-        //       headers: {
-        //         withCredentials: true,
-        //       },
-        //     }
-        //   )
-        // ).data.data;
-        // context.commit("setWorkspaces", workspaces);
-        // return workspaces;
+        const files: _File[] = (
+          await axios.delete(
+            `${process.env.VUE_APP_API_URL}/file?id=${data._id}&workspace=${store.state.workspace.defaultWorkspace._id}`,
+            {
+              headers: {
+                withCredentials: true,
+              },
+            }
+          )
+        ).data.data;
+        context.commit("setFiles", files);
+        return files;
         return [];
       } catch (e) {
         store.dispatch("handleRequestErrors", e);

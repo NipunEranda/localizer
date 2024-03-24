@@ -11,7 +11,9 @@
       />
       <button
         class="w-1/6 bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:brightness-125 dark:hover:border-neutral-500 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
-        @click="openFileModal('add')"
+        @click="
+          openFileModal('add', File.createEmptyObject(user._id, workspace._id))
+        "
       >
         <fai icon="fa-plus" />
         <span class="hidden sm:inline ml-2">New File</span>
@@ -138,6 +140,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('update', file)"
                     >Edit</a
                   >
                   <a
@@ -146,6 +149,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('delete', file)"
                     >Delete</a
                   >
                 </div>
@@ -171,7 +175,7 @@
       :modalProcess="modalProcess"
     >
       <!-- Body -->
-      <div>
+      <div v-if="modal.operation == 'add' || modal.operation == 'update'">
         <div class="flex flex-wrap -mx-3 mb-3">
           <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label
@@ -299,6 +303,7 @@
           </div>
         </div>
       </div>
+      <div v-if="modal.operation == 'delete'" v-html="modal.modalContent"></div>
     </Modal>
   </div>
 </template>
@@ -316,7 +321,7 @@ import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { Repository, _Branch } from "@/models/Repository";
 import mongoose from "mongoose";
-import { Language } from "@/models/Language";
+import { Language, _Language } from "@/models/Language";
 
 // Data
 const store = useStore(key),
@@ -327,6 +332,7 @@ const store = useStore(key),
 let searchText = ref(""),
   modal = ref({
     modalTitle: "",
+    modalContent: "",
     operation: "",
     actionName: "",
     showCancel: true,
@@ -372,10 +378,12 @@ const repository = ref(
 let filterredFiles = ref(files);
 
 // Methods
-async function openFileModal(operation: string) {
+async function openFileModal(operation: string, obj: _File) {
   modal.value.operation = operation;
+  file.value = obj;
   switch (operation) {
     case "add":
+      branchesList.value = [];
       if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
       clearDropDowns(branchesDropDownRef);
 
@@ -386,20 +394,37 @@ async function openFileModal(operation: string) {
       modal.value.actionName = "Save";
       modal.value.showCancel = true;
       break;
+    case "update":
+      modal.value.modalTitle = "Update File";
+      modal.value.actionName = "update";
+      modal.value.showCancel = true;
+      break;
+    case "delete":
+      modal.value.modalTitle = "Remove File";
+      modal.value.modalContent = `Do you want to remove <i><b>${obj.name}</b></i> file?`;
+      modal.value.actionName = "Remove";
+      modal.value.showCancel = true;
+      break;
   }
   showModal("fileModal");
 }
 
 async function modalProcess() {
   let filesResponse = null;
+  util.showLoadingScreen();
   switch (modal.value.operation) {
     case "add":
-      console.log(file.value);
-      // filesResponse = await store.dispatch("file/addFile", file.value);
-      // if (filesResponse) files.value = filesResponse;
+      filesResponse = await store.dispatch("file/addFile", file.value);
+      break;
+    case "delete":
+      filesResponse = await store.dispatch("file/removeFile", file.value);
       break;
   }
+
+  if (filesResponse) files.value = filesResponse;
+  filterredFiles.value = files.value;
   util.hideModal("fileModal");
+  util.hideLoadingScreen();
   return null;
 }
 
@@ -476,6 +501,7 @@ function languagesDropDownOutputToLanguage(output: {
 }
 
 async function loadData() {
+  util.showLoadingScreen();
   files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id != 0) {
     files.value = files.value.filter(
@@ -492,9 +518,14 @@ async function loadData() {
     loading.value.branchLoading = false;
   }
 
-  store.state.language.languages.map((language) =>
+  if (store.state.language.languages.length == 0)
+    await store.dispatch("language/loadLanguages", workspace._id);
+
+  store.state.language.languages.map((language: _Language) =>
     languagesList.value.push({ name: language.name, value: language._id })
   );
+
+  util.hideLoadingScreen();
 }
 
 // Events
