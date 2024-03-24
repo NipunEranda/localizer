@@ -11,7 +11,9 @@
       />
       <button
         class="w-1/6 bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:brightness-125 dark:hover:border-neutral-500 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
-        @click="openFileModal('add')"
+        @click="
+          openFileModal('add', File.createEmptyObject(user._id, workspace._id))
+        "
       >
         <fai icon="fa-plus" />
         <span class="hidden sm:inline ml-2">New File</span>
@@ -138,6 +140,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('update', file)"
                     >Edit</a
                   >
                   <a
@@ -146,6 +149,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openFileModal('delete', file)"
                     >Delete</a
                   >
                 </div>
@@ -171,7 +175,7 @@
       :modalProcess="modalProcess"
     >
       <!-- Body -->
-      <div>
+      <div v-if="modal.operation == 'add' || modal.operation == 'update'">
         <div class="flex flex-wrap -mx-3 mb-3">
           <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label
@@ -299,6 +303,7 @@
           </div>
         </div>
       </div>
+      <div v-if="modal.operation == 'delete'" v-html="modal.modalContent"></div>
     </Modal>
   </div>
 </template>
@@ -327,6 +332,7 @@ const store = useStore(key),
 let searchText = ref(""),
   modal = ref({
     modalTitle: "",
+    modalContent: "",
     operation: "",
     actionName: "",
     showCancel: true,
@@ -372,8 +378,9 @@ const repository = ref(
 let filterredFiles = ref(files);
 
 // Methods
-async function openFileModal(operation: string) {
+async function openFileModal(operation: string, obj: _File) {
   modal.value.operation = operation;
+  file.value = obj;
   switch (operation) {
     case "add":
       if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
@@ -384,6 +391,17 @@ async function openFileModal(operation: string) {
       file.value._id = new mongoose.Types.ObjectId().toHexString();
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
+      modal.value.showCancel = true;
+      break;
+    case "update":
+      modal.value.modalTitle = "Update File";
+      modal.value.actionName = "update";
+      modal.value.showCancel = true;
+      break;
+    case "delete":
+      modal.value.modalTitle = "Remove File";
+      modal.value.modalContent = `Do you want to remove <i><b>${obj.name}</b></i> file?`;
+      modal.value.actionName = "Remove";
       modal.value.showCancel = true;
       break;
   }
