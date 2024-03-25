@@ -433,10 +433,10 @@ async function openFileModal(operation: string, obj: _File) {
   util.showLoadingScreen();
   if (file.value.repository)
     if (branchesList.value.length == 0)
-      loadBranches(file.value.repository).then(() => {
-        util.hideLoadingScreen();
-        showModal("fileModal");
-      });
+      await loadBranches(file.value.repository);
+
+  util.hideLoadingScreen();
+  showModal("fileModal");
 }
 
 async function modalProcess() {
@@ -445,6 +445,9 @@ async function modalProcess() {
   switch (modal.value.operation) {
     case "add":
       filesResponse = await store.dispatch("file/addFile", file.value);
+      break;
+    case "update":
+      filesResponse = await store.dispatch("file/updateFile", file.value);
       break;
     case "delete":
       filesResponse = await store.dispatch("file/removeFile", file.value);
