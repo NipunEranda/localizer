@@ -203,7 +203,18 @@
             <DropDown
               :id="'repository'"
               :items="repositoryDropDownList"
-              :passed-item="file.repository ? file.repository.toString() : ''"
+              :passed-item="
+                file.repository
+                  ? repositoryDropDownList.filter(
+                      (r) => r.value == file.repository
+                    )[0]
+                    ? repositoryDropDownList.filter(
+                        (r) => r.value == file.repository
+                      )[0].name
+                    : ''
+                  : ''
+              "
+              :disabled="true"
               @output="repositoryDropDownOutput"
               ref="repositoryDropDownRef"
             />
@@ -236,7 +247,7 @@
               :id="'branch'"
               :items="branchesList"
               :loading="loading.branchLoading"
-              :passedItem="file.branch"
+              :passed-item="file.branch"
               @output="branchesDropDownOutput"
               ref="branchesDropDownRef"
             />
@@ -286,7 +297,13 @@
               :id="'fromLanguage'"
               :items="languagesList"
               @output="languagesDropDownOutputFromLanguage"
-              :passed-item="file.from"
+              :passed-item="
+                file.from
+                  ? languagesList.filter((l) => l.value == file.from)[0]
+                    ? languagesList.filter((l) => l.value == file.from)[0].name
+                    : ''
+                  : ''
+              "
               ref="languagesFromDropDownRef"
             />
           </div>
@@ -299,7 +316,13 @@
             <DropDown
               :id="'toLanguage'"
               :items="languagesList"
-              :passed-item="file.to"
+              :passed-item="
+                file.to
+                  ? languagesList.filter((l) => l.value == file.to)[0]
+                    ? languagesList.filter((l) => l.value == file.to)[0].name
+                    : ''
+                  : ''
+              "
               @output="languagesDropDownOutputToLanguage"
               ref="languagesToDropDownRef"
             />
@@ -343,12 +366,12 @@ let searchText = ref(""),
   loading = ref({
     branchLoading: false,
   }),
-  branchesList: Ref = ref([]),
+  branchesList: Ref<{ name: string; value: string }[]> = ref([]),
   repoId = route.query.repo ? route.query.repo.toString() : null,
   file: Ref<_File> = ref(File.createEmptyObject(user._id, workspace._id)),
   branchesDropDownRef: Ref = ref({}),
   repositoryDropDownRef: Ref = ref({}),
-  languagesList: Ref = ref([]);
+  languagesList: Ref<{ name: string; value: string }[]> = ref([]);
 
 const repository = ref(
     repoId
@@ -378,9 +401,9 @@ let filterredFiles = ref(files);
 
 // Methods
 async function openFileModal(operation: string, obj: _File) {
-  console.log(obj);
   modal.value.operation = operation;
   file.value = obj;
+
   switch (operation) {
     case "add":
       branchesList.value = [];
@@ -406,7 +429,14 @@ async function openFileModal(operation: string, obj: _File) {
       modal.value.showCancel = true;
       break;
   }
-  showModal("fileModal");
+
+  util.showLoadingScreen();
+  if (file.value.repository)
+    if (branchesList.value.length == 0)
+      loadBranches(file.value.repository).then(() => {
+        util.hideLoadingScreen();
+        showModal("fileModal");
+      });
 }
 
 async function modalProcess() {
@@ -496,6 +526,20 @@ function languagesDropDownOutputToLanguage(output: {
   file.value.to = output.value.toString();
 }
 
+async function loadBranches(repo: string | null) {
+  loading.value.branchLoading = true;
+  const branches: _Branch[] = await store.dispatch(
+    "repository/loadBranches",
+    repo
+      ? store.state.repository.repositories.filter((r) => r.id == repo)[0]
+      : repository.value
+  );
+  branches.map((branch) =>
+    branchesList.value.push({ name: branch.name, value: branch.name })
+  );
+  loading.value.branchLoading = false;
+}
+
 async function loadData() {
   util.showLoadingScreen();
   files.value = await store.dispatch("file/loadFiles", null);
@@ -503,15 +547,7 @@ async function loadData() {
     files.value = files.value.filter(
       (f) => f.repository == repository.value.id
     );
-    loading.value.branchLoading = true;
-    const branches: _Branch[] = await store.dispatch(
-      "repository/loadBranches",
-      repository.value
-    );
-    branches.map((branch) =>
-      branchesList.value.push({ name: branch.name, value: branch.name })
-    );
-    loading.value.branchLoading = false;
+    await loadBranches(null);
   }
 
   if (store.state.language.languages.length == 0)
