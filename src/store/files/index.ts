@@ -90,7 +90,6 @@ const FileModule = {
         ).data.data;
         context.commit("setFiles", files);
         return files;
-        return [];
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;
@@ -98,10 +97,18 @@ const FileModule = {
     },
     async updateFile(
       context: ActionContext<FileState, State>,
-      data: FileState
+      data: _File
     ): Promise<_File[] | null> {
       try {
-        return [];
+        const files: _File[] = (
+          await axios.put(`${process.env.VUE_APP_API_URL}/file`, data, {
+            headers: {
+              withCredentials: true,
+            },
+          })
+        ).data.data;
+        context.commit("setFiles", files);
+        return files;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;

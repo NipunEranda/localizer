@@ -4,9 +4,9 @@ import { _Workspace } from "./Workspace";
 export interface _File {
   _id: string;
   name: string;
-  repository: number;
+  repository: string;
   fileUrl: string;
-  branch: string | number;
+  branch: string;
   versionId: number | null;
   type: string;
   from: string;
@@ -23,9 +23,9 @@ export interface _File {
 export class File implements _File {
   _id: string;
   name: string;
-  repository: number;
+  repository: string;
   fileUrl: string;
-  branch: string | number;
+  branch: string;
   versionId: number | null;
   type: string;
   from: string;
@@ -41,9 +41,9 @@ export class File implements _File {
   constructor(
     _id: string,
     name: string,
-    repository: number,
+    repository: string,
     fileUrl: string,
-    branch: string | number,
+    branch: string,
     versionId: number | null,
     type: string,
     from: string,
@@ -93,9 +93,9 @@ export class File implements _File {
     return new File(
       "",
       "",
-      0,
       "",
-      0,
+      "",
+      "",
       null,
       "",
       "",

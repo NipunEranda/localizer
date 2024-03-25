@@ -7,8 +7,8 @@
       :name="id"
       v-model="searchText"
       class="flex bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
-      :class="{ 'cursor-not-allowed': passedItem }"
-      :disabled="!(passedItem == null || passedItem == 0)"
+      :class="{ 'cursor-not-allowed': disabled }"
+      :disabled="disabled"
       @click="clickEvent()"
       placeholder="Search and select an item"
     />
@@ -77,10 +77,14 @@ const props = defineProps({
     >,
   },
   passedItem: {
-    type: Number || String,
-    default: 0 || null,
+    type: String,
+    default: null,
   },
   loading: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
     type: Boolean,
     default: false,
   },
@@ -105,12 +109,16 @@ defineExpose({
 });
 
 onMounted(() => {
-  searchText.value = props.passedItem
-    ? store.state.repository.repositories.filter(
-        (r) => r.id == props.passedItem
-      )[0].name
-    : "";
-  itemList.value = props.items;
+  console.log(props);
+  if (props.passedItem) {
+    searchText.value = props.passedItem;
+  }
+  // searchText.value = props.passedItem
+  //   ? store.state.repository.repositories.filter(
+  //       (r) => r.id == props.passedItem
+  //     )[0].name
+  //   : "";
+  // itemList.value = props.items;
 });
 
 function clickEvent() {
