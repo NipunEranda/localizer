@@ -1,7 +1,7 @@
 import { _User } from "./Auth";
 
 export interface _Repository {
-  id: number;
+  id: string;
   name: string;
   full_name: string;
   html_url: string;
@@ -20,7 +20,7 @@ export interface _Repository {
 }
 
 export class Repository {
-  id: number;
+  id: string;
   name: string;
   full_name: string;
   html_url: string;
@@ -38,7 +38,7 @@ export class Repository {
   branches: _Branch[];
 
   constructor(
-    id: number,
+    id: string,
     name: string,
     full_name: string,
     html_url: string,
@@ -96,7 +96,7 @@ export class Repository {
 
   static createEmptyObject() {
     return new Repository(
-      0,
+      "",
       "",
       "",
       "",

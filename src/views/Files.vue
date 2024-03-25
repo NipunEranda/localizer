@@ -203,7 +203,7 @@
             <DropDown
               :id="'repository'"
               :items="repositoryDropDownList"
-              :passedItem="repository.id"
+              :passed-item="file.repository ? file.repository.toString() : ''"
               @output="repositoryDropDownOutput"
               ref="repositoryDropDownRef"
             />
@@ -236,6 +236,7 @@
               :id="'branch'"
               :items="branchesList"
               :loading="loading.branchLoading"
+              :passedItem="file.branch"
               @output="branchesDropDownOutput"
               ref="branchesDropDownRef"
             />
@@ -285,6 +286,7 @@
               :id="'fromLanguage'"
               :items="languagesList"
               @output="languagesDropDownOutputFromLanguage"
+              :passed-item="file.from"
               ref="languagesFromDropDownRef"
             />
           </div>
@@ -297,6 +299,7 @@
             <DropDown
               :id="'toLanguage'"
               :items="languagesList"
+              :passed-item="file.to"
               @output="languagesDropDownOutputToLanguage"
               ref="languagesToDropDownRef"
             />
@@ -341,11 +344,7 @@ let searchText = ref(""),
     branchLoading: false,
   }),
   branchesList: Ref = ref([]),
-  repoId = route.query.repo
-    ? typeof route.query.repo == "number"
-      ? route.query.repo
-      : parseInt(route.query.repo.toString())
-    : 0,
+  repoId = route.query.repo ? route.query.repo.toString() : null,
   file: Ref<_File> = ref(File.createEmptyObject(user._id, workspace._id)),
   branchesDropDownRef: Ref = ref({}),
   repositoryDropDownRef: Ref = ref({}),
@@ -379,12 +378,13 @@ let filterredFiles = ref(files);
 
 // Methods
 async function openFileModal(operation: string, obj: _File) {
+  console.log(obj);
   modal.value.operation = operation;
   file.value = obj;
   switch (operation) {
     case "add":
       branchesList.value = [];
-      if (repository.value.id == 0) clearDropDowns(repositoryDropDownRef);
+      if (repository.value.id) clearDropDowns(repositoryDropDownRef);
       clearDropDowns(branchesDropDownRef);
 
       file.value = File.createEmptyObject(user._id, workspace._id);
@@ -429,13 +429,12 @@ async function modalProcess() {
 }
 
 async function repositoryDropDownOutput(output: {
-  name: string | number;
-  value: string | number;
+  name: string;
+  value: string;
 }) {
-  file.value.repository =
-    typeof output.value == "number" ? output.value : parseInt(output.value);
+  file.value.repository = output.value;
 
-  if (output.value != 0) {
+  if (output.value) {
     loading.value.branchLoading = true;
     branchesList.value = [];
 
@@ -479,10 +478,7 @@ function detectFileType() {
   }
 }
 
-function branchesDropDownOutput(output: {
-  name: string | number;
-  value: string | number;
-}) {
+function branchesDropDownOutput(output: { name: string; value: string }) {
   file.value.branch = output.value;
 }
 
@@ -503,7 +499,7 @@ function languagesDropDownOutputToLanguage(output: {
 async function loadData() {
   util.showLoadingScreen();
   files.value = await store.dispatch("file/loadFiles", null);
-  if (repository.value.id != 0) {
+  if (repository.value.id) {
     files.value = files.value.filter(
       (f) => f.repository == repository.value.id
     );
