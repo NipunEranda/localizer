@@ -38,12 +38,8 @@ export const addFile = async (
       const file: _File = JSON.parse(event.body);
       await fileSchema.create(file);
 
-      // Get user workspaces
-      const files = await fileSchema.find({
-        workspace: file.workspace,
-        owner: file.owner,
-      });
-      return AppResponse.createObject(200, files, null);
+      event.queryStringParameters!.workspace = file.workspace;
+      return AppResponse.createObject(200, JSON.parse((await getFiles(event)).body!).data, null);
     } else {
       return AppResponse.createObject(400, null, "Missing Data!");
     }

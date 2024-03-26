@@ -214,7 +214,7 @@
                     : ''
                   : ''
               "
-              :disabled="true"
+              :disabled="repository.id != '' ? true : false"
               @output="repositoryDropDownOutput"
               ref="repositoryDropDownRef"
             />
@@ -403,11 +403,10 @@ let filterredFiles = ref(files);
 async function openFileModal(operation: string, obj: _File) {
   modal.value.operation = operation;
   file.value = obj;
-
   switch (operation) {
     case "add":
-      branchesList.value = [];
-      if (repository.value.id) clearDropDowns(repositoryDropDownRef);
+      if (repository.value.id == "") branchesList.value = [];
+      if (repository.value.id == "") clearDropDowns(repositoryDropDownRef);
       clearDropDowns(branchesDropDownRef);
 
       file.value = File.createEmptyObject(user._id, workspace._id);
@@ -416,6 +415,8 @@ async function openFileModal(operation: string, obj: _File) {
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
       modal.value.showCancel = true;
+
+      console.log(file.value);
       break;
     case "update":
       modal.value.modalTitle = "Update File";
@@ -545,6 +546,16 @@ async function loadBranches(repo: string | null) {
 
 async function loadData() {
   util.showLoadingScreen();
+
+  // Load repositories
+  if (store.state.repository.repositories.length == 0)
+    await store.dispatch("repository/loadRepositories", null);
+
+  // Load languages
+  if (store.state.language.languages.length == 0)
+    await store.dispatch("language/loadLanguages", workspace._id);
+
+  // Load Files
   files.value = await store.dispatch("file/loadFiles", null);
   if (repository.value.id) {
     files.value = files.value.filter(
@@ -552,9 +563,6 @@ async function loadData() {
     );
     await loadBranches(null);
   }
-
-  if (store.state.language.languages.length == 0)
-    await store.dispatch("language/loadLanguages", workspace._id);
 
   store.state.language.languages.map((language: _Language) =>
     languagesList.value.push({ name: language.name, value: language._id })

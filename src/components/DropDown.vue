@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-3 relative">
+  <div class="mb-3 relative" ref="modalForm">
     <input
       type="text"
       autocomplete="off"
@@ -68,6 +68,7 @@ let searchText: Ref = ref("");
 let selectedItem: Ref = ref(null);
 let itemList: Ref = ref([]);
 let previousSelection: Ref = ref(null);
+const modalForm: Ref = ref(null);
 
 const props = defineProps({
   id: String || Number,
@@ -109,7 +110,7 @@ defineExpose({
 });
 
 onMounted(() => {
-  console.log(props);
+  itemList.value = props.items;
   if (props.passedItem) {
     searchText.value = props.passedItem;
   }
@@ -118,7 +119,6 @@ onMounted(() => {
   //       (r) => r.id == props.passedItem
   //     )[0].name
   //   : "";
-  // itemList.value = props.items;
 });
 
 function clickEvent() {
