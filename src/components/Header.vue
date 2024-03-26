@@ -1,10 +1,10 @@
 <template>
   <div>
     <nav
-      class="h-14 bg-white py-2 px-4 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80 z-10"
+      class="h-14 bg-white py-2 dark:bg-neutral-900 absolute left-0 right-0 border-b-[.1rem] border-neutral-200 dark:border-neutral-700 dark:border-opacity-80 z-10"
     >
       <div class="flex flex-wrap justify-between items-center mx-auto">
-        <a href="/" class="flex items-center">
+        <a href="/" class="flex items-center ml-4">
           <img :src="getIcon('logo')" class="mr-3 w-9" alt="Localizer Logo" />
           <span
             class="self-center text-xl font-semibold whitespace-nowrap dark:text-white"
@@ -92,7 +92,7 @@
           <button
             data-collapse-toggle="mobile-menu-2"
             type="button"
-            class="inline-flex items-center p-2 ml-1 text-sm text-neutral-500 rounded-lg lg:hidden hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:ring-neutral-600"
+            class="mr-4 inline-flex items-center p-2 ml-1 text-sm text-neutral-500 rounded-lg lg:hidden hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:ring-neutral-600"
             aria-controls="mobile-menu-2"
             aria-expanded="false"
             @click="toggleMobileView()"
@@ -125,11 +125,11 @@
           </button>
         </div>
         <div
-          class="justify-between items-center w-full hidden lg:flex lg:w-auto lg:order-1"
+          class="justify-between items-center w-full hidden lg:flex lg:w-auto lg:order-1 dark:bg-neutral-900 mt-1 lg:m-0 p-4 lg:p-0"
           id="mobile-menu-2"
         >
           <ul
-            class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0"
+            class="flex flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0"
           >
             <li
               :class="{
