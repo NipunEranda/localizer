@@ -119,7 +119,18 @@ const FileModule = {
       data: _File
     ) {
       try {
-        console.log(data);
+        const githubResponse = (
+          await axios.get(
+            `${process.env.VUE_APP_API_URL}/file/content?id=${data._id}`,
+            {
+              headers: {
+                withCredentials: true,
+              },
+            }
+          )
+        ).data.data;
+        console.log(githubResponse);
+        return null;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;

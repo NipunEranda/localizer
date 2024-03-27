@@ -5,7 +5,7 @@ export interface _File {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: string | number;
+  branch: string;
   versionId: number | null;
   type: string;
   from: string;
@@ -24,7 +24,7 @@ export interface FileDocument extends _File, mongoose.Document {
   name: string;
   repository: number;
   fileUrl: string;
-  branch: string | number;
+  branch: string;
   versionId: number | null;
   type: string;
   from: string;
@@ -55,7 +55,7 @@ export const FileSchema = new mongoose.Schema({
     unique: false,
   },
   branch: {
-    type: String || Number,
+    type: String,
     require: true,
     unique: false,
   },

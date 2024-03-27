@@ -8,6 +8,9 @@ import {
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
 import { _File, fileSchema } from "./models/File";
+import { event } from "jquery";
+import axios from "axios";
+import cookie from "cookie";
 
 export const getFiles = async (
   event: APIGatewayProxyEvent
@@ -39,7 +42,11 @@ export const addFile = async (
       await fileSchema.create(file);
 
       event.queryStringParameters!.workspace = file.workspace;
-      return AppResponse.createObject(200, JSON.parse((await getFiles(event)).body!).data, null);
+      return AppResponse.createObject(
+        200,
+        JSON.parse((await getFiles(event)).body!).data,
+        null
+      );
     } else {
       return AppResponse.createObject(400, null, "Missing Data!");
     }
@@ -114,6 +121,54 @@ export const removeFile = async (
   }
 };
 
+export const getGithubContent = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  let jsonArray;
+  let xml = "";
+  let response: { content: String } = { content: "" };
+  let url: string = "";
+  try {
+    await connectMongoose();
+
+    const cookies = cookie.parse(event.headers.cookie!);
+    const file = await fileSchema.findOne({
+      _id: event.queryStringParameters!.id,
+    });
+
+    if (file) {
+      if (file?.branch.includes("/")) {
+      } else {
+        url = `https://api.github.com/repos/${file.fileUrl.split("/")[3]}/${
+          file.fileUrl.split("/")[4]
+        }/contents/${file.name}?ref=${file.branch}`;
+      }
+    }
+
+    response = (
+      await axios.get(url, {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${cookies.token}${cookies["local._token"]}`,
+        },
+      })
+    ).data;
+
+    if (response.content)
+      return AppResponse.createObject(
+        200,
+        Buffer.from(response!.content, "base64").toString().trim(),
+        null
+      );
+    else return AppResponse.createObject(200, null, null);
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(500, null, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
 export const responseHandler = async function (
   event: APIGatewayProxyEvent,
   context: Context
@@ -125,6 +180,11 @@ export const responseHandler = async function (
       event.httpMethod == "GET"
     ) {
       result = await getFiles(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/file/content` &&
+      event.httpMethod == "GET"
+    ) {
+      result = await getGithubContent(event);
     } else if (
       event.path == `${process.env.VUE_APP_API_URL}/file` &&
       event.httpMethod == "POST"
