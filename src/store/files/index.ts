@@ -114,6 +114,28 @@ const FileModule = {
         return null;
       }
     },
+    async loadGithubContent(
+      context: ActionContext<FileState, State>,
+      data: _File
+    ) {
+      try {
+        const githubResponse = (
+          await axios.get(
+            `${process.env.VUE_APP_API_URL}/file/content?id=${data._id}`,
+            {
+              headers: {
+                withCredentials: true,
+              },
+            }
+          )
+        ).data.data;
+        console.log(githubResponse);
+        return null;
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
   },
 };
 

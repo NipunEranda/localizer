@@ -90,36 +90,30 @@
             </div>
           </a>
           <button
+            name="mainMenuMobileButton"
             data-collapse-toggle="mobile-menu-2"
             type="button"
             class="mr-4 inline-flex items-center p-2 ml-1 text-sm text-neutral-500 rounded-lg lg:hidden hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:ring-neutral-600"
             aria-controls="mobile-menu-2"
             aria-expanded="false"
-            @click="toggleMobileView()"
+            @click="toggleMobileView(null, $event)"
           >
-            <span class="sr-only">Open main menu</span>
             <svg
-              class="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+              class="svg-inline--fa fa-bars text-2xl text-white"
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="bars"
+              role="img"
               xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+              name="mainMenuMobileButton"
             >
               <path
-                fill-rule="evenodd"
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <svg
-              class="hidden w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
+                name="mainMenuMobileButton"
+                class=""
+                fill="currentColor"
+                d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"
               ></path>
             </svg>
           </button>
@@ -140,6 +134,7 @@
               @click="$router.push('/dashboard'), toggleMobileView('close')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -155,6 +150,7 @@
               @click="$router.push('/repositories'), toggleMobileView('close')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -170,6 +166,7 @@
               @click="$router.push('/files'), toggleMobileView('close')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -185,6 +182,7 @@
               @click="$router.push('/languages'), toggleMobileView('close')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -200,6 +198,7 @@
               @click="$router.push('/admin'), toggleMobileView('close')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -211,6 +210,7 @@
               @click="store.dispatch('logout')"
             >
               <a
+                name="mainMenuItem"
                 href="#"
                 class="block py-2 pr-4 pl-3 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0"
                 aria-current="page"
@@ -244,9 +244,10 @@ watch(route, async () => {
   activeTab.value = route.name;
 });
 
-function toggleMobileView(override) {
+function toggleMobileView(override, event) {
   if (override == "close")
     jQuery("#mobile-menu-2").removeClass("hidden").addClass("hidden");
+  else if (override == "open") jQuery("#mobile-menu-2").removeClass("hidden");
   else jQuery("#mobile-menu-2").toggleClass("hidden");
 }
 

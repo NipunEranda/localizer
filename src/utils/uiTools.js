@@ -42,4 +42,14 @@ document.addEventListener("mouseup", function (event) {
             .addClass("hidden");
       });
   }
+
+  if (
+    !(
+      event.target.name == "mainMenuItem" ||
+      event.target.name == "mainMenuMobileButton" ||
+      event.target.getAttribute("name") == "mainMenuMobileButton"
+    )
+  ) {
+    $("#mobile-menu-2").removeClass("hidden").addClass("hidden");
+  }
 });

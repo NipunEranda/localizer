@@ -103,6 +103,7 @@
             v-for="(file, f) in filterredFiles"
             :key="f"
             class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            @dblclick="$router.push(`/editor?file=${file._id}`)"
           >
             <td
               scope="row"
