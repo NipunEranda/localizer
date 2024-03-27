@@ -114,6 +114,17 @@ const FileModule = {
         return null;
       }
     },
+    async loadGithubContent(
+      context: ActionContext<FileState, State>,
+      data: _File
+    ) {
+      try {
+        console.log(data);
+      } catch (e) {
+        store.dispatch("handleRequestErrors", e);
+        return null;
+      }
+    },
   },
 };
 
