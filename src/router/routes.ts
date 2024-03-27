@@ -6,6 +6,7 @@ import Repositories from "@/views/Repositories.vue";
 import Files from "@/views/Files.vue";
 import Languages from "@/views/Languages.vue";
 import AdminIndex from "@/views/Admin/Index.vue";
+import LocalizationEditor from "@/views/LocalizationEditor.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,6 +43,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin",
     name: "admin",
     component: AdminIndex,
+  },
+  {
+    path: "/editor",
+    name: "editor",
+    component: LocalizationEditor,
   },
 ];
 
