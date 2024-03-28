@@ -56,7 +56,7 @@
             <th
               name="type"
               scope="col"
-              class="px-6 py-3"
+              class="px-6 py-3 hidden md:table-cell"
               @click="
                 util.sort(
                   //@ts-ignore
@@ -68,9 +68,37 @@
               Type
             </th>
             <th
+              name="type"
+              scope="col"
+              class="px-6 py-3"
+              @click="
+                util.sort(
+                  //@ts-ignore
+                  $event,
+                  ref(files)
+                )
+              "
+            >
+              From
+            </th>
+            <th
+              name="type"
+              scope="col"
+              class="px-6 py-3"
+              @click="
+                util.sort(
+                  //@ts-ignore
+                  $event,
+                  ref(files)
+                )
+              "
+            >
+              To
+            </th>
+            <th
               name="owner"
               scope="col"
-              class="px-6 py-3 text-right"
+              class="px-6 py-3 hidden lg:table-cell"
               @click="
                 util.sort(
                   //@ts-ignore
@@ -84,7 +112,7 @@
             <th
               name="createdOn"
               scope="col"
-              class="px-6 py-3 text-right"
+              class="px-6 py-3 text-right hidden lg:table-cell"
               @click="
                 util.sort(
                   //@ts-ignore
@@ -111,9 +139,28 @@
               v-text="file.name"
             ></td>
             <td v-text="file.branch" class="px-6 py-4"></td>
-            <td v-text="file.type" class="px-6 py-4 text-right"></td>
-            <td v-text="file.owner" class="px-6 py-4 text-right"></td>
-            <td v-text="file.createdOn" class="px-6 py-4 text-right"></td>
+            <td v-text="file.type" class="px-6 py-4 hidden md:table-cell"></td>
+            <td
+              v-text="
+                languagesList.filter((l) => l.value == file.from)[0]
+                  ? languagesList.filter((l) => l.value == file.from)[0].name
+                  : ''
+              "
+              class="px-6 py-4"
+            ></td>
+            <td
+              v-text="
+                languagesList.filter((l) => l.value == file.to)[0]
+                  ? languagesList.filter((l) => l.value == file.to)[0].name
+                  : ''
+              "
+              class="px-6 py-4"
+            ></td>
+            <td v-text="file.owner" class="px-6 py-4 hidden lg:table-cell"></td>
+            <td
+              v-text="file.createdOn"
+              class="px-6 py-4 text-right hidden lg:table-cell"
+            ></td>
             <td
               @click="jQuery(`#row-menu-${f}`).toggleClass('hidden')"
               id="menu-td"
