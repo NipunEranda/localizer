@@ -124,7 +124,7 @@ export const removeFile = async (
 export const getGithubContent = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  let jsonArray: { name: string; value: string, translation: object }[] = [];
+  let jsonArray: { name: string; value: string; translation: object }[] = [];
   let xml = "";
   let response: { content: String } = { content: "" };
   let url: string = "";
@@ -159,9 +159,9 @@ export const getGithubContent = async (
       response.content = Buffer.from(response!.content, "base64")
         .toString()
         .trim();
+
+      let key: string = "";
       if (file?.type == "Javascript") {
-        let key,
-          subkey = null;
         response.content.split(/\r?\n/).forEach((line) => {
           if (!(line.includes("export") || line.includes(" }"))) {
             if (line.includes(": {")) {
@@ -182,8 +182,45 @@ export const getGithubContent = async (
             }
           }
         });
+      } else if (file?.type == "Java") {
+        response.content.split(/\r?\n/).forEach((line) => {
+          if (file.type === "Java") {
+            line.split("")[0] == "#" || line === ""
+              ? null
+              : jsonArray.push({
+                  name: line.split("=")[0].trim(),
+                  value: line.split("=")[1].replace(/\\/g, '\\"').trim(),
+                  translation: { id: 0, value: "", language: 0 },
+                });
+          }
+          //  else {
+          //   if (
+          //     !(
+          //       line.includes("/*") ||
+          //       line.includes("//") ||
+          //       line.includes("*/") ||
+          //       line == "" ||
+          //       line.split("")[0] == "#" ||
+          //       line.includes("{") ||
+          //       line.includes("}") ||
+          //       line.includes("resource StringTable")
+          //     )
+          //   ) {
+          //     jsonArray.push({
+          //       name: line.split(",")[0].trim(),
+          //       value: line
+          //         .split(",")[1]
+          //         .replace(/"/g, "")
+          //         .replace(/\\/g, '\\"'),
+          //       translation: { id: 0, value: "", language: 0 },
+          //     });
+          //   }
+          // }
+        });
       }
     }
+
+    console.log(jsonArray);
 
     if (response.content) return AppResponse.createObject(200, jsonArray, null);
     else return AppResponse.createObject(200, null, null);
