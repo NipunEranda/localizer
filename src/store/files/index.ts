@@ -5,12 +5,14 @@ import { _File } from "@/models/File";
 
 export interface FileState {
   files: _File[];
+  fileContent: string;
 }
 
 const FileModule = {
   namespaced: true,
   state: (): FileState => ({
     files: [],
+    fileContent: "",
   }),
   getters: {
     getFiles(state: FileState) {
@@ -24,6 +26,9 @@ const FileModule = {
     setFiles(state: FileState, data: _File[]) {
       state.files = data;
     },
+    setFileContent(state: FileState, data: string) {
+      state.fileContent = data;
+    },
   },
   actions: {
     resetState({ commit }: { commit: Commit }) {
@@ -31,6 +36,9 @@ const FileModule = {
     },
     setFiles(context: ActionContext<FileState, State>, data: _File[]) {
       context.commit("setFiles", data);
+    },
+    setFileContent(context: ActionContext<FileState, State>, data: string) {
+      context.commit("setFileContent", data);
     },
     async loadFiles(
       context: ActionContext<FileState, State>
@@ -129,8 +137,8 @@ const FileModule = {
             }
           )
         ).data.data;
-        console.log(githubResponse);
-        return null;
+        context.commit("setFileContent", githubResponse);
+        return githubResponse;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;
