@@ -1,5 +1,9 @@
 <template>
-  <div>Localization Editor</div>
+  <div>
+    Localization Editor
+
+    {{ githubContent }}
+  </div>
 </template>
 
 <script setup lang="ts">

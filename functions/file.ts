@@ -124,7 +124,7 @@ export const removeFile = async (
 export const getGithubContent = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  let jsonArray;
+  let jsonArray: { name: string; value: string }[] = [];
   let xml = "";
   let response: { content: String } = { content: "" };
   let url: string = "";
@@ -154,12 +154,38 @@ export const getGithubContent = async (
       })
     ).data;
 
+    // Split keys and values
+    if (response.content) {
+      response.content = Buffer.from(response!.content, "base64")
+        .toString()
+        .trim();
+      if (file?.type == "Javascript") {
+        let key,
+          subkey = null;
+        response.content.split(/\r?\n/).forEach((line) => {
+          if (!(line.includes("export") || line.includes(" }"))) {
+            if (line.includes(": {")) {
+              key = line.split(":")[0];
+            } else {
+              if (typeof line == "string" && !(line == "}" || line == "};")) {
+                jsonArray.push({
+                  name: `${key.trim()}.${line.split(":")[0].trim()}`,
+                  value: line
+                    .split(":")[1]
+                    .slice(0, -1)
+                    .replace(/'/g, "")
+                    .replace(/"/g, "")
+                    .replace(/\\/g, '\\"'),
+                });
+              }
+            }
+          }
+        });
+      }
+    }
+
     if (response.content)
-      return AppResponse.createObject(
-        200,
-        Buffer.from(response!.content, "base64").toString().trim(),
-        null
-      );
+      return AppResponse.createObject(200, jsonArray, null);
     else return AppResponse.createObject(200, null, null);
   } catch (e) {
     console.log(e);
