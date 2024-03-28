@@ -124,7 +124,7 @@ export const removeFile = async (
 export const getGithubContent = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  let jsonArray: { name: string; value: string }[] = [];
+  let jsonArray: { name: string; value: string, translation: object }[] = [];
   let xml = "";
   let response: { content: String } = { content: "" };
   let url: string = "";
@@ -176,6 +176,7 @@ export const getGithubContent = async (
                     .replace(/'/g, "")
                     .replace(/"/g, "")
                     .replace(/\\/g, '\\"'),
+                  translation: { id: 0, value: "", language: 0 },
                 });
               }
             }
@@ -184,8 +185,7 @@ export const getGithubContent = async (
       }
     }
 
-    if (response.content)
-      return AppResponse.createObject(200, jsonArray, null);
+    if (response.content) return AppResponse.createObject(200, jsonArray, null);
     else return AppResponse.createObject(200, null, null);
   } catch (e) {
     console.log(e);
