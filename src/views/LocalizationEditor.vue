@@ -38,9 +38,39 @@
           class="text-xs text-neutral-700 uppercase bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
         >
           <tr class="select-none">
-            <th name="name" scope="col" class="px-3 py-3">Key</th>
-            <th name="name" scope="col" class="px-3 py-3">Value</th>
-            <th name="name" scope="col" class="px-3">Translation</th>
+            <th
+              name="name"
+              scope="col"
+              class="px-3 py-3"
+              @click="
+                //@ts-ignore
+                util.sort($event, ref(githubContent))
+              "
+            >
+              Key
+            </th>
+            <th
+              name="name"
+              scope="col"
+              class="px-3 py-3"
+              @click="
+                //@ts-ignore
+                util.sort($event, ref(githubContent))
+              "
+            >
+              Value
+            </th>
+            <th
+              name="name"
+              scope="col"
+              class="px-3"
+              @click="
+                //@ts-ignore
+                util.sort($event, ref(githubContent))
+              "
+            >
+              Translation
+            </th>
             <th class="w-8"></th>
           </tr>
         </thead>
