@@ -40,6 +40,10 @@ import {
   faHouseChimney,
   faPlus,
   faLanguage,
+  faFolderOpen,
+  faSave,
+  faFileExport,
+  faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -61,10 +65,14 @@ library.add(
   faBars,
   faUser,
   faChevronRight,
+  faFolderOpen,
   faFile,
   faHouseChimney,
   faPlus,
-  faLanguage
+  faLanguage,
+  faSave,
+  faFileExport,
+  faFileImport
 );
 
 createApp(App)

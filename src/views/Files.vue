@@ -437,7 +437,7 @@ const repository = ref(
       name: `Files${
         repository.value.name ? ` (${repository.value.name})` : ""
       }`,
-      icon: "fa-file",
+      icon: "fa-folder-open",
       url: `/files${repoId ? `?repo=${repoId}` : ""}`,
     },
   ]),

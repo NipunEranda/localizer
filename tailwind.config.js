@@ -10,7 +10,7 @@ module.exports = {
         "accentColor-hover": "#489d90",
         primary: "#007bff",
         "primary-hover": "#0169d9",
-        success: "#28a745",
+        success: "#158a30",
         "success-hover": "#218838",
         secondary: "#6c757d",
         "secondary-hover": "#596268",
