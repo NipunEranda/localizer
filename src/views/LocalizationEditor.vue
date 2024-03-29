@@ -173,6 +173,20 @@ async function loadData() {
   util.hideLoadingScreen();
 }
 
+// Events
+watch(searchText, (newValue) => {
+  if (newValue.trim() != "") {
+    filterredGithubContent = ref(
+      githubContent.value.filter(
+        (c) =>
+          c.name.toLowerCase().includes(newValue.toLowerCase()) ||
+          c.value?.toLowerCase().includes(newValue.toLowerCase())
+      )
+    );
+  } else
+    filterredGithubContent = ref(jQuery.extend(true, [], githubContent.value));
+});
+
 onMounted(async () => {
   await loadData();
 });
