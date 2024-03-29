@@ -220,7 +220,7 @@ export const getGithubContent = async (
       }
     }
 
-    console.log(jsonArray);
+    jsonArray = jsonArray.sort((a, b) => a.name.localeCompare(b.name));
 
     if (response.content) return AppResponse.createObject(200, jsonArray, null);
     else return AppResponse.createObject(200, null, null);
