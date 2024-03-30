@@ -11,6 +11,7 @@ import { _File, fileSchema } from "./models/File";
 import { event } from "jquery";
 import axios from "axios";
 import cookie from "cookie";
+import { xml2json } from "xml-js";
 
 export const getFiles = async (
   event: APIGatewayProxyEvent
@@ -161,7 +162,13 @@ export const getGithubContent = async (
         .trim();
 
       let key: string = "";
-      if (file?.type == "Javascript") {
+      if (file?.type === "C#") {
+        response.content.split(/\r?\n/).forEach((element) => {
+          xml += element;
+        });
+        let convertedArray = JSON.parse(xml2json(xml, {compact: true, spaces: 4})).root.data;
+        jsonArray = convertedArray.map(item => item = { name: item._attributes.name, value: item.value._text, translation: { id: 0, value: "", language: 0 } });
+      } else if (file?.type == "Javascript") {
         response.content.split(/\r?\n/).forEach((line) => {
           if (!(line.includes("export") || line.includes(" }"))) {
             if (line.includes(": {")) {
