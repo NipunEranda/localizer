@@ -112,7 +112,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
-                    >Edit</a
+                    >Translate</a
                   >
                   <a
                     href="#"
@@ -120,7 +120,15 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
-                    >Delete</a
+                    >History</a
+                  >
+                  <a
+                    href="#"
+                    class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="menu-item-0"
+                    >Clear</a
                   >
                 </div>
               </div>
