@@ -12,6 +12,7 @@ import { event } from "jquery";
 import axios from "axios";
 import cookie from "cookie";
 import { xml2json } from "xml-js";
+import { _Language } from "./models/Language.ts";
 
 export const getFiles = async (
   event: APIGatewayProxyEvent
@@ -166,8 +167,17 @@ export const getGithubContent = async (
         response.content.split(/\r?\n/).forEach((element) => {
           xml += element;
         });
-        let convertedArray = JSON.parse(xml2json(xml, {compact: true, spaces: 4})).root.data;
-        jsonArray = convertedArray.map(item => item = { name: item._attributes.name, value: item.value._text, translation: { id: 0, value: "", language: 0 } });
+        let convertedArray = JSON.parse(
+          xml2json(xml, { compact: true, spaces: 4 })
+        ).root.data;
+        jsonArray = convertedArray.map(
+          (item) =>
+            (item = {
+              name: item._attributes.name,
+              value: item.value._text,
+              translation: { id: 0, value: "", language: 0 },
+            })
+        );
       } else if (file?.type == "Javascript") {
         response.content.split(/\r?\n/).forEach((line) => {
           if (!(line.includes("export") || line.includes(" }"))) {
@@ -239,6 +249,37 @@ export const getGithubContent = async (
   }
 };
 
+export const translate = async (
+  event: APIGatewayProxyEvent
+): Promise<AppResponse> => {
+  const translate = require("@iamtraction/google-translate");
+  try {
+    const translateRequestBody: {
+      name: string;
+      value: string;
+      from: _Language;
+      to: _Language;
+    } = JSON.parse(event.body!);
+    const response = await translate(translateRequestBody.value, {
+      from: translateRequestBody.from.code.toLowerCase(),
+      to: translateRequestBody.to.code.toLowerCase(),
+    });
+
+    if (response.text)
+      return AppResponse.createObject(200, response.text, null);
+    return AppResponse.createObject(
+      400,
+      null,
+      "Something went wrong in translation"
+    );
+  } catch (e) {
+    console.log(e);
+    return AppResponse.createObject(500, null, e.message);
+  } finally {
+    await closeMongooseConnection();
+  }
+};
+
 export const responseHandler = async function (
   event: APIGatewayProxyEvent,
   context: Context
@@ -260,6 +301,11 @@ export const responseHandler = async function (
       event.httpMethod == "POST"
     ) {
       result = await addFile(event);
+    } else if (
+      event.path == `${process.env.VUE_APP_API_URL}/file/translate` &&
+      event.httpMethod == "POST"
+    ) {
+      result = await translate(event);
     } else if (
       event.path == `${process.env.VUE_APP_API_URL}/file` &&
       event.httpMethod == "DELETE"

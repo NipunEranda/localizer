@@ -2,6 +2,7 @@ import axios from "axios";
 import { State, store } from "../";
 import { Commit, ActionContext } from "vuex";
 import { _File } from "@/models/File";
+import { _Language } from "@/models/Language";
 
 export interface FileState {
   files: _File[];
@@ -143,6 +144,23 @@ const FileModule = {
         store.dispatch("handleRequestErrors", e);
         return null;
       }
+    },
+    async translate(
+      context: ActionContext<FileState, State>,
+      data: { name: string; value: string; from: _Language; to: _Language }
+    ) {
+      const translateResponse = (
+        await axios.post(
+          `${process.env.VUE_APP_API_URL}/file/translate`,
+          data,
+          {
+            headers: {
+              withCredentials: true,
+            },
+          }
+        )
+      ).data.data;
+      return translateResponse;
     },
   },
 };
