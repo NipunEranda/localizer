@@ -112,6 +112,9 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="
+                      translate(l, line.name, line.value, file.from, file.to)
+                    "
                     >Translate</a
                   >
                   <a
@@ -152,6 +155,7 @@ import { File, _File } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { _Repository } from "@/models/Repository";
+import axios from "axios";
 
 const store = useStore(key),
   route = useRoute(),
@@ -208,6 +212,24 @@ async function loadData() {
     file.value
   );
   filterredGithubContent.value = githubContent.value;
+  util.hideLoadingScreen();
+}
+
+async function translate(
+  index: number,
+  name: string,
+  value: string,
+  from: string,
+  to: string
+) {
+  util.showLoadingScreen();
+  const translation = await store.dispatch("file/translate", {
+    name,
+    value,
+    from: store.state.language.languages.filter((l) => l._id == from)[0],
+    to: store.state.language.languages.filter((l) => l._id == to)[0],
+  });
+  // console.log(filterredGithubContent.value[index].translation.id);
   util.hideLoadingScreen();
 }
 
