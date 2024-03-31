@@ -13,7 +13,7 @@
         <div class="w-2/6 flex">
           <button
             class="w-1/3 text-center bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:hover:bg-primary dark:brightness-125 dark:hover:border-blue-400 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
-            @click="saveFile(file)"
+            @click="saveFile()"
           >
             <fai icon="fa-save" />
             <span class="ms-1 lg:ms-2 hidden md:inline">Save</span>
@@ -152,7 +152,7 @@ import { useStore } from "vuex";
 import { key } from "../store";
 import Modal from "@/components/modals/Modal.vue";
 import { clearDropDowns, showModal } from "@/utils";
-import { File, _File } from "@/models/File";
+import { File, _File, _FileLine } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
 import { _Repository } from "@/models/Repository";
@@ -185,20 +185,8 @@ const store = useStore(key),
     },
   ];
 
-let githubContent: Ref<
-  {
-    name: string;
-    value: string;
-    translation: { id: string; value: string; language: string };
-  }[]
-> = ref([]);
-let filterredGithubContent: Ref<
-    {
-      name: string;
-      value: string;
-      translation: { id: string; value: string; language: string };
-    }[]
-  > = ref(githubContent),
+let githubContent: Ref<_FileLine[]> = ref([]);
+let filterredGithubContent: Ref<_FileLine[]> = ref(githubContent),
   searchText: Ref<string> = ref("");
 
 async function loadData() {
@@ -241,8 +229,8 @@ async function translate(
   util.hideLoadingScreen();
 }
 
-async function saveFile(file: _File) {
-  console.log(file);
+async function saveFile() {
+  file.value.lines = githubContent.value;
 }
 
 // Events

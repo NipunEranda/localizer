@@ -7,7 +7,7 @@ import {
 } from "./util";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { verifyToken } from "./auth";
-import { _File, fileSchema } from "./models/File";
+import { _File, _FileLine, fileSchema } from "./models/File";
 import { event } from "jquery";
 import axios from "axios";
 import cookie from "cookie";
@@ -126,7 +126,7 @@ export const removeFile = async (
 export const getGithubContent = async (
   event: APIGatewayProxyEvent
 ): Promise<AppResponse> => {
-  let jsonArray: { name: string; value: string; translation: object }[] = [];
+  let jsonArray: _FileLine[] = [];
   let xml = "";
   let response: { content: String } = { content: "" };
   let url: string = "";
@@ -193,7 +193,8 @@ export const getGithubContent = async (
                     .replace(/'/g, "")
                     .replace(/"/g, "")
                     .replace(/\\/g, '\\"'),
-                  translation: { id: 0, value: "", language: 0 },
+                  translation: { value: "", language: "" },
+                  history: [],
                 });
               }
             }
@@ -207,7 +208,8 @@ export const getGithubContent = async (
               : jsonArray.push({
                   name: line.split("=")[0].trim(),
                   value: line.split("=")[1].replace(/\\/g, '\\"').trim(),
-                  translation: { id: 0, value: "", language: 0 },
+                  translation: { value: "", language: "" },
+                  history: [],
                 });
           }
           //  else {
