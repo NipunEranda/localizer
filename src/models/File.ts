@@ -1,6 +1,18 @@
 import { _User } from "./Auth";
 import { _Workspace } from "./Workspace";
 
+export interface _translation {
+  language: string;
+  value: string;
+}
+
+export interface _FileLine {
+  name: string;
+  value: string;
+  translation: _translation;
+  history: _translation[];
+}
+
 export interface _File {
   _id: string;
   name: string;
@@ -11,6 +23,7 @@ export interface _File {
   type: string;
   from: string;
   to: string;
+  lines: _FileLine[];
   owner: string;
   workspace: string;
   createdOn: Date;
@@ -30,6 +43,7 @@ export class File implements _File {
   type: string;
   from: string;
   to: string;
+  lines: _FileLine[];
   owner: string;
   workspace: string;
   createdOn: Date;
@@ -48,6 +62,7 @@ export class File implements _File {
     type: string,
     from: string,
     to: string,
+    lines: _FileLine[],
     owner: string,
     workspace: string,
     createdOn: Date = new Date(),
@@ -62,6 +77,7 @@ export class File implements _File {
     this.type = type;
     this.from = from;
     this.to = to;
+    this.lines = lines;
     this.owner = owner;
     this.workspace = workspace;
     this.createdOn = createdOn;
@@ -82,6 +98,7 @@ export class File implements _File {
       obj.type,
       obj.from,
       obj.to,
+      obj.lines,
       obj.owner,
       obj.workspace,
       obj.createdOn,
@@ -100,6 +117,7 @@ export class File implements _File {
       "",
       "",
       "",
+      [],
       owner,
       workspace,
       new Date(),

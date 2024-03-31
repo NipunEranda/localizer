@@ -13,6 +13,7 @@
         <div class="w-2/6 flex">
           <button
             class="w-1/3 text-center bg-neutral-50 border-neutral-300 hover:brightness-95 text-neutral-600 dark:bg-neutral-800 dark:hover:bg-primary dark:brightness-125 dark:hover:border-blue-400 dark:border-neutral-600 dark:text-white border ms-1 h-[2.125rem] text-sm"
+            @click="saveFile(file)"
           >
             <fai icon="fa-save" />
             <span class="ms-1 lg:ms-2 hidden md:inline">Save</span>
@@ -238,6 +239,10 @@ async function translate(
   filterredGithubContent.value[index].translation.value = translation;
   filterredGithubContent.value[index].translation.language = to;
   util.hideLoadingScreen();
+}
+
+async function saveFile(file: _File) {
+  console.log(file);
 }
 
 // Events

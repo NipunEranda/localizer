@@ -1,5 +1,17 @@
 import mongoose, { ObjectId } from "mongoose";
 
+export interface _translation {
+  language: string;
+  value: string;
+}
+
+export interface _FileLine {
+  name: string;
+  value: string;
+  translation: _translation;
+  history: _translation[];
+}
+
 export interface _File {
   _id: string;
   name: string;
@@ -10,6 +22,7 @@ export interface _File {
   type: string;
   from: string;
   to: string;
+  lines: _FileLine[];
   owner: string;
   workspace: string;
   createdOn: Date;
@@ -29,6 +42,7 @@ export interface FileDocument extends _File, mongoose.Document {
   type: string;
   from: string;
   to: string;
+  lines: _FileLine[];
   owner: string;
   workspace: string;
   createdOn: Date;
@@ -77,6 +91,11 @@ export const FileSchema = new mongoose.Schema({
   to: {
     type: String,
     require: true,
+    unique: false,
+  },
+  lines: {
+    type: Array,
+    require: false,
     unique: false,
   },
   owner: {

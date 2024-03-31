@@ -463,8 +463,6 @@ async function openFileModal(operation: string, obj: _File) {
       modal.value.modalTitle = "New File";
       modal.value.actionName = "Save";
       modal.value.showCancel = true;
-
-      console.log(file.value);
       break;
     case "update":
       modal.value.modalTitle = "Update File";
