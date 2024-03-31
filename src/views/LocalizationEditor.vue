@@ -223,13 +223,20 @@ async function translate(
   to: string
 ) {
   util.showLoadingScreen();
-  const translation = await store.dispatch("file/translate", {
+  const translation: string = await store.dispatch("file/translate", {
     name,
     value,
     from: store.state.language.languages.filter((l) => l._id == from)[0],
     to: store.state.language.languages.filter((l) => l._id == to)[0],
   });
-  // console.log(filterredGithubContent.value[index].translation.id);
+  githubContent.value[
+    githubContent.value.indexOf(filterredGithubContent.value[index])
+  ].translation.value = translation;
+  githubContent.value[
+    githubContent.value.indexOf(filterredGithubContent.value[index])
+  ].translation.language = to;
+  filterredGithubContent.value[index].translation.value = translation;
+  filterredGithubContent.value[index].translation.language = to;
   util.hideLoadingScreen();
 }
 
