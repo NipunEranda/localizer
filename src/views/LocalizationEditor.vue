@@ -200,6 +200,18 @@ async function loadData() {
     "file/loadGithubContent",
     file.value
   );
+
+  githubContent.value.map((line, l) => {
+    if (
+      file.value.lines.filter(
+        (l) => l.name == line.name && l.value == line.value
+      )[0]
+    )
+      githubContent.value[l] = file.value.lines.filter(
+        (l) => l.name == line.name && l.value == line.value
+      )[0];
+  });
+
   filterredGithubContent.value = githubContent.value;
   util.hideLoadingScreen();
 }
@@ -230,7 +242,11 @@ async function translate(
 }
 
 async function saveFile() {
+  util.showLoadingScreen();
   file.value.lines = githubContent.value;
+  await store.dispatch("file/updateFile", file.value);
+  file.value = store.state.file.files.filter((f) => f._id == file.value._id)[0];
+  util.hideLoadingScreen();
 }
 
 // Events

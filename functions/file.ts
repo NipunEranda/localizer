@@ -78,9 +78,11 @@ export const updateFile = async (
             type: file.type,
             from: file.from,
             to: file.to,
+            lines: file.lines,
             modifiedOn: new Date(),
             modifiedBy: file.modifiedBy,
             fileUrl: file.fileUrl,
+            history: file.history,
           },
         }
       );

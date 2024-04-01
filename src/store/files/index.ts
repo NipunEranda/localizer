@@ -162,7 +162,6 @@ const FileModule = {
       ).data.data;
       return translateResponse;
     },
-    // async saveFile(context: ActionContext<FileState, State>, data: _File) {},
   },
 };
 
