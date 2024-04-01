@@ -9,6 +9,7 @@ export interface _translation {
 export interface _FileLine {
   name: string;
   value: string;
+  new: boolean;
   translation: _translation;
   history: _translation[];
 }

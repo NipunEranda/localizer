@@ -81,7 +81,14 @@
             :key="l"
             class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
           >
-            <td class="pl-3">{{ line.name }}</td>
+            <td class="pl-3">
+              {{ line.name }}
+              <fai
+                v-if="line.new"
+                icon="fa-circle-info"
+                class="ms-1 text-white"
+              />
+            </td>
             <td class="pl-3">{{ line.value }}</td>
             <td class="pt-2 pb-2 pl-3 pr-2">
               <input
@@ -125,14 +132,6 @@
                     tabindex="-1"
                     id="menu-item-0"
                     >History</a
-                  >
-                  <a
-                    href="#"
-                    class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
-                    role="menuitem"
-                    tabindex="-1"
-                    id="menu-item-0"
-                    >Clear</a
                   >
                 </div>
               </div>
@@ -206,13 +205,16 @@ async function loadData() {
       file.value.lines.filter(
         (l) => l.name == line.name && l.value == line.value
       )[0]
-    )
+    ) {
       githubContent.value[l] = file.value.lines.filter(
         (l) => l.name == line.name && l.value == line.value
       )[0];
+      githubContent.value[l].new = false;
+    } else githubContent.value[l].new = true;
   });
 
   filterredGithubContent.value = githubContent.value;
+  console.log(githubContent.value);
   util.hideLoadingScreen();
 }
 
