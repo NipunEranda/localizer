@@ -79,9 +79,24 @@
           <tr
             v-for="(line, l) in filterredGithubContent"
             :key="l"
-            class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            :class="{
+              'opacity-50 cursor-not-allowed select-none': line.removed,
+              'cursor-pointer': !line.removed,
+            }"
           >
-            <td class="pl-3">{{ line.name }}</td>
+            <td class="pl-3">
+              {{ line.name }}
+              <fai
+                v-if="line.new || line.removed"
+                icon="fa-circle-info"
+                class="ms-1"
+                :class="{
+                  'text-white': !line.removed,
+                  'text-red-500': line.removed,
+                }"
+              />
+            </td>
             <td class="pl-3">{{ line.value }}</td>
             <td class="pt-2 pb-2 pl-3 pr-2">
               <input
@@ -90,6 +105,8 @@
                 id="value"
                 v-model="line.translation.value"
                 class="bg-neutral-50 border border-neutral-300 text-neutral-900 dark:bg-neutral-800 dark:border-neutral-500 dark:placeholder-neutral-400 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 w-100"
+                :class="{ 'cursor-not-allowed select-none': line.removed }"
+                :disabled="line.removed"
               />
             </td>
             <td
@@ -125,14 +142,6 @@
                     tabindex="-1"
                     id="menu-item-0"
                     >History</a
-                  >
-                  <a
-                    href="#"
-                    class="text-neutral-700 dark:text-white dark:bg-neutral-700 dark:hover:bg-neutral-600 block px-4 py-2 text-sm"
-                    role="menuitem"
-                    tabindex="-1"
-                    id="menu-item-0"
-                    >Clear</a
                   >
                 </div>
               </div>
@@ -200,6 +209,33 @@ async function loadData() {
     "file/loadGithubContent",
     file.value
   );
+
+  // Merge save file lines to githubContent and mark removed lines
+  file.value.lines.map((line, l) => {
+    if (
+      !githubContent.value.filter(
+        (gcl) => gcl.name == line.name && gcl.value == line.value
+      )[0]
+    ) {
+      line.removed = true;
+      githubContent.value.push(line);
+    }
+  });
+
+  // Mark new lines
+  githubContent.value.map((line, l) => {
+    if (
+      file.value.lines.filter(
+        (fl) => fl.name == line.name && fl.value == line.value
+      )[0]
+    ) {
+      githubContent.value[l] = file.value.lines.filter(
+        (l) => l.name == line.name && l.value == line.value
+      )[0];
+      githubContent.value[l].new = false;
+    } else githubContent.value[l].new = true;
+  });
+
   filterredGithubContent.value = githubContent.value;
   util.hideLoadingScreen();
 }
@@ -230,7 +266,11 @@ async function translate(
 }
 
 async function saveFile() {
+  util.showLoadingScreen();
   file.value.lines = githubContent.value;
+  await store.dispatch("file/updateFile", file.value);
+  file.value = store.state.file.files.filter((f) => f._id == file.value._id)[0];
+  util.hideLoadingScreen();
 }
 
 // Events

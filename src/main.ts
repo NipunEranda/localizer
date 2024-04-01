@@ -44,6 +44,7 @@ import {
   faSave,
   faFileExport,
   faFileImport,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -72,7 +73,8 @@ library.add(
   faLanguage,
   faSave,
   faFileExport,
-  faFileImport
+  faFileImport,
+  faCircleInfo
 );
 
 createApp(App)
