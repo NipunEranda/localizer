@@ -257,21 +257,35 @@ async function translate(
   githubContent.value[
     githubContent.value.indexOf(filterredGithubContent.value[index])
   ].translation.value = translation;
-  githubContent.value[
-    githubContent.value.indexOf(filterredGithubContent.value[index])
-  ].translation.language = to;
   filterredGithubContent.value[index].translation.value = translation;
-  filterredGithubContent.value[index].translation.language = to;
   util.hideLoadingScreen();
 }
 
 async function saveFile() {
+  const createdDate = new Date();
   util.showLoadingScreen();
   file.value.lines = githubContent.value.filter((c) => !c.removed);
+
+  // Update translation createdDate
+  file.value.lines.map((line, l) => {
+    file.value.lines[l].translation.createdAt = createdDate;
+    if (line.translation.value != "")
+      if (
+        !file.value.lines[l].history.filter(
+          (h) => h.value == line.translation.value
+        )[0]
+      )
+        file.value.lines[l].history.push({
+          value: line.translation.value,
+          createdAt: createdDate,
+        });
+  });
+
   const filesResponse: _File[] = await store.dispatch(
     "file/updateFile",
     file.value
   );
+  await loadData();
   file.value = filesResponse.filter((f) => f._id == file.value._id)[0];
   util.hideLoadingScreen();
 }
