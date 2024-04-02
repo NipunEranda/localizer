@@ -141,6 +141,7 @@
                     role="menuitem"
                     tabindex="-1"
                     id="menu-item-0"
+                    @click="openHistoryModal(line)"
                     >History</a
                   >
                 </div>
@@ -150,6 +151,43 @@
         </tbody>
       </table>
     </div>
+
+    <Modal
+      :modalId="'lineHistoryModal'"
+      :modalTitle="modal.modalTitle"
+      :operation="modal.operation"
+      :actionName="modal.actionName"
+      :showCancel="modal.showCancel"
+      :modalProcess="hideHistoryModal"
+    >
+      <table
+        class="h-full w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400 table-auto table-sort"
+        v-if="lineHistoryObject"
+      >
+        <thead
+          class="text-xs text-neutral-700 uppercase bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-400 cursor-pointer border-b-[.1rem] border-neutral-600"
+        >
+          <tr>
+            <th scope="col" class="px-3 py-3">Translation</th>
+            <th scope="col" class="px-3 py-3 text-right">Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(translation, t) in lineHistoryObject.history"
+            :key="t"
+            class="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+          >
+            <td class="px-3 py-3">
+              {{ translation.value }}
+            </td>
+            <td class="px-3 py-3 text-right">
+              {{ translation.createdAt }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </Modal>
   </div>
 </template>
 
@@ -196,7 +234,19 @@ const store = useStore(key),
 
 let githubContent: Ref<_FileLine[]> = ref([]);
 let filterredGithubContent: Ref<_FileLine[]> = ref(githubContent),
-  searchText: Ref<string> = ref("");
+  searchText: Ref<string> = ref(""),
+  modal: Ref<{
+    modalTitle: string;
+    operation: string;
+    actionName: string;
+    showCancel: boolean;
+  }> = ref({
+    modalTitle: "",
+    operation: "",
+    actionName: "",
+    showCancel: true,
+  }),
+  lineHistoryObject: Ref<_FileLine>;
 
 async function loadData() {
   util.showLoadingScreen();
@@ -288,6 +338,21 @@ async function saveFile() {
   await loadData();
   file.value = filesResponse.filter((f) => f._id == file.value._id)[0];
   util.hideLoadingScreen();
+}
+
+async function openHistoryModal(line: _FileLine) {
+  if (line) lineHistoryObject = ref(line);
+  modal.value = {
+    modalTitle: `"${line.value.trim()}" translation history`,
+    operation: "view",
+    actionName: "Cancel",
+    showCancel: false,
+  };
+  showModal("lineHistoryModal");
+}
+
+function hideHistoryModal() {
+  util.hideModal("lineHistoryModal");
 }
 
 // Events
