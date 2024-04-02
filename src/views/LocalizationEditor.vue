@@ -267,9 +267,12 @@ async function translate(
 
 async function saveFile() {
   util.showLoadingScreen();
-  file.value.lines = githubContent.value;
-  await store.dispatch("file/updateFile", file.value);
-  file.value = store.state.file.files.filter((f) => f._id == file.value._id)[0];
+  file.value.lines = githubContent.value.filter((c) => !c.removed);
+  const filesResponse: _File[] = await store.dispatch(
+    "file/updateFile",
+    file.value
+  );
+  file.value = filesResponse.filter((f) => f._id == file.value._id)[0];
   util.hideLoadingScreen();
 }
 
