@@ -2,8 +2,8 @@ import { _User } from "./Auth";
 import { _Workspace } from "./Workspace";
 
 export interface _translation {
-  language: string;
   value: string;
+  createdAt: Date;
 }
 
 export interface _FileLine {
