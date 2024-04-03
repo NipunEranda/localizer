@@ -111,7 +111,7 @@ let loading = ref({
 
 onMounted(async () => {
   loading.value["workspaces"] = true;
-  workspaces.value = await store.dispatch("workspace/loadWorkspaces");
+  workspaces.value = await store.dispatch("workspace/getWorkspaces");
   loading.value["workspaces"] = false;
 });
 

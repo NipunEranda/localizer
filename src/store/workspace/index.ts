@@ -49,6 +49,12 @@ const WorkspaceModule = {
     ) {
       context.commit("setDefaultWorkspace", data);
     },
+    async getWorkspaces(context: ActionContext<WorkspaceState, State>) {
+      if (context.state.workspaces.length == 0)
+        await context.dispatch("loadWorkspaces");
+
+      return context.state.workspaces;
+    },
     async loadWorkspaces(
       context: ActionContext<WorkspaceState, State>
     ): Promise<Workspace[] | null> {
