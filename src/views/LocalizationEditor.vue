@@ -262,35 +262,33 @@ async function loadData() {
     file.value
   );
 
-  if (githubContent.value) {
-    // Merge save file lines to githubContent and mark removed lines
-    file.value.lines.map((line, l) => {
-      if (
-        !githubContent.value.filter(
-          (gcl) => gcl.name == line.name && gcl.value == line.value
-        )[0]
-      ) {
-        line.removed = true;
-        githubContent.value.push(line);
-      }
-    });
+  // Merge save file lines to githubContent and mark removed lines
+  file.value.lines.map((line, l) => {
+    if (
+      !githubContent.value.filter(
+        (gcl) => gcl.name == line.name && gcl.value == line.value
+      )[0]
+    ) {
+      line.removed = true;
+      githubContent.value.push(line);
+    }
+  });
 
-    // Mark new lines
-    githubContent.value.map((line, l) => {
-      if (
-        file.value.lines.filter(
-          (fl) => fl.name == line.name && fl.value == line.value
-        )[0]
-      ) {
-        githubContent.value[l] = file.value.lines.filter(
-          (l) => l.name == line.name && l.value == line.value
-        )[0];
-        githubContent.value[l].new = false;
-      } else githubContent.value[l].new = true;
-    });
+  // Mark new lines
+  githubContent.value.map((line, l) => {
+    if (
+      file.value.lines.filter(
+        (fl) => fl.name == line.name && fl.value == line.value
+      )[0]
+    ) {
+      githubContent.value[l] = file.value.lines.filter(
+        (l) => l.name == line.name && l.value == line.value
+      )[0];
+      githubContent.value[l].new = false;
+    } else githubContent.value[l].new = true;
+  });
 
-    filterredGithubContent.value = githubContent.value;
-  }
+  filterredGithubContent.value = githubContent.value;
   util.hideLoadingScreen();
 }
 
