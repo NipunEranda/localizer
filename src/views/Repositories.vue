@@ -146,7 +146,7 @@ function openRepository(repo) {
 
 onMounted(async () => {
   showLoadingScreen();
-  repositories.value = await store.dispatch("repository/getRepositories");
+  repositories.value = await store.dispatch("repository/loadRepositories");
   repositories.value.sort((a, b) => a.name.localeCompare(b.name));
   filterredRepositories = ref(repositories);
   hideLoadingScreen();
