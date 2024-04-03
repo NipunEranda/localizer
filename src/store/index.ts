@@ -40,7 +40,6 @@ export const store = createStore<State>({
   },
   actions: {
     handleRequestErrors(context: ActionContext<State, State>, data) {
-      console.log(data);
       if (data.response.status == 401) {
         this.dispatch("logout");
       }
