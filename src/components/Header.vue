@@ -160,7 +160,7 @@
             <li
               :class="{
                 'bg-orange-600 bg-opacity-85 text-white  p-2 pl-4 pr-4 rounded-xl':
-                  activeTab == 'files',
+                  activeTab == 'files' || activeTab == 'editor',
               }"
               class="hover:bg-orange-600 p-2 pl-4 pr-4 rounded-xl cursor-pointer text-black dark:text-white hover:text-white"
               @click="$router.push('/files'), toggleMobileView('close')"
