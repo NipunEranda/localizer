@@ -35,6 +35,12 @@ const RepositoryModule = {
     ) {
       context.commit("setRepositories", data);
     },
+    async getRepositories(context: ActionContext<RepositoryState, State>) {
+      if (context.state.repositories.length == 0)
+        await context.dispatch("loadRepositories");
+
+      return context.state.repositories;
+    },
     async loadRepositories(
       context: ActionContext<RepositoryState, State>
     ): Promise<_Repository[] | null> {

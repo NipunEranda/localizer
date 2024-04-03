@@ -119,7 +119,7 @@ import * as util from "@/utils";
 import jQuery from "jquery";
 
 const store = useStore(key);
-const repositories = ref(store.state.repository.repositories);
+const repositories = ref([]);
 let filterredRepositories = ref(repositories);
 let searchText = ref("");
 const breadCrumbPaths = [
@@ -146,7 +146,7 @@ function openRepository(repo) {
 
 onMounted(async () => {
   showLoadingScreen();
-  repositories.value = await store.dispatch("repository/loadRepositories");
+  repositories.value = await store.dispatch("repository/getRepositories");
   repositories.value.sort((a, b) => a.name.localeCompare(b.name));
   filterredRepositories = ref(repositories);
   hideLoadingScreen();
