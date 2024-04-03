@@ -204,35 +204,11 @@ import { clearDropDowns, showModal } from "@/utils";
 import { File, _File, _FileLine } from "@/models/File";
 import DropDown from "@/components/DropDown.vue";
 import jQuery from "jquery";
-import { _Repository } from "@/models/Repository";
+import { Repository, _Repository } from "@/models/Repository";
 import axios from "axios";
 
 const store = useStore(key),
-  route = useRoute(),
-  file: Ref<_File> = ref(
-    store.state.file.files.filter((f) => f._id == route.query.file)[0]
-  ),
-  repository: Ref<_Repository> = ref(
-    store.state.repository.repositories.filter(
-      (r) => r.id == file.value.repository
-    )[0]
-  ),
-  breadCrumbPaths = [
-    {
-      name: `Files${
-        repository.value.name ? ` (${repository.value.name})` : ""
-      }`,
-      icon: "fa-folder-open",
-      url: `/files${
-        file.value.repository ? `?repo=${file.value.repository}` : ""
-      }`,
-    },
-    {
-      name: file.value.name,
-      icon: "fa-file",
-      url: `/editor?file=${file.value._id}`,
-    },
-  ];
+  route = useRoute();
 
 let githubContent: Ref<_FileLine[]> = ref([]);
 let filterredGithubContent: Ref<_FileLine[]> = ref(githubContent),
@@ -248,14 +224,48 @@ let filterredGithubContent: Ref<_FileLine[]> = ref(githubContent),
     actionName: "",
     showCancel: true,
   }),
-  lineHistoryObject: Ref<_FileLine>;
+  lineHistoryObject: Ref<_FileLine>,
+  file: Ref<_File> = ref(
+    File.createEmptyObject(
+      store.state.auth.currentUser._id,
+      store.state.workspace.defaultWorkspace._id
+    )
+  ),
+  repository: Ref<_Repository> = ref(Repository.createEmptyObject()),
+  breadCrumbPaths: Ref<{ name: string; icon: string; url: string }[]> = ref([]);
 
 async function loadData() {
   util.showLoadingScreen();
-  await store.dispatch("file/loadFiles", null);
+  await store.dispatch(
+    "language/loadLanguages",
+    store.state.workspace.defaultWorkspace._id
+  );
+  await store.dispatch("repository/loadRepositories");
+  await store.dispatch("file/loadFiles");
+
   file.value = store.state.file.files.filter(
     (f) => f._id == route.query.file
   )[0];
+  repository.value = store.state.repository.repositories.filter(
+    (r) => r.id == file.value.repository
+  )[0];
+
+  breadCrumbPaths.value = [
+    {
+      name: `Files${
+        repository.value.name ? ` (${repository.value.name})` : ""
+      }`,
+      icon: "fa-folder-open",
+      url: `/files${
+        file.value.repository ? `?repo=${file.value.repository}` : ""
+      }`,
+    },
+    {
+      name: file.value.name,
+      icon: "fa-file",
+      url: `/editor?file=${file.value._id}`,
+    },
+  ];
 
   githubContent.value = await store.dispatch(
     "file/loadGithubContent",
