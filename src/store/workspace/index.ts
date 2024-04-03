@@ -53,13 +53,15 @@ const WorkspaceModule = {
       context: ActionContext<WorkspaceState, State>
     ): Promise<Workspace[] | null> {
       try {
-        const workspaces: Workspace[] = (
-          await axios.get(`${process.env.VUE_APP_API_URL}/workspace`, {
-            withCredentials: true,
-          })
-        ).data.data;
-        context.commit("setWorkspaces", workspaces);
-        return workspaces;
+        if (context.state.workspaces.length == 0) {
+          const workspaces: Workspace[] = (
+            await axios.get(`${process.env.VUE_APP_API_URL}/workspace`, {
+              withCredentials: true,
+            })
+          ).data.data;
+          context.commit("setWorkspaces", workspaces);
+        }
+        return context.state.workspaces;
       } catch (e) {
         store.dispatch("handleRequestErrors", e);
         return null;
