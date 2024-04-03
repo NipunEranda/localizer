@@ -64,7 +64,6 @@ const LanguageModule = {
             )
           ).data.data;
           context.commit("setLanguages", languages);
-          return languages;
         }
         return context.state.languages;
       } catch (e) {
